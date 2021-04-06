@@ -1,0 +1,32 @@
+{
+	"name": "edupage-api",
+	"version": "0.1.0",
+	"description": "Simple API package to manage your EduPage account.",
+	"main": "index.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/loumadev/EdupageAPI.git"
+	},
+	"keywords": [
+		"edupage",
+		"asc",
+		"api",
+		"edu",
+		"education",
+		"school",
+		"study",
+		"node",
+		"async",
+		"await",
+		"promise"
+	],
+	"author": "Jaroslav Louma",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/loumadev/EdupageAPI/issues"
+	},
+	"homepage": "https://github.com/loumadev/EdupageAPI#readme"
+}

@@ -1,0 +1,100 @@
+const Class = require("./Class");
+const Edupage = require("./Edupage");
+const Parent = require("./Parent");
+const User = require("./User");
+
+class Student extends User {
+	/**
+	 * Creates an instance of Student.
+	 * @param {Object<string, any>} [data={}]
+	 * @param {Edupage} [edupage=null]
+	 * @memberof Student
+	 */
+	constructor(data = {}, edupage = null) {
+		super(data, edupage);
+
+		/**
+		 * Raw object data
+		 * @type {Object<string, any>} 
+		 */
+		this._data = data;
+
+		/**
+		 * Edupage instance
+		 * @type {Edupage} 
+		 */
+		this.edupage = edupage;
+
+		/**
+		 * @type {string}
+		 */
+		this.classid = data.classid;
+
+		/**
+		 * @type {number}
+		 */
+		this.number = +data.number;
+
+		/**
+		 * @type {number}
+		 */
+		this.numberinclass = +data.numberinclass;
+
+		/**
+		 * @type {string}
+		 */
+		this.parent1id = data.parent1id;
+
+		/**
+		 * @type {string}
+		 */
+		this.parent2id = data.parent2id;
+
+		/**
+		 * @type {string}
+		 */
+		this.parent3id = data.parent3id;
+
+
+		/**
+		 * @type {Parent}
+		 */
+		this.parent1 = data.parent1id ? new Parent({id: data.parent1id}) : null;
+
+		/**
+		 * @type {Parent}
+		 */
+		this.parent2 = data.parent2id ? new Parent({id: data.parent2id}) : null;
+
+		/**
+		 * @type {Parent}
+		 */
+		this.parent3 = data.parent3id ? new Parent({id: data.parent3id}) : null;
+
+
+		/**
+		 * @type {Class}
+		 */
+		this.class = null;
+
+		if(this.edupage) Student.prototype.init.call(this);
+	}
+
+	/**
+	 * 
+	 * @param {Edupage} [edupage=null]
+	 * @memberof Class
+	 */
+	init(edupage = null) {
+		if(edupage) this.edupage = edupage;
+
+		this.class = this.edupage.classes.find(e => e.id == this.classid);
+		this.parent1 = this.parent1 ? this.edupage.parents.find(e => e.id == this.parent1.id) : this.parent1;
+		this.parent2 = this.parent2 ? this.edupage.parents.find(e => e.id == this.parent2.id) : this.parent2;
+		this.parent3 = this.parent3 ? this.edupage.parents.find(e => e.id == this.parent3.id) : this.parent3;
+
+
+	}
+}
+
+module.exports = Student;
