@@ -76,7 +76,7 @@ class Edupage extends RawData {
 		this.teachers = Object.values(this._data.dbi.teachers).map(data => new Teacher(data, this));
 		this.classes = Object.values(this._data.dbi.classes).map(data => new Class(data, this));
 		this.classrooms = Object.values(this._data.dbi.classrooms).map(data => new Classroom(data, this));
-		this.parents = Object.values(this._data.dbi.parents).map(data => new Parent(data, this));
+		this.parents = Object.values(this._data.dbi.parents).map(data => new Parent(data));
 
 		//Parse current user
 		const id = (this._data.mygroups[0].match(/\d+/) || [])[0];
@@ -130,26 +130,21 @@ class Edupage extends RawData {
 				fetch(url, {
 					"headers": {
 						"accept": "application/json, text/javascript, */*; q=0.01",
-						"accept-language": "en-GB,en;q=0.9",
 						"content-type": "application/x-www-form-urlencoded; charset=UTF-8",
-						"Cookie": this.user.cookies,
-						"sec-fetch-dest": "empty",
-						"sec-fetch-mode": "cors",
-						"sec-fetch-site": "same-origin",
-						"x-requested-with": "XMLHttpRequest"
+						"Cookie": this.user.cookies.toString(false),
+						"x-requested-with": "XMLHttpRequest",
+						"referrer": `https://${this.user.origin}.edupage.org/`
 					},
-					"referrer": `https://${this.user.origin}.edupage.org/`,
-					"referrerPolicy": "same-origin",
 					"body": method == "POST" ? this._getRequestBody(data) : undefined,
 					"method": method,
-					"mode": "cors",
-					"credentials": "include"
 				}).then(res => res.text()).catch(e => {
 					//Network error
 					console.log(e, arguments);
 					//Server.warn(`[Edupage] [API] Error while sending request`, arguments);
 					tryFetch(++tryCount);
 				}).then(text => {
+					if(!text) return tryFetch(++tryCount);
+
 					try {
 						//Parse response as json
 						var json = JSON.parse(text);
@@ -183,7 +178,7 @@ class Edupage extends RawData {
 
 	/**
 	 * Returns endpoint URL
-	 * @param {APIEndpoint} endpoint
+	 * @param {import("./enums").APIEndpoint} endpoint
 	 * @return {string} Endpoint URL
 	 */
 	_buildRequestUrl(endpoint) {
