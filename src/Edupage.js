@@ -8,6 +8,7 @@ const Class = require("./Class");
 const Classroom = require("./Classroom");
 const Parent = require("./Parent");
 const RawData = require("../lib/RawData");
+const Subject = require("./Subject");
 
 class Edupage extends RawData {
 	/**
@@ -46,6 +47,11 @@ class Edupage extends RawData {
 		 * @type {Parent[]}
 		 */
 		this.parents = [];
+
+		/**
+		 * @type {Subject[]}
+		 */
+		this.subjects = [];
 	}
 
 	/**
@@ -77,6 +83,7 @@ class Edupage extends RawData {
 		this.classes = Object.values(this._data.dbi.classes).map(data => new Class(data, this));
 		this.classrooms = Object.values(this._data.dbi.classrooms).map(data => new Classroom(data, this));
 		this.parents = Object.values(this._data.dbi.parents).map(data => new Parent(data));
+		this.subjects = Object.values(this._data.dbi.subjects).map(data => new Subject(data));
 
 		//Parse current user
 		const id = (this._data.mygroups[0].match(/\d+/) || [])[0];
