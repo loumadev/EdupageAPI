@@ -67,13 +67,13 @@ class Edupage extends RawData {
 			const temp = new User();
 			temp.login(username, password).then(async user => {
 				this.user = temp;
-				await this.reload().catch(reject);
+				await this.refresh().catch(reject);
 				resolve(this.user);
 			}).catch(reject);
 		});
 	}
 
-	async reload() {
+	async refresh() {
 		//Load data
 		this._data = await this._api(ENDPOINT.TIMELINE);
 
