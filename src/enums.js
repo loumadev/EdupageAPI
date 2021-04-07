@@ -1,6 +1,6 @@
 /**
  * Edupage API endpoint
- * @typedef {Number} APIEndpoint
+ * @typedef {number} APIEndpoint
  */
 
 /**

@@ -1,8 +1,9 @@
+const RawData = require("../lib/RawData");
 const Classroom = require("./Classroom");
 const Edupage = require("./Edupage");
 const Teacher = require("./Teacher");
 
-class Class {
+class Class extends RawData {
 	/**
 	 * Creates an instance of Class.
 	 * @param {Object<string, any>} [data={}]
@@ -10,11 +11,7 @@ class Class {
 	 * @memberof Class
 	 */
 	constructor(data = {}, edupage = null) {
-		/**
-		 * Raw object data
-		 * @type {Object<string, any>} 
-		 */
-		this._data = data;
+		super(data);
 
 		/**
 		 * Edupage instance

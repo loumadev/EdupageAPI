@@ -13,12 +13,6 @@ class Teacher extends User {
 		super(data, edupage);
 
 		/**
-		 * Raw object data
-		 * @type {Object<string, any>} 
-		 */
-		this._data = data;
-
-		/**
 		 * Edupage instance
 		 * @type {Edupage} 
 		 */

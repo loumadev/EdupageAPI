@@ -7,23 +7,20 @@ const {ENDPOINT} = require("./enums");
 const Class = require("./Class");
 const Classroom = require("./Classroom");
 const Parent = require("./Parent");
+const RawData = require("../lib/RawData");
 
-class Edupage {
+class Edupage extends RawData {
 	/**
 	 * Creates an instance of Edupage.
 	 * @memberof Edupage
 	 */
 	constructor() {
+		super();
+
 		/**
 		 * @type {User|Teacher|Student}
 		 */
 		this.user = null;
-
-		/**
-		 * Raw object data
-		 * @type {Object<string, any>} 
-		 */
-		this._data = null;
 
 		/**
 		 * @type {Student[]}

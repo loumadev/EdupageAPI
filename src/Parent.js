@@ -1,10 +1,9 @@
-class Parent {
+const RawData = require("../lib/RawData");
+const {GENDER} = require("./enums");
+
+class Parent extends RawData {
 	constructor(data = {}) {
-		/**
-		 * Raw object data
-		 * @type {Object<string, any>} 
-		 */
-		this._data = data;
+		super(data);
 
 		/**
 		* @type {string}

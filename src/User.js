@@ -3,8 +3,9 @@ const CookieJar = require("../lib/CookieJar");
 const {LoginError, ParseError, EdupageError} = require("./exceptions");
 const {GENDER} = require("./enums");
 const Edupage = require("./Edupage");
+const RawData = require("../lib/RawData");
 
-class User {
+class User extends RawData {
 	/**
 	 * Creates an instance of User.
 	 * @param {Object<string, any>} [data={}]
@@ -12,11 +13,7 @@ class User {
 	 * @memberof User
 	 */
 	constructor(data = {}, edupage = null) {
-		/**
-		 * Raw object data
-		 * @type {Object<string, any>} 
-		 */
-		this._data = data;
+		super(data);
 
 		/**
 		 * Edupage instance
