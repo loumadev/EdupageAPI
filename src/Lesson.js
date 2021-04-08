@@ -24,7 +24,12 @@ class Lesson extends RawData {
 		/**
 		 * @type {string}
 		 */
-		this.id = data.lid;
+		this.id = data.id;
+
+		/**
+		 * @type {string}
+		 */
+		this.idl = data.lid;
 
 		/**
 		 * @type {string}
@@ -45,6 +50,16 @@ class Lesson extends RawData {
 		 * @type {string[]}
 		 */
 		this.classroomids = data.classroomids;
+
+		/**
+		 * @type {string}
+		 */
+		this.onlineLessonURL = data.ol_url;
+
+		/**
+		 * @type {boolean}
+		 */
+		this.isOnlineLesson = !!this.onlineLessonURL;
 
 
 		/**
