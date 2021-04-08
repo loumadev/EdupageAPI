@@ -16,7 +16,8 @@
 const ENDPOINT = {
 	TIMELINE: 1,
 	TEST_DATA: 2,
-	CARDS_DATA: 3
+	CARDS_DATA: 3,
+	DASHBOARD: 4
 };
 
 /**

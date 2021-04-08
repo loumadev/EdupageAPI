@@ -10,8 +10,12 @@ const Parent = require("./Parent");
 const RawData = require("../lib/RawData");
 const Subject = require("./Subject");
 const Period = require("./Period");
+const ASC = require("../ASC");
 
 class Edupage extends RawData {
+
+	static verbose = false;
+
 	/**
 	 * Creates an instance of Edupage.
 	 * @memberof Edupage
@@ -80,8 +84,16 @@ class Edupage extends RawData {
 	}
 
 	async refresh() {
-		//Load data
-		this._data = await this._api(ENDPOINT.TIMELINE);
+		//Load global edupage data
+		const _html = await Edupage._api(this.user, ENDPOINT.DASHBOARD, null, "GET");
+		const _json = Edupage.parse(_html);
+
+		//Load timeline data
+		const _timeline = await Edupage._api(this.user, ENDPOINT.TIMELINE);
+		const _asc = ASC.parse(_html);
+
+		//Merge data
+		this._data = {..._json, ..._timeline, ASC: _asc};
 
 		//Parse json and create Objects
 		this.students = Object.values(this._data.dbi.students).map(data => new Student(data, this));
@@ -116,12 +128,23 @@ class Edupage extends RawData {
 		return this.teachers;
 	}
 
-	async _api(url, data = {}, method = "POST") {
+	/**
+	 *
+	 * @static
+	 * @param {User} user
+	 * @param {string|ENDPOINT} url
+	 * @param {Object<string, any>} [data={}]
+	 * @param {string} [method="POST"]
+	 * @param {boolean} [encodeBody=true]
+	 * @return {Promise<any>} 
+	 * @memberof Edupage
+	 */
+	static async _api(user, url, data = {}, method = "POST", encodeBody = true) {
 		return new Promise((resolve, reject) => {
 			const tryFetch = (tryCount = 0) => {
 				const tryLogIn = async () => {
 					//Server.log(`[Edupage] [API] Logging in as ${user.username}...`);
-					await this.login().then(() => {
+					await user.login().then(() => {
 						tryFetch(++tryCount - 1);
 					}).catch(err => {
 						//Server.warn(`[Edupage] [API] Failed to log in user:`, err, arguments);
@@ -134,10 +157,10 @@ class Edupage extends RawData {
 				if(tryCount > 1) return reject(new Error("Failed to send request multiple times"));
 
 				//User does not have origin assigned yet
-				if(!this.user.origin) return tryLogIn();
+				if(!user.origin) return tryLogIn();
 
 				//If url is APIEndpoint, convert it to url
-				if(typeof url === "number") url = this._buildRequestUrl(url);
+				if(typeof url === "number") url = this.buildRequestUrl(user, url);
 
 				//Send request
 				console.log(`[Edupage] [API] Sending request...`);
@@ -145,11 +168,11 @@ class Edupage extends RawData {
 					"headers": {
 						"accept": "application/json, text/javascript, */*; q=0.01",
 						"content-type": "application/x-www-form-urlencoded; charset=UTF-8",
-						"Cookie": this.user.cookies.toString(false),
+						"Cookie": user.cookies.toString(false),
 						"x-requested-with": "XMLHttpRequest",
-						"referrer": `https://${this.user.origin}.edupage.org/`
+						"referrer": `https://${user.origin}.edupage.org/`
 					},
-					"body": method == "POST" ? this._getRequestBody(data) : undefined,
+					"body": method == "POST" ? (encodeBody ? this.getRequestBody(data) : JSON.stringify(data)) : undefined,
 					"method": method,
 				}).then(res => res.text()).catch(e => {
 					//Network error
@@ -185,7 +208,7 @@ class Edupage extends RawData {
 	 * @param {Object<string, any>} data 
 	 * @return {string} Form body 
 	 */
-	_getRequestBody(data) {
+	static getRequestBody(data) {
 		const query = new URLSearchParams(data).toString();
 		return `eqap=${encodeURIComponent(btoa(query))}&eqaz=0`;
 	}
@@ -195,12 +218,27 @@ class Edupage extends RawData {
 	 * @param {import("./enums").APIEndpoint} endpoint
 	 * @return {string} Endpoint URL
 	 */
-	_buildRequestUrl(endpoint) {
-		const base = `https://${this.user.origin}.edupage.org`;
+	static buildRequestUrl(user, endpoint) {
+		const base = `https://${user.origin}.edupage.org`;
 
 		if(endpoint == ENDPOINT.TIMELINE) return `${base}/timeline/?jwid=jwd52d7615&module=todo&filterTab=messages&akcia=getData&eqav=1&maxEqav=7`;
 		if(endpoint == ENDPOINT.TEST_DATA) return `${base}/elearning/?cmd=MaterialPlayer&akcia=getETestData&ts=${new Date().getTime()}`;
 		if(endpoint == ENDPOINT.CARDS_DATA) return `${base}/elearning/?cmd=EtestCreator&akcia=getCardsData`;
+		if(endpoint == ENDPOINT.DASHBOARD) return `${base}/user/?`;
+	}
+
+	static parse(html) {
+		const match = (html.match(/\.userhome\((.+?)\);$/m) || "")[1];
+
+		try {
+			return JSON.parse(match);
+		} catch(e) {
+			if(Edupage.verbose) {
+				if(match) console.error(`Failed to parse JSON from Edupage html`);
+				else console.error(`Failed to parse Edupage html`);
+			}
+			return {};
+		}
 	}
 }
 
