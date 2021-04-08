@@ -22,7 +22,7 @@ class Student extends User {
 		/**
 		 * @type {string}
 		 */
-		this.classid = data.classid;
+		this.classId = data.classid;
 
 		/**
 		 * @type {number}
@@ -32,22 +32,22 @@ class Student extends User {
 		/**
 		 * @type {number}
 		 */
-		this.numberinclass = +data.numberinclass;
+		this.numberInClass = +data.numberinclass;
 
 		/**
 		 * @type {string}
 		 */
-		this.parent1id = data.parent1id;
+		this.parent1Id = data.parent1id;
 
 		/**
 		 * @type {string}
 		 */
-		this.parent2id = data.parent2id;
+		this.parent2Id = data.parent2id;
 
 		/**
 		 * @type {string}
 		 */
-		this.parent3id = data.parent3id;
+		this.parent3Id = data.parent3id;
 
 
 		/**
@@ -82,7 +82,7 @@ class Student extends User {
 	init(edupage = null) {
 		if(edupage) this.edupage = edupage;
 
-		this.class = this.edupage.classes.find(e => e.id == this.classid);
+		this.class = this.edupage.classes.find(e => e.id == this.classId);
 		this.parent1 = this.parent1 ? this.edupage.parents.find(e => e.id == this.parent1.id) : this.parent1;
 		this.parent2 = this.parent2 ? this.edupage.parents.find(e => e.id == this.parent2.id) : this.parent2;
 		this.parent3 = this.parent3 ? this.edupage.parents.find(e => e.id == this.parent3.id) : this.parent3;

@@ -26,7 +26,7 @@ class Teacher extends User {
 		/**
 		 * @type {string}
 		 */
-		this.classroomid = data.classroomid;
+		this.classroomId = data.classroomid;
 
 		/**
 		 * @type {string}
@@ -50,7 +50,7 @@ class Teacher extends User {
 	init(edupage = null) {
 		if(edupage) this.edupage = edupage;
 
-		this.classroom = this.edupage.classrooms.find(e => e.id == this.classroomid);
+		this.classroom = this.edupage.classrooms.find(e => e.id == this.classroomId);
 	}
 }
 

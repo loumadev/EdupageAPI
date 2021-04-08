@@ -65,7 +65,7 @@ class ASC extends RawData {
 		/**
 		 * @type {string}
 		 */
-		this.gsechash = data.gsechash;
+		this.gsecHash = data.gsechash;
 
 		/**
 		 * @type {number}

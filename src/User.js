@@ -24,12 +24,12 @@ class User extends RawData {
 		/**
 		 * @type {Date}
 		 */
-		this.datefrom = data.datefrom ? new Date(data.datefrom) : null;
+		this.dateFrom = data.datefrom ? new Date(data.datefrom) : null;
 
 		/**
 		 * @type {Date}
 		 */
-		this.dateto = data.dateto ? new Date(data.dateto) : null;
+		this.dateTo = data.dateto ? new Date(data.dateto) : null;
 
 		/**
 		 * @type {string}

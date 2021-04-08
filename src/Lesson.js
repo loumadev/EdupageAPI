@@ -34,22 +34,22 @@ class Lesson extends RawData {
 		/**
 		 * @type {string}
 		 */
-		this.periodid = data.period;
+		this.periodId = data.period;
 
 		/**
 		 * @type {string}
 		 */
-		this.subjectid = data.subjectid;
+		this.subjectId = data.subjectid;
 
 		/**
 		 * @type {string[]}
 		 */
-		this.classids = data.classids;
+		this.classIds = data.classids;
 
 		/**
 		 * @type {string[]}
 		 */
-		this.classroomids = data.classroomids;
+		this.classroomIds = data.classroomids;
 
 		/**
 		 * @type {string}
