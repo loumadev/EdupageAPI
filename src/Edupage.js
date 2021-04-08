@@ -85,11 +85,11 @@ class Edupage extends RawData {
 
 	async refresh() {
 		//Load global edupage data
-		const _html = await Edupage._api(this.user, ENDPOINT.DASHBOARD, null, "GET");
+		const _html = await Edupage.api(this.user, {url: ENDPOINT.DASHBOARD, method: "GET"});
 		const _json = Edupage.parse(_html);
 
 		//Load timeline data
-		const _timeline = await Edupage._api(this.user, ENDPOINT.TIMELINE);
+		const _timeline = await Edupage.api(this.user, {url: ENDPOINT.TIMELINE});
 		const _asc = ASC.parse(_html);
 
 		//Merge data
@@ -129,17 +129,29 @@ class Edupage extends RawData {
 	}
 
 	/**
+	 * @typedef {Object} APIOptions
+	 * @prop {string|ENDPOINT} url
+	 * @prop {Object<string, any>} [data={}]
+	 * @prop {string} [method="POST"]
+	 * @prop {boolean} [encodeBody=true]
+	 */
+
+	/**
 	 *
 	 * @static
 	 * @param {User} user
-	 * @param {string|ENDPOINT} url
-	 * @param {Object<string, any>} [data={}]
-	 * @param {string} [method="POST"]
-	 * @param {boolean} [encodeBody=true]
+	 * @param {APIOptions} options
 	 * @return {Promise<any>} 
 	 * @memberof Edupage
 	 */
-	static async _api(user, url, data = {}, method = "POST", encodeBody = true) {
+	static async api(user, options) {
+		let {
+			url,
+			data = {},
+			method = "POST",
+			encodeBody = true
+		} = options;
+
 		return new Promise((resolve, reject) => {
 			const tryFetch = (tryCount = 0) => {
 				const tryLogIn = async () => {
