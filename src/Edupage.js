@@ -1,3 +1,5 @@
+const debug = require("debug")("edupage:log");
+const error = require("debug")("edupage:error");
 const {default: fetch} = require("node-fetch");
 const Student = require("./Student");
 const Teacher = require("./Teacher");
@@ -11,11 +13,11 @@ const RawData = require("../lib/RawData");
 const Subject = require("./Subject");
 const Period = require("./Period");
 const ASC = require("../ASC");
+const {LoginError} = require("./exceptions");
+
+debug.log = console.log.bind(console);
 
 class Edupage extends RawData {
-
-	static verbose = false;
-
 	/**
 	 * Creates an instance of Edupage.
 	 * @memberof Edupage
@@ -158,28 +160,38 @@ class Edupage extends RawData {
 
 		return new Promise((resolve, reject) => {
 			const tryFetch = (tryCount = 0) => {
+				debug(`[API] Trying to send request...`);
+
 				const tryLogIn = async () => {
-					//Server.log(`[Edupage] [API] Logging in as ${user.username}...`);
+					debug(`[API] Logging in...`);
 					await user.login().then(() => {
 						tryFetch(++tryCount - 1);
 					}).catch(err => {
-						//Server.warn(`[Edupage] [API] Failed to log in user:`, err, arguments);
-						//reject(new Error("Failed to log in user: " + err.error.message));
+						error(`[API] Failed to log in user:`, err);
 						reject(err)
 					});
 				};
 
 				//If there are too many tries, reject the promise
-				if(tryCount > 1) return reject(new Error("Failed to send request multiple times"));
+				if(tryCount > 1) {
+					error(`[API] Request terminated due to mutiple failures`);
+					return reject(new Error("Failed to send request multiple times"));
+				}
 
 				//User does not have origin assigned yet
-				if(!user.origin && autoLogin) return tryLogIn();
+				if(!user.origin && autoLogin) {
+					debug(`[API] User is not logged in yet`);
+					return tryLogIn();
+				}
 
 				//If url is APIEndpoint, convert it to url
-				if(typeof url === "number") url = this.buildRequestUrl(user, url);
+				if(typeof url === "number") {
+					debug(`[API] Translating API endpoint into URL...`);
+					url = this.buildRequestUrl(user, url);
+				}
 
 				//Send request
-				console.log(`[Edupage] [API] Sending request...`);
+				debug(`[API] Sending request to '${url}'...`);
 				fetch(url, {
 					"headers": {
 						"accept": "application/json, text/javascript, */*; q=0.01",
@@ -190,32 +202,42 @@ class Edupage extends RawData {
 					},
 					"body": method == "POST" ? (encodeBody ? this.getRequestBody(data) : JSON.stringify(data)) : undefined,
 					"method": method,
-				}).then(res => res.text()).catch(e => {
+				}).then(res => res.text()).catch(err => {
 					//Network error
-					console.log(e, arguments);
-					//Server.warn(`[Edupage] [API] Error while sending request`, arguments);
+					error(`[API] Error while sending request:`, err);
 					tryFetch(++tryCount);
 				}).then(text => {
-					if(!text) return tryFetch(++tryCount);
+					if(!text) {
+						error(`[API] Empty response body`);
+						return tryFetch(++tryCount);
+					}
 
 					//Needs to log in
 					if(text.includes("edubarLogin.php") && autoLogin) {
 						//Try to log in
+						debug(`[API] Server responded with login page`);
 						tryLogIn();
 					} else {
 						if(type == "json") {
 							try {
 								//Parse response as json
 								var json = JSON.parse(text);
+								debug(`[API] Request successful`);
 								resolve(json);
 							} catch(err) {
 								//Unknown error
-								//Server.warn(`[Edupage] [API] Failed to parse response:`, err, arguments, text?.slice(0, 200));
+								error(`[API] Failed to parse response as '${type}':`, err, text.slice(0, 200));
 								tryFetch(++tryCount);
 							}
 						} else if(type == "text") {
+							//Already as text, do not have to parse
+							debug(`[API] Request successful`);
 							resolve(text);
-						} else throw new TypeError(`Invalid response type '${type}'. (Available: 'json', 'text')`);
+						} else {
+							//Unknown response type
+							error(`[API] Invalid response type provided ('${type}')`);
+							throw new TypeError(`Invalid response type '${type}'. (Available: 'json', 'text')`);
+						}
 					}
 				});
 			};
@@ -239,12 +261,16 @@ class Edupage extends RawData {
 	 * @return {string} Endpoint URL
 	 */
 	static buildRequestUrl(user, endpoint) {
+		if(!user.origin) throw new LoginError(`Failed to build URL: User is not logged in yet`);
+
 		const base = `https://${user.origin}.edupage.org`;
 
 		if(endpoint == ENDPOINT.TIMELINE) return `${base}/timeline/?jwid=jwd52d7615&module=todo&filterTab=messages&akcia=getData&eqav=1&maxEqav=7`;
 		if(endpoint == ENDPOINT.TEST_DATA) return `${base}/elearning/?cmd=MaterialPlayer&akcia=getETestData&ts=${new Date().getTime()}`;
 		if(endpoint == ENDPOINT.CARDS_DATA) return `${base}/elearning/?cmd=EtestCreator&akcia=getCardsData`;
 		if(endpoint == ENDPOINT.DASHBOARD) return `${base}/user/?`;
+
+		throw new TypeError(`Invalid API endpoint '${endpoint}'`);
 	}
 
 	static parse(html) {
@@ -253,10 +279,9 @@ class Edupage extends RawData {
 		try {
 			return JSON.parse(match);
 		} catch(e) {
-			if(Edupage.verbose) {
-				if(match) console.error(`Failed to parse JSON from Edupage html`);
-				else console.error(`Failed to parse Edupage html`);
-			}
+			if(match) error(`Failed to parse JSON from Edupage html`);
+			else error(`Failed to parse Edupage html`);
+
 			return {};
 		}
 	}

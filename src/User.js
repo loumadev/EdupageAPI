@@ -1,9 +1,13 @@
+const debug = require("debug")("edupage:log");
+const error = require("debug")("edupage:error");
 const {default: fetch} = require("node-fetch");
 const CookieJar = require("../lib/CookieJar");
 const {LoginError, ParseError, EdupageError} = require("./exceptions");
 const {GENDER} = require("./enums");
 const Edupage = require("./Edupage");
 const RawData = require("../lib/RawData");
+
+debug.log = console.log.bind(console);
 
 class User extends RawData {
 	/**
@@ -95,7 +99,7 @@ class User extends RawData {
 		this.cookies = new CookieJar();
 
 		return new Promise((resolve, reject) => {
-			console.log("logging in");
+			debug(`[Login] Logging in as ${username}...`);
 			fetch("https://portal.edupage.org/index.php?jwid=jw3&module=Login&lang=sk", {
 				"headers": {
 					"accept": "*/*",
@@ -104,22 +108,36 @@ class User extends RawData {
 				"body": `meno=${username}&heslo=${password}&akcia=login`,
 				"method": "POST"
 			}).then(res => {
+				debug(`[Login] Saving received cookies...`);
 				this.cookies.setCookie(res);
 				return res.text();
 			}).then(async html => {
 				html = html.replace(/\n/g, "").replace(/\r/g, "");
 
 				//Parse data
+				debug(`[Login] Parsing html data...`);
 				const err = html.match(/<div.*?class=".*?errorbox".*?>(.*?)</)?.[1]?.trim?.();
 				const url = html.match(/window\.open\("(.*?)"/)?.[1];
 				const origin = url?.match(/(\w*?).edupage.org/)?.[1];
 				const ESID = url?.match(/(?:ESID|PSID)=(.+?)\b/)?.[1];
 
 				//Validate parsed data
-				if(origin == "portal") return reject(new EdupageError(`Edupage server did not redirect login request to proper origin`));
-				if(err) return reject(new LoginError(`Failed to login: ${err}`));
-				if(!url) return reject(new ParseError(`Cannot parse redirect URL`));
-				if(!ESID) return reject(new ParseError(`Cannot parse ESID parameter from URL`));
+				if(origin == "portal") {
+					error(`[Login] Edupage server did not redirect login request to proper origin ('${origin}')`);
+					return reject(new EdupageError(`Edupage server did not redirect login request to proper origin`));
+				}
+				if(err) {
+					error(`[Login] Error box showed:`, err);
+					return reject(new LoginError(`Failed to login: ${err}`));
+				}
+				if(!url) {
+					error(`[Login] Failed to parse redirect URL '${url}'`);
+					return reject(new ParseError(`Cannot parse redirect URL`));
+				}
+				if(!ESID) {
+					error(`[Login] Failed to parse ESID parameter from URL '${ESID}' ('${url}')`);
+					return reject(new ParseError(`Cannot parse ESID parameter from URL`));
+				}
 
 				//Setup properties
 				this.cookies.setCookie("PHPSESSID", ESID);
@@ -131,8 +149,10 @@ class User extends RawData {
 					password
 				};
 
+				debug(`[Login] Login successful`)
 				resolve(this);
 			}).catch(err => {
+				error(`[Login] Failed to login user:`, err);
 				reject(err);
 			});
 		});

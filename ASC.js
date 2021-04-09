@@ -1,5 +1,9 @@
+const debug = require("debug")("edupage:log");
+const error = require("debug")("edupage:error");
 const RawData = require("./lib/RawData");
 const Edupage = require("./src/Edupage");
+
+debug.log = console.log.bind(console);
 
 class ASC extends RawData {
 	/**
@@ -77,9 +81,7 @@ class ASC extends RawData {
 		const data = {};
 		const matches = [...html.matchAll(/ASC\.([a-zA-Z0-9_$]+)\s?=\s?([\s\S]+?);/g)];
 
-		if(Edupage.verbose && !matches.length) {
-			console.error(`Failed to parse ASC data from html`);
-		}
+		if(!matches.length) error(`Failed to parse ASC data from html`, matches);
 
 		for(const [match, key, value] of matches) {
 			if(value.startsWith("function")) continue;
@@ -87,7 +89,7 @@ class ASC extends RawData {
 			try {
 				data[key] = JSON.parse(value);
 			} catch(e) {
-				if(Edupage.verbose) console.error(`Failed to parse JSON from ASC html`);
+				error(`Failed to parse JSON from ASC html`, match);
 			}
 		}
 

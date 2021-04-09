@@ -1,10 +1,10 @@
 {
 	"name": "edupage-api",
-	"version": "0.1.0",
+	"version": "0.2.0",
 	"description": "Simple API package to manage your EduPage account.",
 	"main": "index.js",
 	"scripts": {
-		"test": "echo \"Error: no test specified\" && exit 1"
+		"debug": "set DEBUG=edupage:* && node ./test/test.js"
 	},
 	"repository": {
 		"type": "git",
