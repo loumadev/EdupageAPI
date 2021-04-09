@@ -1,7 +1,7 @@
 const debug = require("debug")("edupage:log");
 const error = require("debug")("edupage:error");
-const RawData = require("./lib/RawData");
-const Edupage = require("./src/Edupage");
+const RawData = require("../lib/RawData");
+const Edupage = require("./Edupage");
 
 debug.log = console.log.bind(console);
 

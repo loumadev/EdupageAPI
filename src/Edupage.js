@@ -4,7 +4,7 @@ const {default: fetch} = require("node-fetch");
 const Student = require("./Student");
 const Teacher = require("./Teacher");
 const User = require("./User");
-const {btoa} = require("../lib/utils");
+const {btoa, iterate} = require("../lib/utils");
 const {ENDPOINT} = require("./enums");
 const Class = require("./Class");
 const Classroom = require("./Classroom");
@@ -12,8 +12,9 @@ const Parent = require("./Parent");
 const RawData = require("../lib/RawData");
 const Subject = require("./Subject");
 const Period = require("./Period");
-const ASC = require("../ASC");
+const ASC = require("./ASC");
 const {LoginError} = require("./exceptions");
+const Timetable = require("./Timetable");
 
 debug.log = console.log.bind(console);
 
@@ -64,6 +65,17 @@ class Edupage extends RawData {
 		 * @type {Period[]}
 		 */
 		this.periods = [];
+
+		/**
+		 * @type {Timetable[]}
+		 */
+		this.timetables = [];
+
+
+		/**
+		 * @type {number}
+		 */
+		this.year = null;
 	}
 
 	/**
@@ -105,6 +117,10 @@ class Edupage extends RawData {
 		this.parents = Object.values(this._data.dbi.parents).map(data => new Parent(data));
 		this.subjects = Object.values(this._data.dbi.subjects).map(data => new Subject(data));
 		this.periods = Object.values(this._data.dbi.periods).map(data => new Period(data));
+		this.timetables = iterate(this._data.dp.dates).map(([i, date, data]) => new Timetable(data, date, this));
+
+		//Create single values
+		this.year = this._data.dp.year;
 
 		//Parse current user
 		const id = (this._data.mygroups[0].match(/\d+/) || [])[0];

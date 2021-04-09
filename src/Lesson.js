@@ -29,7 +29,7 @@ class Lesson extends RawData {
 		/**
 		 * @type {string}
 		 */
-		this.idl = data.lid;
+		this.lid = data.lid;
 
 		/**
 		 * @type {string}
@@ -81,6 +81,19 @@ class Lesson extends RawData {
 		 * @type {Classroom[]}
 		 */
 		this.classrooms = [];
+
+		if(this.edupage) Lesson.prototype.init.call(this);
+	}
+
+	/**
+	 * 
+	 * @param {Edupage} [edupage=null]
+	 * @memberof Class
+	 */
+	init(edupage = null) {
+		if(edupage) this.edupage = edupage;
+
+
 	}
 }
 
