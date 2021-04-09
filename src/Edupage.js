@@ -85,7 +85,7 @@ class Edupage extends RawData {
 
 	async refresh() {
 		//Load global edupage data
-		const _html = await Edupage.api(this.user, {url: ENDPOINT.DASHBOARD, method: "GET"});
+		const _html = await Edupage.api(this.user, {url: ENDPOINT.DASHBOARD, method: "GET", type: "text"});
 		const _json = Edupage.parse(_html);
 
 		//Load timeline data
@@ -134,6 +134,8 @@ class Edupage extends RawData {
 	 * @prop {Object<string, any>} [data={}]
 	 * @prop {string} [method="POST"]
 	 * @prop {boolean} [encodeBody=true]
+	 * @prop {"json"|"text"} [type="json"]
+	 * @prop {boolean} [autoLogin=true]
 	 */
 
 	/**
@@ -149,7 +151,9 @@ class Edupage extends RawData {
 			url,
 			data = {},
 			method = "POST",
-			encodeBody = true
+			encodeBody = true,
+			type = "json",
+			autoLogin = true
 		} = options;
 
 		return new Promise((resolve, reject) => {
@@ -169,7 +173,7 @@ class Edupage extends RawData {
 				if(tryCount > 1) return reject(new Error("Failed to send request multiple times"));
 
 				//User does not have origin assigned yet
-				if(!user.origin) return tryLogIn();
+				if(!user.origin && autoLogin) return tryLogIn();
 
 				//If url is APIEndpoint, convert it to url
 				if(typeof url === "number") url = this.buildRequestUrl(user, url);
@@ -194,20 +198,24 @@ class Edupage extends RawData {
 				}).then(text => {
 					if(!text) return tryFetch(++tryCount);
 
-					try {
-						//Parse response as json
-						var json = JSON.parse(text);
-						resolve(json);
-					} catch(err) {
-						//Needs to log in
-						if(text.includes("edubarLogin.php")) {
-							//Try to log in
-							tryLogIn();
-						} else {
-							//Unknown error
-							//Server.warn(`[Edupage] [API] Failed to parse response:`, err, arguments, text?.slice(0, 200));
-							tryFetch(++tryCount);
-						}
+					//Needs to log in
+					if(text.includes("edubarLogin.php") && autoLogin) {
+						//Try to log in
+						tryLogIn();
+					} else {
+						if(type == "json") {
+							try {
+								//Parse response as json
+								var json = JSON.parse(text);
+								resolve(json);
+							} catch(err) {
+								//Unknown error
+								//Server.warn(`[Edupage] [API] Failed to parse response:`, err, arguments, text?.slice(0, 200));
+								tryFetch(++tryCount);
+							}
+						} else if(type == "text") {
+							resolve(text);
+						} else throw new TypeError(`Invalid response type '${type}'. (Available: 'json', 'text')`);
 					}
 				});
 			};
