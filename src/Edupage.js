@@ -99,11 +99,11 @@ class Edupage extends RawData {
 
 	async refresh() {
 		//Load global edupage data
-		const _html = await Edupage.api(this.user, {url: ENDPOINT.DASHBOARD, method: "GET", type: "text"});
+		const _html = await this.api({url: ENDPOINT.DASHBOARD, method: "GET", type: "text"});
 		const _json = Edupage.parse(_html);
 
 		//Load timeline data
-		const _timeline = await Edupage.api(this.user, {url: ENDPOINT.TIMELINE});
+		const _timeline = await this.api({url: ENDPOINT.TIMELINE});
 		const _asc = ASC.parse(_html);
 
 		//Merge data
@@ -159,12 +159,11 @@ class Edupage extends RawData {
 	/**
 	 *
 	 * @static
-	 * @param {User} user
 	 * @param {APIOptions} options
 	 * @return {Promise<any>} 
 	 * @memberof Edupage
 	 */
-	static async api(user, options) {
+	async api(options) {
 		let {
 			url,
 			data = {},
@@ -180,7 +179,7 @@ class Edupage extends RawData {
 
 				const tryLogIn = async () => {
 					debug(`[API] Logging in...`);
-					await user.login().then(() => {
+					await this.user.login().then(() => {
 						tryFetch(++tryCount - 1);
 					}).catch(err => {
 						error(`[API] Failed to log in user:`, err);
@@ -195,7 +194,7 @@ class Edupage extends RawData {
 				}
 
 				//User does not have origin assigned yet
-				if(!user.origin && autoLogin) {
+				if(!this.user.origin && autoLogin) {
 					debug(`[API] User is not logged in yet`);
 					return tryLogIn();
 				}
@@ -203,7 +202,7 @@ class Edupage extends RawData {
 				//If url is APIEndpoint, convert it to url
 				if(typeof url === "number") {
 					debug(`[API] Translating API endpoint into URL...`);
-					url = this.buildRequestUrl(user, url);
+					url = this.buildRequestUrl(url);
 				}
 
 				//Send request
@@ -212,9 +211,9 @@ class Edupage extends RawData {
 					"headers": {
 						"accept": "application/json, text/javascript, */*; q=0.01",
 						"content-type": "application/x-www-form-urlencoded; charset=UTF-8",
-						"Cookie": user.cookies.toString(false),
+						"Cookie": this.user.cookies.toString(false),
 						"x-requested-with": "XMLHttpRequest",
-						"referrer": `https://${user.origin}.edupage.org/`
+						"referrer": `https://${this.user.origin}.edupage.org/`
 					},
 					"body": method == "POST" ? (encodeBody ? this.getRequestBody(data) : JSON.stringify(data)) : undefined,
 					"method": method,
@@ -263,23 +262,25 @@ class Edupage extends RawData {
 
 	/**
 	 * Converts Object to form body
+	 * @private
 	 * @param {Object<string, any>} data 
 	 * @return {string} Form body 
 	 */
-	static getRequestBody(data) {
+	getRequestBody(data) {
 		const query = new URLSearchParams(data).toString();
 		return `eqap=${encodeURIComponent(btoa(query))}&eqaz=0`;
 	}
 
 	/**
 	 * Returns endpoint URL
+	 * @private
 	 * @param {import("./enums").APIEndpoint} endpoint
 	 * @return {string} Endpoint URL
 	 */
-	static buildRequestUrl(user, endpoint) {
-		if(!user.origin) throw new LoginError(`Failed to build URL: User is not logged in yet`);
+	buildRequestUrl(endpoint) {
+		if(!this.user.origin) throw new LoginError(`Failed to build URL: User is not logged in yet`);
 
-		const base = `https://${user.origin}.edupage.org`;
+		const base = `https://${this.user.origin}.edupage.org`;
 
 		if(endpoint == ENDPOINT.TIMELINE) return `${base}/timeline/?jwid=jwd52d7615&module=todo&filterTab=messages&akcia=getData&eqav=1&maxEqav=7`;
 		if(endpoint == ENDPOINT.TEST_DATA) return `${base}/elearning/?cmd=MaterialPlayer&akcia=getETestData&ts=${new Date().getTime()}`;
@@ -289,6 +290,12 @@ class Edupage extends RawData {
 		throw new TypeError(`Invalid API endpoint '${endpoint}'`);
 	}
 
+	/**
+	 * Parses raw JSON data from html
+	 * @private
+	 * @param {string} html 
+	 * @returns {Object<string, any>}
+	 */
 	static parse(html) {
 		const match = (html.match(/\.userhome\((.+?)\);$/m) || "")[1];
 
