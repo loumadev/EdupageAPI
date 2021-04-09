@@ -2,6 +2,7 @@ const RawData = require("../lib/RawData");
 const Class = require("./Class");
 const Classroom = require("./Classroom");
 const Edupage = require("./Edupage");
+const {ENDPOINT} = require("./enums");
 const Period = require("./Period");
 const Student = require("./Student");
 const Subject = require("./Subject");
@@ -32,6 +33,11 @@ class Lesson extends RawData {
 		 * @type {string}
 		 */
 		this.lid = data.flags.dp0.lid;
+
+		/**
+		 * @type {Date}
+		 */
+		this.date = new Date(data.flags.dp0.date);
 
 		/**
 		 * @type {string}
@@ -147,6 +153,31 @@ class Lesson extends RawData {
 		this.students = this.studentIds.map(id => this.edupage.students.find(e => e.id == id));
 		this.teachers = this.teacherIds.map(id => this.edupage.teachers.find(e => e.id == id));
 		//TODO: this.homeworks // "2021-04-07:01AC6375F9899C7BC2C0"
+	}
+
+	async signIntoLesson() {
+		if(!this.isOnlineLesson) throw new Error(`Cannot sign into this lesson`);
+
+		const payload = {
+			"__args": [
+				null,
+				{
+					"click": true,
+					"date": this.date.toISOString().slice(0, 10),
+					"ol_url": this.onlineLessonURL,
+					"subjectid": this.subject.id
+				}
+			],
+			"__gsh": this.edupage.ASC.gsecHash
+		};
+
+		const res = await this.edupage.api({
+			url: ENDPOINT.ONLINE_LESSON_SIGN,
+			data: payload,
+			encodeBody: false
+		});
+
+		return res.reload != true;
 	}
 }
 

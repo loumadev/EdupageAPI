@@ -73,6 +73,11 @@ class Edupage extends RawData {
 
 
 		/**
+		 * @type {ASC}
+		 */
+		this.ASC = null;
+
+		/**
 		 * @type {number}
 		 */
 		this.year = null;
@@ -120,6 +125,7 @@ class Edupage extends RawData {
 		this.timetables = iterate(this._data.dp.dates).map(([i, date, data]) => new Timetable(data, date, this));
 
 		//Create single values
+		this.ASC = new ASC(this._data.ASC, this);
 		this.year = this._data.dp.year;
 
 		//Parse current user
@@ -286,6 +292,7 @@ class Edupage extends RawData {
 		if(endpoint == ENDPOINT.TEST_DATA) return `${base}/elearning/?cmd=MaterialPlayer&akcia=getETestData&ts=${new Date().getTime()}`;
 		if(endpoint == ENDPOINT.CARDS_DATA) return `${base}/elearning/?cmd=EtestCreator&akcia=getCardsData`;
 		if(endpoint == ENDPOINT.DASHBOARD) return `${base}/user/?`;
+		if(endpoint == ENDPOINT.ONLINE_LESSON_SIGN) return `${base}/dashboard/server/onlinelesson.js?__func=getOnlineLessonOpenUrl`;
 
 		throw new TypeError(`Invalid API endpoint '${endpoint}'`);
 	}
