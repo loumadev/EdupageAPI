@@ -208,7 +208,7 @@ class Message extends RawData {
 					if(e.timelineid == this._data.item?.timelineid) return;
 					if(e.cas_pridania == this._data.cas_pridania) return;
 					if(e.typ == "confirmation") {
-						const data = Message.parseUsername(this._data.vlastnik_meno);
+						const data = Message.parseUsername(e.vlastnik_meno);
 						const user = this.edupage.getUserByUserString(e.vlastnik) || User.from(e.vlastnik, data, this.edupage);
 
 						if(e.data.like) this.likedBy.push({user, date: new Date(e.data.like)});
