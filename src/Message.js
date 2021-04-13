@@ -223,6 +223,8 @@ class Message extends RawData {
 						if(!this.replies.includes(msg)) this.replies.push(msg);
 					}
 				});
+
+			this.repliesCount = this.replies.length;
 		}
 
 		//Setup flags
