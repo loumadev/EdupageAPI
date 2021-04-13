@@ -1,13 +1,27 @@
+module.exports = null;
 const debug = require("debug")("edupage:log");
 const error = require("debug")("edupage:error");
 const {default: fetch} = require("node-fetch");
 const CookieJar = require("../lib/CookieJar");
-const {LoginError, ParseError, EdupageError} = require("./exceptions");
-const {GENDER} = require("./enums");
+const {LoginError, ParseError, EdupageError, APIError, MessageError} = require("./exceptions");
+const {GENDER, ENDPOINT} = require("./enums");
 const Edupage = require("./Edupage");
 const RawData = require("../lib/RawData");
 
 debug.log = console.log.bind(console);
+
+/**
+ * @typedef {import("./Teacher")} Teacher
+ */
+/**
+ * @typedef {import("./Student")} Student
+ */
+/**
+ * @typedef {import("./Parent")} Parent
+ */
+/**
+ * @typedef {import("./Message")} Message
+ */
 
 class User extends RawData {
 	/**
@@ -56,6 +70,11 @@ class User extends RawData {
 		this.id = data.id;
 
 		/**
+		 * @type {string}
+		 */
+		this.userString = null;
+
+		/**
 		 * @type {boolean}
 		 */
 		this.isOut = data.isOut;
@@ -92,6 +111,62 @@ class User extends RawData {
 		if(edupage) this.edupage = edupage;
 
 		this.origin = this.edupage.user.origin;
+	}
+
+	/**
+	 * @typedef {Object} MessageOptions
+	 * @prop {string} text
+	 * @prop {boolean} [important=false]
+	 * @prop {boolean} [parents=false]
+	 * @prop {any[]} [attachements=[]]
+	 */
+
+	/**
+	 * 
+	 * @param {MessageOptions} options
+	 * @this {User|Teacher|Student|Parent}
+	 * @memberof User
+	 */
+	async sendMessage(options) {
+		const {
+			text = "",
+			important = false,
+			parents = false,
+			attachements = []
+		} = options;
+
+		if(!this.edupage) throw new EdupageError(`User does not have assigned Edupage instance yet`);
+
+		//Post message
+		const res = await this.edupage.api({
+			url: ENDPOINT.CREATE_TIMELINE_ITEM,
+			data: {
+				attachements: "{}",	//TODO: add attachements support
+				receipt: (+important).toString(),
+				selectedUser: this.getUserString(parents),
+				text: text,
+				typ: "sprava"
+				//TODO: add polls support
+			}
+		});
+
+		//Request failed
+		if(res.status !== "ok") {
+			error(`Received invalid status from the server '${res.status}'`);
+			throw new APIError(`Failed to send message: Invalid status received '${res.status}'`, res);
+		}
+
+		//No changes
+		if(!res.changes?.length) {
+			error(`Failed to send message (no changes made) (${res.changes})`);
+			throw new MessageError(`Failed to send message: No changes were made`, res);
+		}
+
+		//Debug
+		if(res.changes.length > 1) debug(`[Message] Multiple changes after posting single message`, res.changes);
+
+		//Return Message object
+		return new (require("./Message"))(res.changes[0], this.edupage);
 	}
 
 	async login(username, password) {
@@ -156,6 +231,35 @@ class User extends RawData {
 				reject(err);
 			});
 		});
+	}
+
+	getUserString() {
+		return this.userString;
+	}
+
+	/**
+	 * Creates an instance of Student or Teacher from user data.
+	 * @static
+	 * @param {string} userString
+	 * @param {Object<string, any>} [data={}]
+	 * @param {Edupage} [edupage=null]
+	 * @return {User|Teacher|Student|Parent}
+	 * @memberof User
+	 */
+	static from(userString, data = {}, edupage = null) {
+		const id = (userString.match(/-?\d+/) || [])[0];
+		const type = ((userString.match(/[a-z]+/i) || [])[0] || "").toLowerCase();
+
+		data.id = id || null;
+
+		if(type == "ucitel") return new (require("./Teacher"))(data, edupage);
+		if(type == "student") return new (require("./Student"))(data, edupage);
+		if(type == "rodic") return new (require("./Parent"))(data, edupage);
+
+		const user = new User(data, edupage);
+		user.userString = userString;
+
+		return user;
 	}
 }
 

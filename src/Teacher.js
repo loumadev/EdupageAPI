@@ -33,6 +33,11 @@ class Teacher extends User {
 		 */
 		this.short = data.short;
 
+		/**
+		 * @type {string}
+		 */
+		this.userString = "Ucitel" + this.id;
+
 
 		/**
 		 * @type {Classroom}

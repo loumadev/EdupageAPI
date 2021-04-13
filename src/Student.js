@@ -49,21 +49,26 @@ class Student extends User {
 		 */
 		this.parent3Id = data.parent3id;
 
+		/**
+		 * @type {string}
+		 */
+		this.userString = "Student" + this.id;
+
 
 		/**
 		 * @type {Parent}
 		 */
-		this.parent1 = data.parent1id ? new Parent({id: data.parent1id}) : null;
+		this.parent1 = data.parent1id ? new Parent({id: data.parent1id}, edupage) : null;
 
 		/**
 		 * @type {Parent}
 		 */
-		this.parent2 = data.parent2id ? new Parent({id: data.parent2id}) : null;
+		this.parent2 = data.parent2id ? new Parent({id: data.parent2id}, edupage) : null;
 
 		/**
 		 * @type {Parent}
 		 */
-		this.parent3 = data.parent3id ? new Parent({id: data.parent3id}) : null;
+		this.parent3 = data.parent3id ? new Parent({id: data.parent3id}, edupage) : null;
 
 
 		/**
@@ -88,6 +93,12 @@ class Student extends User {
 		this.parent3 = this.parent3 ? this.edupage.parents.find(e => e.id == this.parent3.id) : this.parent3;
 
 
+	}
+
+	getUserString(parents = false) {
+		return parents ?
+			this.userString.split(/(?<=[a-z])(?=[0-9])/).join("Only") :
+			this.userString
 	}
 }
 

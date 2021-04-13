@@ -16,8 +16,26 @@ class EdupageError extends Error {
 	}
 }
 
+class APIError extends Error {
+	constructor(message, ...data) {
+		super(message);
+
+		this.data = data;
+	}
+}
+
+class MessageError extends Error {
+	constructor(message, ...data) {
+		super(message);
+
+		this.data = data;
+	}
+}
+
 module.exports = {
 	LoginError,
 	ParseError,
-	EdupageError
+	EdupageError,
+	APIError,
+	MessageError
 };

@@ -15,6 +15,7 @@ const Period = require("./Period");
 const ASC = require("./ASC");
 const {LoginError} = require("./exceptions");
 const Timetable = require("./Timetable");
+const Message = require("./Message");
 
 debug.log = console.log.bind(console);
 
@@ -71,6 +72,16 @@ class Edupage extends RawData {
 		 */
 		this.timetables = [];
 
+		/**
+		 * @type {Message[]}
+		 */
+		this.timeline = [];
+
+		/**
+		 * @type {Message[]}
+		 */
+		this.messages = [];
+
 
 		/**
 		 * @type {ASC}
@@ -106,36 +117,60 @@ class Edupage extends RawData {
 		//Load global edupage data
 		const _html = await this.api({url: ENDPOINT.DASHBOARD, method: "GET", type: "text"});
 		const _json = Edupage.parse(_html);
+		this._data = {...this._data, ..._json};
+		this.year = this._data.dp.year;
+
+		//Parse ASC data
+		const _asc = ASC.parse(_html);
+		this._data = {...this._data, ASC: _asc};
+		this.ASC = new ASC(this._data.ASC, this);
 
 		//Load timeline data
-		const _timeline = await this.api({url: ENDPOINT.TIMELINE});
-		const _asc = ASC.parse(_html);
+		const _timeline = await this.api({url: ENDPOINT.TIMELINE, data: {datefrom: this.getYearStart(false)}});
+		this._data = {...this._data, ..._timeline};
 
-		//Merge data
-		this._data = {..._json, ..._timeline, ASC: _asc};
+		const _created = await this.api({url: ENDPOINT.CREATED_TIMELINE_ITEMS, data: {odkedy: this.getYearStart()}});
+
+		const _timeline_items = [..._timeline.timelineItems, ..._created.data.items];
+		const _timeline_items_filtered = _timeline_items.filter((e, i, arr) =>
+			//Remove duplicated items
+			i == arr.findIndex(t => (
+				t.timelineid == e.timelineid
+			))
+			//Remove useless items created only for notification to be sent
+			&& !(e.typ == "sprava" && e.pomocny_zaznam && arr.some(t => t.timelineid == e.reakcia_na))
+		);
+
+		this._data.timelineItems = _timeline_items_filtered;
+
+		//TODO: try to eliminate useless replies, confirmations and `pomocny_zaznam`s
 
 		//Parse json and create Objects
-		this.students = Object.values(this._data.dbi.students).map(data => new Student(data, this));
-		this.teachers = Object.values(this._data.dbi.teachers).map(data => new Teacher(data, this));
-		this.classes = Object.values(this._data.dbi.classes).map(data => new Class(data, this));
+		this.classes = Object.values(this._data.dbi.classes).map(data => new Class(data));
 		this.classrooms = Object.values(this._data.dbi.classrooms).map(data => new Classroom(data, this));
-		this.parents = Object.values(this._data.dbi.parents).map(data => new Parent(data));
+		this.teachers = Object.values(this._data.dbi.teachers).map(data => new Teacher(data, this));
+		this.parents = Object.values(this._data.dbi.parents).map(data => new Parent(data, this));
+		this.students = Object.values(this._data.dbi.students).map(data => new Student(data, this));
 		this.subjects = Object.values(this._data.dbi.subjects).map(data => new Subject(data));
 		this.periods = Object.values(this._data.dbi.periods).map(data => new Period(data));
 		this.timetables = iterate(this._data.dp.dates).map(([i, date, data]) => new Timetable(data, date, this));
+		//TODO: filter out confirmation messages from this._data.timelineItems
+		this._data.timelineItems
+			.sort((a, b) => new Date(a.cas_pridania).getTime() - new Date(b.cas_pridania).getTime())
+			.forEach(data => this.timeline.unshift(new Message(data, this)));
 
-		//Create single values
-		this.ASC = new ASC(this._data.ASC, this);
-		this.year = this._data.dp.year;
+		this.messages = this.timeline.filter(e => e.type != "confirmation");
+
+		//Init objects if needed
+		this.classes.forEach(e => e.init(this));
 
 		//Parse current user
-		const id = (this._data.mygroups[0].match(/\d+/) || [])[0];
-		const type = (this._data.mygroups[0].match(/[a-z]+/i) || [])[0] || "";
-		const user = [...this.students, ...this.teachers].find(e => e.id == id);
 		const _temp = this.user;
+		const id = (this._data.mygroups[0].match(/\d+/) || [])[0];
+		const user = this.getUserById(id);
 
 		//Assign properties to current user
-		this.user = type.toLowerCase() == "student" ? new Student(user._data, this) : new Teacher(user._data, this);
+		this.user = User.from(this.ASC.loggedUser, user._data, this);
 		this.user.credentials = _temp.credentials;
 		this.user.cookies = _temp.cookies;
 		this.user.isLoggedIn = _temp.isLoggedIn;
@@ -150,6 +185,38 @@ class Edupage extends RawData {
 
 	async getTeachers() {
 		return this.teachers;
+	}
+
+	/**
+	 *
+	 * @param {string} id
+	 * @return {User|Teacher|Student|Parent|undefined} 
+	 * @memberof Edupage
+	 */
+	getUserById(id) {
+		return [this.user, ...this.teachers, ...this.students, ...this.parents].find(e => e.id == id);
+	}
+
+	/**
+	 *
+	 * @param {string} userString
+	 * @return {User|Teacher|Student|Parent|undefined} 
+	 * @memberof Edupage
+	 */
+	getUserByUserString(userString) {
+		const id = (userString.match(/-?\d+/) || "")[0];
+
+		return this.getUserById(id);
+	}
+
+	/**
+	 *
+	 * @param {boolean} time
+	 * @return {string} 
+	 * @memberof Edupage
+	 */
+	getYearStart(time = true) {
+		return `${this.year}-${this.ASC.schoolyearTurnover}${time ? " 00:00:00" : ""}`;
 	}
 
 	/**
@@ -288,11 +355,17 @@ class Edupage extends RawData {
 
 		const base = `https://${this.user.origin}.edupage.org`;
 
-		if(endpoint == ENDPOINT.TIMELINE) return `${base}/timeline/?jwid=jwd52d7615&module=todo&filterTab=messages&akcia=getData&eqav=1&maxEqav=7`;
+		if(endpoint == ENDPOINT.TIMELINE) return `${base}/timeline/?akcia=getData`;
 		if(endpoint == ENDPOINT.TEST_DATA) return `${base}/elearning/?cmd=MaterialPlayer&akcia=getETestData&ts=${new Date().getTime()}`;
 		if(endpoint == ENDPOINT.CARDS_DATA) return `${base}/elearning/?cmd=EtestCreator&akcia=getCardsData`;
 		if(endpoint == ENDPOINT.DASHBOARD) return `${base}/user/?`;
 		if(endpoint == ENDPOINT.ONLINE_LESSON_SIGN) return `${base}/dashboard/server/onlinelesson.js?__func=getOnlineLessonOpenUrl`;
+		if(endpoint == ENDPOINT.MESSAGE_REPLIES) return `${base}/timeline/?akcia=getRepliesItem`;
+		if(endpoint == ENDPOINT.CREATE_TIMELINE_ITEM) return `${base}/timeline/?akcia=createItem`;
+		if(endpoint == ENDPOINT.CREATED_TIMELINE_ITEMS) return `${base}/timeline/?cmd=created&akcia=getData`;
+		if(endpoint == ENDPOINT.CREATE_CONFIRMATION) return `${base}/timeline/?akcia=createConfirmation`;
+		if(endpoint == ENDPOINT.HOMEWORK_FLAG) return `${base}/timeline/?akcia=homeworkFlag`;
+		if(endpoint == ENDPOINT.CREATE_MESSAGE_REPLY) return `${base}/timeline/?akcia=createReply`;
 
 		throw new TypeError(`Invalid API endpoint '${endpoint}'`);
 	}
