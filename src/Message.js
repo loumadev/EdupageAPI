@@ -303,19 +303,18 @@ class Message extends RawData {
 			throw new APIError(`Failed to send message: Invalid status received '${res.status}'`, res);
 		}
 
+		//Add reply to root message
 		const _len = this.replies.length;
-		console.log("len before", _len);
 		this._data.reakcie = res.data.reakcie;
 		Message.prototype.init.call(this);
 
-		console.log("len after", this.replies.length);
-		console.log("res", res);
-
+		//Check for successful creation of the reply
 		if(this.replies.length > _len) {
+			if(this.replies.length > _len + 1) debug(`[Reply] Message contains multiple new replies (${_len} -> ${this.replies.length})`);
 			return this.replies[this.replies.length - 1];
 		} else {
-			console.error(`[Reply] Message had ${_len} replies, and now has ${this.replies.length}`, res, this.replies);
-			//throw new MessageError(`Failed to get sent message: No new replies were created`);
+			error(`[Reply] Message had ${_len} replies, and now has ${this.replies.length}`, res, this.replies);
+			throw new MessageError(`Failed to get sent message: No new replies were created`);
 		}
 	}
 
