@@ -126,6 +126,11 @@ class Message extends RawData {
 		 */
 		this.text = data.data.messageContent || data.text;
 
+		/**
+		 * @type {string}
+		 */
+		this.title = data.data.user_meno;
+
 
 		/**
 		 * ! WARNING: This property is only accessible after calling `message.refresh()`!
