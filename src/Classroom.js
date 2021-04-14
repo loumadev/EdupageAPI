@@ -43,7 +43,7 @@ class Classroom extends RawData {
 	/**
 	 * 
 	 * @param {Edupage} [edupage=null]
-	 * @memberof Class
+	 * @memberof Classroom
 	 */
 	init(edupage = null) {
 		if(edupage) this.edupage = edupage;

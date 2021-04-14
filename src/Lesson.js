@@ -141,7 +141,7 @@ class Lesson extends RawData {
 	/**
 	 * 
 	 * @param {Edupage} [edupage=null]
-	 * @memberof Class
+	 * @memberof Lesson
 	 */
 	init(edupage = null) {
 		if(edupage) this.edupage = edupage;

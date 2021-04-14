@@ -82,7 +82,7 @@ class Student extends User {
 	/**
 	 * 
 	 * @param {Edupage} [edupage=null]
-	 * @memberof Class
+	 * @memberof Parent
 	 */
 	init(edupage = null) {
 		if(edupage) this.edupage = edupage;

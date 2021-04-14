@@ -183,7 +183,7 @@ class Message extends RawData {
 	/**
 	 * 
 	 * @param {Edupage} [edupage=null]
-	 * @memberof Class
+	 * @memberof Message
 	 */
 	init(edupage = null) {
 		if(edupage) this.edupage = edupage;
