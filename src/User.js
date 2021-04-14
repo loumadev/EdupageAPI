@@ -99,6 +99,11 @@ class User extends RawData {
 		 */
 		this.isLoggedIn = false;
 
+		/**
+		 * @type {string}
+		 */
+		this.email = null;
+
 		if(this.edupage) User.prototype.init.call(this);
 	}
 

@@ -180,6 +180,7 @@ class Edupage extends RawData {
 		this.user.credentials = _temp.credentials;
 		this.user.cookies = _temp.cookies;
 		this.user.isLoggedIn = _temp.isLoggedIn;
+		this.user.email = this._data.userrow.p_mail;
 
 		return this._data;
 	}
