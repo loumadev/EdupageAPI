@@ -16,6 +16,7 @@ const ASC = require("./ASC");
 const {LoginError} = require("./exceptions");
 const Timetable = require("./Timetable");
 const Message = require("./Message");
+const Plan = require("./Plan");
 
 debug.log = console.log.bind(console);
 
@@ -81,6 +82,11 @@ class Edupage extends RawData {
 		 * @type {Message[]}
 		 */
 		this.timeline = [];
+
+		/**
+		 * @type {Plan[]}
+		 */
+		this.plans = [];
 
 
 		/**
@@ -153,6 +159,7 @@ class Edupage extends RawData {
 		this.students = Object.values(this._data.dbi.students).map(data => new Student(data, this));
 		this.subjects = Object.values(this._data.dbi.subjects).map(data => new Subject(data));
 		this.periods = Object.values(this._data.dbi.periods).map(data => new Period(data));
+		this.plans = Object.values(this._data.dbi.plans).map(data => new Plan(data, this));
 		this.timetables = iterate(this._data.dp.dates).map(([i, date, data]) => new Timetable(data, date, this));
 		//TODO: filter out confirmation messages from this._data.timelineItems
 		this._data.timelineItems
