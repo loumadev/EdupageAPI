@@ -1,2 +1,2 @@
 # License
-This project is protected from beeing copied, distributed, or modified.
+This project is protected from being copied, distributed, or modified.
