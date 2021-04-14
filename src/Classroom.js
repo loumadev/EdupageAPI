@@ -20,7 +20,7 @@ class Classroom extends RawData {
 		/**
 		 * @type {boolean} 
 		 */
-		this.cb_hidden = data.cb_hidden;
+		this.cb_hidden = "cb_hidden" in data ? data.cb_hidden : null;
 
 		/**
 		 * @type {string} 
