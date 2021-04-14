@@ -6,7 +6,7 @@ const User = require("./User");
 class Student extends User {
 	/**
 	 * Creates an instance of Student.
-	 * @param {Object<string, any>} [data={}]
+	 * @param {import("../lib/RawData").RawDataObject} [data={}]
 	 * @param {Edupage} [edupage=null]
 	 * @memberof Student
 	 */

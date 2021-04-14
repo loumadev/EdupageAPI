@@ -4,7 +4,7 @@ const Edupage = require("./Edupage");
 class Classroom extends RawData {
 	/**
 	 * Creates an instance of Classroom.
-	 * @param {Object<string, any>} [data={}]
+	 * @param {import("../lib/RawData").RawDataObject} [data={}]
 	 * @param {Edupage} [edupage=null]
 	 * @memberof Classroom
 	 */

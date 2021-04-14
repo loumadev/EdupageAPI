@@ -15,7 +15,7 @@ debug.log = console.log.bind(console);
 class Message extends RawData {
 	/**
 	 * Creates an instance of Message.
-	 * @param {Object<string, any>} [data={}]
+	 * @param {import("../lib/RawData").RawDataObject} [data={}]
 	 * @param {Edupage} [edupage=null]
 	 * @memberof Message
 	 */

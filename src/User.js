@@ -26,7 +26,7 @@ debug.log = console.log.bind(console);
 class User extends RawData {
 	/**
 	 * Creates an instance of User.
-	 * @param {Object<string, any>} [data={}]
+	 * @param {import("../lib/RawData").RawDataObject} [data={}]
 	 * @param {Edupage} [edupage=null]
 	 * @memberof User
 	 */
@@ -246,7 +246,7 @@ class User extends RawData {
 	 * Creates an instance of Student or Teacher from user data.
 	 * @static
 	 * @param {string} userString
-	 * @param {Object<string, any>} [data={}]
+	 * @param {import("../lib/RawData").RawDataObject} [data={}]
 	 * @param {Edupage} [edupage=null]
 	 * @return {User|Teacher|Student|Parent}
 	 * @memberof User

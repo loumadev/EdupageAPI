@@ -5,7 +5,7 @@ const Lesson = require("./Lesson");
 class Timetable extends RawData {
 	/**
 	 * Creates an instance of Timetable.
-	 * @param {Object<string, any>} [data={}]
+	 * @param {import("../lib/RawData").RawDataObject} [data={}]
 	 * @param {string} [date=null]
 	 * @param {Edupage} [edupage=null]
 	 * @memberof Timetable

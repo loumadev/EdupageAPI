@@ -6,7 +6,7 @@ const Teacher = require("./Teacher");
 class Class extends RawData {
 	/**
 	 * Creates an instance of Class.
-	 * @param {Object<string, any>} [data={}]
+	 * @param {import("../lib/RawData").RawDataObject} [data={}]
 	 * @param {Edupage} [edupage=null]
 	 * @memberof Class
 	 */

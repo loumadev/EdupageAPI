@@ -375,7 +375,7 @@ class Edupage extends RawData {
 	 * Parses raw JSON data from html
 	 * @private
 	 * @param {string} html 
-	 * @returns {Object<string, any>}
+	 * @returns {import("../lib/RawData").RawDataObject}
 	 */
 	static parse(html) {
 		const match = (html.match(/\.userhome\((.+?)\);$/m) || "")[1];

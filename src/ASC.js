@@ -8,7 +8,7 @@ debug.log = console.log.bind(console);
 class ASC extends RawData {
 	/**
 	 * Creates an instance of ASC.
-	 * @param {Object<string, any>} [data={}]
+	 * @param {import("../lib/RawData").RawDataObject} [data={}]
 	 * @param {Edupage} [edupage=null]
 	 * @memberof ASC
 	 */

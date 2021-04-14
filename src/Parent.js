@@ -5,7 +5,7 @@ const User = require("./User");
 class Parent extends User {
 	/**
 	 * Creates an instance of Parent.
-	 * @param {Object<string, any>} [data={}]
+	 * @param {import("../lib/RawData").RawDataObject} [data={}]
 	 * @param {Edupage} [edupage=null]
 	 * @memberof Parent
 	 */
