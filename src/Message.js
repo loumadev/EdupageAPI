@@ -291,7 +291,9 @@ class Message extends RawData {
 			url: ENDPOINT.CREATE_MESSAGE_REPLY,
 			data: {
 				"groupid": this.id,
-				"recipient": recipient ? recipient.getUserString(parents) : "",
+				"recipient": this.isReply
+					? this.owner.getUserString(parents)
+					: (recipient ? recipient.getUserString(parents) : ""),
 				"text": text,
 				"moredata": JSON.stringify({attachements})
 			}
