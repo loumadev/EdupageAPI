@@ -131,7 +131,7 @@ class Message extends RawData {
 		/**
 		 * @type {string}
 		 */
-		this.title = data.data.user_meno;	//TODO: fix this
+		this.title = data.user_meno;
 
 
 		/**
