@@ -13,7 +13,7 @@ const RawData = require("../lib/RawData");
 const Subject = require("./Subject");
 const Period = require("./Period");
 const ASC = require("./ASC");
-const {LoginError} = require("./exceptions");
+const {LoginError, EdupageError} = require("./exceptions");
 const Timetable = require("./Timetable");
 const Message = require("./Message");
 const Plan = require("./Plan");
@@ -174,6 +174,9 @@ class Edupage extends RawData {
 		const _temp = this.user;
 		const id = (this._data.userid.match(/\d+/) || [])[0];
 		const user = this.getUserById(id);
+
+		//Error handling
+		if(!user) throw new EdupageError(`Failed to load currently logged in user`);
 
 		//Assign properties to current user
 		this.user = User.from(this.ASC.loggedUser, user._data, this);
