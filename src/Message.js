@@ -2,10 +2,12 @@ const debug = require("debug")("edupage:log");
 const error = require("debug")("edupage:error");
 const RawData = require("../lib/RawData");
 const {iterate} = require("../lib/utils");
+const Class = require("./Class");
 const Edupage = require("./Edupage");
 const {ENDPOINT} = require("./enums");
 const {APIError, EdupageError, MessageError} = require("./exceptions");
 const Parent = require("./Parent");
+const Plan = require("./Plan");
 const Student = require("./Student");
 const Teacher = require("./Teacher");
 const User = require("./User");
@@ -129,7 +131,7 @@ class Message extends RawData {
 		/**
 		 * @type {string}
 		 */
-		this.title = data.data.user_meno;
+		this.title = data.data.user_meno;	//TODO: fix this
 
 
 		/**
@@ -161,6 +163,21 @@ class Message extends RawData {
 		 * @type {User|Teacher|Student|Parent}
 		 */
 		this.owner = null;
+
+		/**
+		 * @type {User|Teacher|Student|Parent|Plan|Class}
+		 */
+		this.recipient = null;
+
+		/**
+		 * @type {string}
+		 */
+		this.recipientUserString = null;
+
+		/**
+		 * @type {boolean}
+		 */
+		this.isWildcardRecipient = false;
 
 		/**
 		 * @type {Message}
@@ -246,6 +263,15 @@ class Message extends RawData {
 			//Assign owner object
 			this.owner = this.edupage.getUserByUserString(this._data.vlastnik) ||
 				User.from(this._data.vlastnik, data, this.edupage);
+		}
+
+		//Add recipient object
+		if(this._data.user) {
+			const {recipient, wildcard} = this.getRecipient(this._data.user);
+
+			this.recipient = recipient;
+			this.isWildcardRecipient = wildcard;
+			this.recipientUserString = this._data.user;
 		}
 
 		//Add reply
@@ -363,7 +389,7 @@ class Message extends RawData {
 			url: ENDPOINT.CREATE_CONFIRMATION,
 			data: {
 				"groupid": this.id,
-				"confirmType": "like"
+				"confirmType": "receipt" // ? Not tested, just guessing
 			}
 		});
 
@@ -428,7 +454,7 @@ class Message extends RawData {
 
 	/**
 	 * 
-	 * @param {Object<string, any>} [data=null]
+	 * @param {import("../lib/RawData").RawDataObject} [data=null]
 	 * @memberof Message
 	 */
 	async refresh(data = null) {
@@ -469,6 +495,25 @@ class Message extends RawData {
 		const {firstname = "", lastname = ""} = name.match(/(?<firstname>.*?)\s?(?<lastname>\S+)(?:\s\(|$)/)?.groups || {};
 
 		return {firstname, lastname};
+	}
+
+	getRecipient(userString) {
+		//Ignore parents just for now
+		userString = userString.replace("Only", "");
+
+		//Parse userString
+		const {type, id, wildcard} = User.parseUserString(userString);
+		let recipient = null;
+
+		//TODO: change this to enum
+		if(type == "ucitel") recipient = this.edupage.teachers.find(e => e.id == id);
+		if(type == "student") recipient = this.edupage.students.find(e => e.id == id);
+		if(type == "parent") recipient = this.edupage.parents.find(e => e.id == id);
+		if(type == "studplan" || type == "custplan") recipient = this.edupage.plans.find(e => e.id == id);
+		if(type == "studtrieda") recipient = this.edupage.classes.find(e => e.id == id);
+		if(type == "trieda") recipient = this.edupage.plans.find(e => e.customClassId == id);
+
+		return {recipient, wildcard};
 	}
 }
 

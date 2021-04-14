@@ -252,8 +252,7 @@ class User extends RawData {
 	 * @memberof User
 	 */
 	static from(userString, data = {}, edupage = null) {
-		const id = (userString.match(/-?\d+/) || [])[0];
-		const type = ((userString.match(/[a-z]+/i) || [])[0] || "").toLowerCase();
+		const {id, type} = this.parseUserString(userString);
 
 		data.id = id || null;
 
@@ -265,6 +264,21 @@ class User extends RawData {
 		user.userString = userString;
 
 		return user;
+	}
+
+	/**
+	 *
+	 * @static
+	 * @param {string} userString
+	 * @return {{id: string, type: string, wildcard: boolean}} 
+	 * @memberof User
+	 */
+	static parseUserString(userString) {
+		const id = (userString.match(/-?\d+/) || [])[0];
+		const type = ((userString.match(/[a-z]+/i) || [])[0] || "").toLowerCase();
+		const wildcard = userString.indexOf("*") > -1;
+
+		return {id, type, wildcard};
 	}
 }
 
