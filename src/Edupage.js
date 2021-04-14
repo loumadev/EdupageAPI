@@ -75,12 +75,12 @@ class Edupage extends RawData {
 		/**
 		 * @type {Message[]}
 		 */
-		this.timeline = [];
+		this.timelineItems = [];
 
 		/**
 		 * @type {Message[]}
 		 */
-		this.messages = [];
+		this.timeline = [];
 
 
 		/**
@@ -157,9 +157,9 @@ class Edupage extends RawData {
 		//TODO: filter out confirmation messages from this._data.timelineItems
 		this._data.timelineItems
 			.sort((a, b) => new Date(a.cas_pridania).getTime() - new Date(b.cas_pridania).getTime())
-			.forEach(data => this.timeline.unshift(new Message(data, this)));
+			.forEach(data => this.timelineItems.unshift(new Message(data, this)));
 
-		this.messages = this.timeline.filter(e => e.type != "confirmation");
+		this.timeline = this.timelineItems.filter(e => e.type != "confirmation");
 
 		//Init objects if needed
 		this.classes.forEach(e => e.init(this));

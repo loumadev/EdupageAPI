@@ -246,7 +246,7 @@ class Message extends RawData {
 		//Add reply
 		if(this._data.reakcia_na && this._data.typ != "confirmation") {
 			//Find root message
-			const message = this.edupage.timeline.find(e => e.id == this._data.reakcia_na);
+			const message = this.edupage.timelineItems.find(e => e.id == this._data.reakcia_na);
 
 			if(message) {
 				message.replies.push(this);
