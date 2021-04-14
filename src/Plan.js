@@ -190,7 +190,6 @@ class Plan extends RawData {
 		if(edupage) this.edupage = edupage;
 
 		this.subject = this.edupage.subjects.find(e => e.id == this.subjectId);
-		this.class = this.edupage.classes.find(e => e.id == this.classId);
 		this.teacher = this.edupage.teachers.find(e => e.id == this.teacherId);
 
 		this.classes = this.classIds.map(e => this.edupage.classes.find(t => t.id == e));
