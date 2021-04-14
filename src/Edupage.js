@@ -135,10 +135,11 @@ class Edupage extends RawData {
 		const _timeline = await this.api({url: ENDPOINT.TIMELINE, data: {datefrom: this.getYearStart(false)}});
 		this._data = {...this._data, ..._timeline};
 
+		//Load created timeline items
 		const _created = await this.api({url: ENDPOINT.CREATED_TIMELINE_ITEMS, data: {odkedy: this.getYearStart()}});
 
-		const _timeline_items = [..._timeline.timelineItems, ..._created.data.items];
-		const _timeline_items_filtered = _timeline_items.filter((e, i, arr) =>
+		//Merge all timeline items together and filter them down
+		this._data.timelineItems = [..._timeline.timelineItems, ..._created.data.items].filter((e, i, arr) =>
 			//Remove duplicated items
 			i == arr.findIndex(t => (
 				t.timelineid == e.timelineid
@@ -146,10 +147,6 @@ class Edupage extends RawData {
 			//Remove useless items created only for notification to be sent
 			&& !(e.typ == "sprava" && e.pomocny_zaznam && arr.some(t => t.timelineid == e.reakcia_na))
 		);
-
-		this._data.timelineItems = _timeline_items_filtered;
-
-		//TODO: try to eliminate useless replies, confirmations and `pomocny_zaznam`s
 
 		//Parse json and create Objects
 		this.classes = Object.values(this._data.dbi.classes).map(data => new Class(data));
@@ -161,11 +158,13 @@ class Edupage extends RawData {
 		this.periods = Object.values(this._data.dbi.periods).map(data => new Period(data));
 		this.plans = Object.values(this._data.dbi.plans).map(data => new Plan(data, this));
 		this.timetables = iterate(this._data.dp.dates).map(([i, date, data]) => new Timetable(data, date, this));
-		//TODO: filter out confirmation messages from this._data.timelineItems
+
+		//Create Message objects for each timeline item
 		this._data.timelineItems
 			.sort((a, b) => new Date(a.cas_pridania).getTime() - new Date(b.cas_pridania).getTime())
 			.forEach(data => this.timelineItems.unshift(new Message(data, this)));
 
+		//Filter out confirmation messages
 		this.timeline = this.timelineItems.filter(e => e.type != "confirmation");
 
 		//Init objects if needed
@@ -173,7 +172,7 @@ class Edupage extends RawData {
 
 		//Parse current user
 		const _temp = this.user;
-		const id = (this._data.mygroups[0].match(/\d+/) || [])[0];
+		const id = (this._data.userid.match(/\d+/) || [])[0];
 		const user = this.getUserById(id);
 
 		//Assign properties to current user
@@ -181,17 +180,8 @@ class Edupage extends RawData {
 		this.user.credentials = _temp.credentials;
 		this.user.cookies = _temp.cookies;
 		this.user.isLoggedIn = _temp.isLoggedIn;
-		this.user.isLoggedIn = _temp.isLoggedIn;
 
 		return this._data;
-	}
-
-	async getStudents() {
-		return this.students;
-	}
-
-	async getTeachers() {
-		return this.teachers;
 	}
 
 	/**
