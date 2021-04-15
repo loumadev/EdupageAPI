@@ -101,6 +101,11 @@ class Edupage extends RawData {
 		 * @type {number}
 		 */
 		this.year = null;
+
+		/**
+		 * @type {string}
+		 */
+		this.baseUrl = null;
 	}
 
 	/**
@@ -115,8 +120,13 @@ class Edupage extends RawData {
 		return new Promise((resolve, reject) => {
 			const temp = new User();
 			temp.login(username, password).then(async user => {
+				//Assign properties
 				this.user = temp;
+				this.baseUrl = `https://${this.user.origin}.edupage.org`;
+
+				//Update edupage data
 				await this.refresh().catch(reject);
+
 				resolve(this.user);
 			}).catch(reject);
 		});
