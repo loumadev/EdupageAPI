@@ -1,5 +1,7 @@
 const debug = require("debug")("edupage:log");
 const error = require("debug")("edupage:error");
+const fs = require("fs");
+const stream = require("stream");
 const {default: fetch} = require("node-fetch");
 const Student = require("./Student");
 const Teacher = require("./Teacher");
@@ -13,10 +15,11 @@ const RawData = require("../lib/RawData");
 const Subject = require("./Subject");
 const Period = require("./Period");
 const ASC = require("./ASC");
-const {LoginError, EdupageError} = require("./exceptions");
+const {LoginError, EdupageError, AttachementError, APIError} = require("./exceptions");
 const Timetable = require("./Timetable");
 const Message = require("./Message");
 const Plan = require("./Plan");
+const Attachement = require("./Attachement");
 
 debug.log = console.log.bind(console);
 
@@ -221,9 +224,41 @@ class Edupage extends RawData {
 	}
 
 	/**
+	 * 
+	 * @param {string} filepath 
+	 * @returns {Promise<Attachement>}
+	 */
+	async uploadAttachement(filepath) {
+		const CRLF = "\r\n";
+		const filename = (filepath.match(/(?:.+[\\\/])*(.+\..+)$/m) || "")[1] || "untitled.txt";
+
+		const buffer = Buffer.concat([
+			Buffer.from("--" + Attachement.formBoundary + CRLF + `Content-Disposition: form-data; name="att"; filename="${filename}"` + CRLF + CRLF, "utf8"),
+			await fs.promises.readFile(filepath).catch(err => {
+				throw new AttachementError(`Error while reading input file: ` + err.message, err);
+			}),
+			Buffer.from(CRLF + "--" + Attachement.formBoundary + "--" + CRLF, "utf8")
+		]);
+
+		const res = await this.api({
+			url: ENDPOINT.UPLOAD_ATTACHEMENT,
+			headers: {
+				"content-type": `multipart/form-data; boundary=` + Attachement.formBoundary
+			},
+			data: buffer,
+			encodeBody: false
+		});
+
+		if(res.status !== "ok") throw new APIError(`Failed to upload file: Invalid status received '${res.status}'`, res);
+
+		return new Attachement(res.data, this);
+	}
+
+	/**
 	 * @typedef {Object} APIOptions
 	 * @prop {string|ENDPOINT} url
-	 * @prop {Object<string, any>} [data={}]
+	 * @prop {Object<string, any>|stream.Readable|Buffer} [data={}]
+	 * @prop {Object<string, any>} [headers={}]
 	 * @prop {string} [method="POST"]
 	 * @prop {boolean} [encodeBody=true]
 	 * @prop {"json"|"text"} [type="json"]
@@ -240,6 +275,7 @@ class Edupage extends RawData {
 	async api(options) {
 		let {
 			url,
+			headers = {},
 			data = {},
 			method = "POST",
 			encodeBody = true,
@@ -287,9 +323,14 @@ class Edupage extends RawData {
 						"content-type": "application/x-www-form-urlencoded; charset=UTF-8",
 						"Cookie": this.user.cookies.toString(false),
 						"x-requested-with": "XMLHttpRequest",
-						"referrer": `https://${this.user.origin}.edupage.org/`
+						"referrer": `https://${this.user.origin}.edupage.org/`,
+						...headers
 					},
-					"body": method == "POST" ? (encodeBody ? this.getRequestBody(data) : JSON.stringify(data)) : undefined,
+					"body": "POST" == method ? (
+						encodeBody ? this.getRequestBody(data) : (
+							"string" == typeof data || data instanceof stream.Readable || data instanceof Buffer ? data : JSON.stringify(data)
+						)
+					) : undefined,
 					"method": method,
 				}).then(res => res.text()).catch(err => {
 					//Network error
@@ -367,6 +408,7 @@ class Edupage extends RawData {
 		if(endpoint == ENDPOINT.CREATE_CONFIRMATION) return `${base}/timeline/?akcia=createConfirmation`;
 		if(endpoint == ENDPOINT.HOMEWORK_FLAG) return `${base}/timeline/?akcia=homeworkFlag`;
 		if(endpoint == ENDPOINT.CREATE_MESSAGE_REPLY) return `${base}/timeline/?akcia=createReply`;
+		if(endpoint == ENDPOINT.UPLOAD_ATTACHEMENT) return `${base}/timeline/?akcia=uploadAtt`;
 
 		throw new TypeError(`Invalid API endpoint '${endpoint}'`);
 	}

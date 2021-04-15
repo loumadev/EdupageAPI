@@ -2,6 +2,7 @@ const debug = require("debug")("edupage:log");
 const error = require("debug")("edupage:error");
 const RawData = require("../lib/RawData");
 const {iterate} = require("../lib/utils");
+const Attachement = require("./Attachement");
 const Class = require("./Class");
 const Edupage = require("./Edupage");
 const {ENDPOINT} = require("./enums");
@@ -185,7 +186,7 @@ class Message extends RawData {
 		this.replyOf = null;
 
 		/**
-		 * @type {any[]}
+		 * @type {Attachement[]}
 		 */
 		this.attachements = [];
 
@@ -287,6 +288,12 @@ class Message extends RawData {
 			}
 		}
 
+		//Add attachements
+		if(this._data.data.attachements) {
+			const attchs = this._data.data.attachements;
+			this.attachements = Object.keys(attchs).map(e => new Attachement({src: e, name: attchs[e]}, this.edupage));
+		}
+
 		//TODO: implement this._data.participantGroups = {
 		//TODO: 	hasParticipants: 1
 		//TODO: 	id: "CustPlan3610"
@@ -302,7 +309,7 @@ class Message extends RawData {
 	 * @prop {string} text
 	 * @prop {User|Teacher|Student|Parent} [recipient=null]
 	 * @prop {boolean} [parents=false]
-	 * @prop {any[]} [attachements=[]]
+	 * @prop {Attachement[]} [attachements=[]]
 	 */
 
 	/**

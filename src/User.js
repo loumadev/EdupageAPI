@@ -7,6 +7,7 @@ const {LoginError, ParseError, EdupageError, APIError, MessageError} = require("
 const {GENDER, ENDPOINT} = require("./enums");
 const Edupage = require("./Edupage");
 const RawData = require("../lib/RawData");
+const Attachement = require("./Attachement");
 
 debug.log = console.log.bind(console);
 
@@ -123,7 +124,7 @@ class User extends RawData {
 	 * @prop {string} text
 	 * @prop {boolean} [important=false]
 	 * @prop {boolean} [parents=false]
-	 * @prop {any[]} [attachements=[]]
+	 * @prop {Attachement[]} [attachements=[]]
 	 */
 
 	/**
@@ -146,7 +147,7 @@ class User extends RawData {
 		const res = await this.edupage.api({
 			url: ENDPOINT.CREATE_TIMELINE_ITEM,
 			data: {
-				attachements: "{}",	//TODO: add attachements support
+				attachements: JSON.stringify(attachements.reduce((a, b) => ({...a, ...b}), {})),
 				receipt: (+important).toString(),
 				selectedUser: this.getUserString(parents),
 				text: text,

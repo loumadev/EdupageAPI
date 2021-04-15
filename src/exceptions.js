@@ -32,10 +32,19 @@ class MessageError extends Error {
 	}
 }
 
+class AttachementError extends Error {
+	constructor(message, ...data) {
+		super(message);
+
+		this.data = data;
+	}
+}
+
 module.exports = {
 	LoginError,
 	ParseError,
 	EdupageError,
 	APIError,
-	MessageError
+	MessageError,
+	AttachementError
 };
