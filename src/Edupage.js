@@ -337,7 +337,7 @@ class Edupage extends RawData {
 						...headers
 					},
 					"body": "POST" == method ? (
-						encodeBody ? this.getRequestBody(data) : (
+						encodeBody ? this.encodeRequestBody(data) : (
 							"string" == typeof data || data instanceof stream.Readable || data instanceof Buffer ? data : JSON.stringify(data)
 						)
 					) : undefined,
@@ -391,7 +391,7 @@ class Edupage extends RawData {
 	 * @param {Object<string, any>} data 
 	 * @return {string} Form body 
 	 */
-	getRequestBody(data) {
+	encodeRequestBody(data) {
 		const query = new URLSearchParams(data).toString();
 		return `eqap=${encodeURIComponent(btoa(query))}&eqaz=0`;
 	}
