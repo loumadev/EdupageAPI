@@ -326,7 +326,7 @@ class Message extends RawData {
 		} = options;
 
 		const res = await this.edupage.api({
-			url: ENDPOINT.CREATE_MESSAGE_REPLY,
+			url: ENDPOINT.TIMELINE_CREATE_REPLY,
 			data: {
 				"groupid": this.id,
 				"recipient": this.isReply
@@ -369,7 +369,7 @@ class Message extends RawData {
 
 		//Load data
 		const res = await this.edupage.api({
-			url: ENDPOINT.CREATE_CONFIRMATION,
+			url: ENDPOINT.TIMELINE_CREATE_CONFIRMATION,
 			data: {
 				"groupid": this.id,
 				"confirmType": "like",
@@ -393,7 +393,7 @@ class Message extends RawData {
 		//Load data
 		//TODO: send important message to track the request
 		const res = await this.edupage.api({
-			url: ENDPOINT.CREATE_CONFIRMATION,
+			url: ENDPOINT.TIMELINE_CREATE_CONFIRMATION,
 			data: {
 				"groupid": this.id,
 				"confirmType": "receipt" // ? Not tested, just guessing
@@ -414,7 +414,7 @@ class Message extends RawData {
 
 		//Load data
 		const res = await this.edupage.api({
-			url: ENDPOINT.HOMEWORK_FLAG,
+			url: ENDPOINT.TIMELINE_FLAG_HOMEWORK,
 			data: {
 				"homeworkid": "timeline:" + this.id,
 				"flag": "done",
@@ -442,7 +442,7 @@ class Message extends RawData {
 
 		//Load data
 		const res = await this.edupage.api({
-			url: ENDPOINT.HOMEWORK_FLAG,
+			url: ENDPOINT.TIMELINE_FLAG_HOMEWORK,
 			data: {
 				"homeworkid": "timeline:" + this.id,
 				"flag": "important",
@@ -469,7 +469,7 @@ class Message extends RawData {
 
 		//Load data
 		const res = data || await this.edupage.api({
-			url: ENDPOINT.MESSAGE_REPLIES,
+			url: ENDPOINT.TIMELINE_GET_REPLIES,
 			data: {
 				groupid: this.id,
 				lastsync: ""

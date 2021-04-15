@@ -145,7 +145,7 @@ class User extends RawData {
 
 		//Post message
 		const res = await this.edupage.api({
-			url: ENDPOINT.CREATE_TIMELINE_ITEM,
+			url: ENDPOINT.TIMELINE_CREATE_ITEM,
 			data: {
 				attachements: JSON.stringify(attachements.reduce((a, b) => ({...a, ...b}), {})),
 				receipt: (+important).toString(),

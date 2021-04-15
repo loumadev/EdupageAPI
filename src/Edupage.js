@@ -124,7 +124,7 @@ class Edupage extends RawData {
 
 	async refresh() {
 		//Load global edupage data
-		const _html = await this.api({url: ENDPOINT.DASHBOARD, method: "GET", type: "text"});
+		const _html = await this.api({url: ENDPOINT.DASHBOARD_GET_USER, method: "GET", type: "text"});
 		const _json = Edupage.parse(_html);
 		this._data = {...this._data, ..._json};
 		this.year = this._data.dp.year;
@@ -135,11 +135,11 @@ class Edupage extends RawData {
 		this.ASC = new ASC(this._data.ASC, this);
 
 		//Load timeline data
-		const _timeline = await this.api({url: ENDPOINT.TIMELINE, data: {datefrom: this.getYearStart(false)}});
+		const _timeline = await this.api({url: ENDPOINT.TIMELINE_GET_DATA, data: {datefrom: this.getYearStart(false)}});
 		this._data = {...this._data, ..._timeline};
 
 		//Load created timeline items
-		const _created = await this.api({url: ENDPOINT.CREATED_TIMELINE_ITEMS, data: {odkedy: this.getYearStart()}});
+		const _created = await this.api({url: ENDPOINT.TIMELINE_GET_CREATED_ITEMS, data: {odkedy: this.getYearStart()}});
 
 		//Merge all timeline items together and filter them down
 		this._data.timelineItems = [..._timeline.timelineItems, ..._created.data.items].filter((e, i, arr) =>
@@ -241,7 +241,7 @@ class Edupage extends RawData {
 		]);
 
 		const res = await this.api({
-			url: ENDPOINT.UPLOAD_ATTACHEMENT,
+			url: ENDPOINT.TIMELINE_UPLOAD_ATTACHEMENT,
 			headers: {
 				"content-type": `multipart/form-data; boundary=` + Attachement.formBoundary
 			},
@@ -397,18 +397,18 @@ class Edupage extends RawData {
 
 		const base = `https://${this.user.origin}.edupage.org`;
 
-		if(endpoint == ENDPOINT.TIMELINE) return `${base}/timeline/?akcia=getData`;
-		if(endpoint == ENDPOINT.TEST_DATA) return `${base}/elearning/?cmd=MaterialPlayer&akcia=getETestData&ts=${new Date().getTime()}`;
-		if(endpoint == ENDPOINT.CARDS_DATA) return `${base}/elearning/?cmd=EtestCreator&akcia=getCardsData`;
-		if(endpoint == ENDPOINT.DASHBOARD) return `${base}/user/?`;
-		if(endpoint == ENDPOINT.ONLINE_LESSON_SIGN) return `${base}/dashboard/server/onlinelesson.js?__func=getOnlineLessonOpenUrl`;
-		if(endpoint == ENDPOINT.MESSAGE_REPLIES) return `${base}/timeline/?akcia=getRepliesItem`;
-		if(endpoint == ENDPOINT.CREATE_TIMELINE_ITEM) return `${base}/timeline/?akcia=createItem`;
-		if(endpoint == ENDPOINT.CREATED_TIMELINE_ITEMS) return `${base}/timeline/?cmd=created&akcia=getData`;
-		if(endpoint == ENDPOINT.CREATE_CONFIRMATION) return `${base}/timeline/?akcia=createConfirmation`;
-		if(endpoint == ENDPOINT.HOMEWORK_FLAG) return `${base}/timeline/?akcia=homeworkFlag`;
-		if(endpoint == ENDPOINT.CREATE_MESSAGE_REPLY) return `${base}/timeline/?akcia=createReply`;
-		if(endpoint == ENDPOINT.UPLOAD_ATTACHEMENT) return `${base}/timeline/?akcia=uploadAtt`;
+		if(endpoint == ENDPOINT.DASHBOARD_GET_USER) return `${base}/user/?`;
+		if(endpoint == ENDPOINT.DASHBOARD_SIGN_ONLINE_LESSON) return `${base}/dashboard/server/onlinelesson.js?__func=getOnlineLessonOpenUrl`;
+		if(endpoint == ENDPOINT.TIMELINE_GET_DATA) return `${base}/timeline/?akcia=getData`;
+		if(endpoint == ENDPOINT.TIMELINE_GET_REPLIES) return `${base}/timeline/?akcia=getRepliesItem`;
+		if(endpoint == ENDPOINT.TIMELINE_GET_CREATED_ITEMS) return `${base}/timeline/?cmd=created&akcia=getData`;
+		if(endpoint == ENDPOINT.TIMELINE_CREATE_ITEM) return `${base}/timeline/?akcia=createItem`;
+		if(endpoint == ENDPOINT.TIMELINE_CREATE_CONFIRMATION) return `${base}/timeline/?akcia=createConfirmation`;
+		if(endpoint == ENDPOINT.TIMELINE_CREATE_REPLY) return `${base}/timeline/?akcia=createReply`;
+		if(endpoint == ENDPOINT.TIMELINE_FLAG_HOMEWORK) return `${base}/timeline/?akcia=homeworkFlag`;
+		if(endpoint == ENDPOINT.TIMELINE_UPLOAD_ATTACHEMENT) return `${base}/timeline/?akcia=uploadAtt`;
+		if(endpoint == ENDPOINT.ELEARNING_TEST_DATA) return `${base}/elearning/?cmd=MaterialPlayer&akcia=getETestData&ts=${new Date().getTime()}`;
+		if(endpoint == ENDPOINT.ELEARNING_CARDS_DATA) return `${base}/elearning/?cmd=EtestCreator&akcia=getCardsData`;
 
 		throw new TypeError(`Invalid API endpoint '${endpoint}'`);
 	}

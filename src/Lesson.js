@@ -172,7 +172,7 @@ class Lesson extends RawData {
 		};
 
 		const res = await this.edupage.api({
-			url: ENDPOINT.ONLINE_LESSON_SIGN,
+			url: ENDPOINT.DASHBOARD_SIGN_ONLINE_LESSON,
 			data: payload,
 			encodeBody: false
 		});
