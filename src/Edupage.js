@@ -405,22 +405,23 @@ class Edupage extends RawData {
 	buildRequestUrl(endpoint) {
 		if(!this.user.origin) throw new LoginError(`Failed to build URL: User is not logged in yet`);
 
-		const base = `https://${this.user.origin}.edupage.org`;
+		let url = null;
 
-		if(endpoint == ENDPOINT.DASHBOARD_GET_USER) return `${base}/user/?`;
-		if(endpoint == ENDPOINT.DASHBOARD_SIGN_ONLINE_LESSON) return `${base}/dashboard/server/onlinelesson.js?__func=getOnlineLessonOpenUrl`;
-		if(endpoint == ENDPOINT.TIMELINE_GET_DATA) return `${base}/timeline/?akcia=getData`;
-		if(endpoint == ENDPOINT.TIMELINE_GET_REPLIES) return `${base}/timeline/?akcia=getRepliesItem`;
-		if(endpoint == ENDPOINT.TIMELINE_GET_CREATED_ITEMS) return `${base}/timeline/?cmd=created&akcia=getData`;
-		if(endpoint == ENDPOINT.TIMELINE_CREATE_ITEM) return `${base}/timeline/?akcia=createItem`;
-		if(endpoint == ENDPOINT.TIMELINE_CREATE_CONFIRMATION) return `${base}/timeline/?akcia=createConfirmation`;
-		if(endpoint == ENDPOINT.TIMELINE_CREATE_REPLY) return `${base}/timeline/?akcia=createReply`;
-		if(endpoint == ENDPOINT.TIMELINE_FLAG_HOMEWORK) return `${base}/timeline/?akcia=homeworkFlag`;
-		if(endpoint == ENDPOINT.TIMELINE_UPLOAD_ATTACHEMENT) return `${base}/timeline/?akcia=uploadAtt`;
-		if(endpoint == ENDPOINT.ELEARNING_TEST_DATA) return `${base}/elearning/?cmd=MaterialPlayer&akcia=getETestData&ts=${new Date().getTime()}`;
-		if(endpoint == ENDPOINT.ELEARNING_CARDS_DATA) return `${base}/elearning/?cmd=EtestCreator&akcia=getCardsData`;
+		if(endpoint == ENDPOINT.DASHBOARD_GET_USER) url = `/user/?`;
+		if(endpoint == ENDPOINT.DASHBOARD_SIGN_ONLINE_LESSON) url = `/dashboard/server/onlinelesson.js?__func=getOnlineLessonOpenUrl`;
+		if(endpoint == ENDPOINT.TIMELINE_GET_DATA) url = `/timeline/?akcia=getData`;
+		if(endpoint == ENDPOINT.TIMELINE_GET_REPLIES) url = `/timeline/?akcia=getRepliesItem`;
+		if(endpoint == ENDPOINT.TIMELINE_GET_CREATED_ITEMS) url = `/timeline/?cmd=created&akcia=getData`;
+		if(endpoint == ENDPOINT.TIMELINE_CREATE_ITEM) url = `/timeline/?akcia=createItem`;
+		if(endpoint == ENDPOINT.TIMELINE_CREATE_CONFIRMATION) url = `/timeline/?akcia=createConfirmation`;
+		if(endpoint == ENDPOINT.TIMELINE_CREATE_REPLY) url = `/timeline/?akcia=createReply`;
+		if(endpoint == ENDPOINT.TIMELINE_FLAG_HOMEWORK) url = `/timeline/?akcia=homeworkFlag`;
+		if(endpoint == ENDPOINT.TIMELINE_UPLOAD_ATTACHEMENT) url = `/timeline/?akcia=uploadAtt`;
+		if(endpoint == ENDPOINT.ELEARNING_TEST_DATA) url = `/elearning/?cmd=MaterialPlayer&akcia=getETestData&ts=${new Date().getTime()}`;
+		if(endpoint == ENDPOINT.ELEARNING_CARDS_DATA) url = `/elearning/?cmd=EtestCreator&akcia=getCardsData`;
 
-		throw new TypeError(`Invalid API endpoint '${endpoint}'`);
+		if(!url) throw new TypeError(`Invalid API endpoint '${endpoint}'`);
+		else return this.baseUrl + url;
 	}
 
 	/**
