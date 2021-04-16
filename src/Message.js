@@ -391,12 +391,12 @@ class Message extends RawData {
 		if(!this.edupage) throw new EdupageError(`Message does not have assigned Edupage instance yet`);
 
 		//Load data
-		//TODO: send important message to track the request
 		const res = await this.edupage.api({
 			url: ENDPOINT.TIMELINE_CREATE_CONFIRMATION,
 			data: {
 				"groupid": this.id,
-				"confirmType": "receipt" // ? Not tested, just guessing
+				"confirmType": "receipt",
+				"val": ""
 			}
 		});
 
