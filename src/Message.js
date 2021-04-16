@@ -5,7 +5,7 @@ const {iterate} = require("../lib/utils");
 const Attachement = require("./Attachement");
 const Class = require("./Class");
 const Edupage = require("./Edupage");
-const {ENDPOINT} = require("./enums");
+const {ENDPOINT, ENTITY_TYPE} = require("./enums");
 const {APIError, EdupageError, MessageError} = require("./exceptions");
 const Parent = require("./Parent");
 const Plan = require("./Plan");
@@ -512,13 +512,12 @@ class Message extends RawData {
 		const {type, id, wildcard} = User.parseUserString(userString);
 		let recipient = null;
 
-		//TODO: change this to enum
-		if(type == "ucitel") recipient = this.edupage.teachers.find(e => e.id == id);
-		if(type == "student") recipient = this.edupage.students.find(e => e.id == id);
-		if(type == "parent") recipient = this.edupage.parents.find(e => e.id == id);
-		if(type == "studplan" || type == "custplan") recipient = this.edupage.plans.find(e => e.id == id);
-		if(type == "studtrieda") recipient = this.edupage.classes.find(e => e.id == id);
-		if(type == "trieda") recipient = this.edupage.plans.find(e => e.customClassId == id);
+		if(type == ENTITY_TYPE.TEACHER) recipient = this.edupage.teachers.find(e => e.id == id);
+		if(type == ENTITY_TYPE.STUDENT) recipient = this.edupage.students.find(e => e.id == id);
+		if(type == ENTITY_TYPE.PARENT) recipient = this.edupage.parents.find(e => e.id == id);
+		if(type == ENTITY_TYPE.STUD_PLAN || type == ENTITY_TYPE.CUST_PLAN) recipient = this.edupage.plans.find(e => e.id == id);
+		if(type == ENTITY_TYPE.STUD_CLASS) recipient = this.edupage.classes.find(e => e.id == id);
+		if(type == ENTITY_TYPE.CLASS) recipient = this.edupage.plans.find(e => e.customClassId == id);
 
 		return {recipient, wildcard};
 	}

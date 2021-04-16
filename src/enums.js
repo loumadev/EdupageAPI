@@ -9,8 +9,8 @@
  */
 
 /**
- * Edupage userString type
- * @typedef {string} UserString
+ * Edupage primitive enitity type
+ * @typedef {string} EntityType
  */
 
 
@@ -42,21 +42,22 @@ const GENDER = {
 };
 
 /**
- * @enum {UserString}
+ * @enum {EntityType}
  */
-const USER_STRING = {
+const ENTITY_TYPE = {
 	STUD_PLAN: "StudPlan",
 	STUDENT: "Student",
 	CUST_PLAN: "CustPlan",
 	STUDENT_ONLY: "StudentOnly",
-	STUD_TRIEDA: "StudTrieda",
-	UCITEL: "Ucitel",
+	STUD_CLASS: "StudTrieda",
+	TEACHER: "Ucitel",
 	ALL: "*",
-	TRIEDA: "Trieda",
+	CLASS: "Trieda",
 	STUDENT_ALL: "Student*",
 	STUDENTONLY_ALL: "StudentOnly*",
-	UCITEL_ALL: "Ucitel*",
-	ADMIN: "Admin"
+	TEACHER_ALL: "Ucitel*",
+	ADMIN: "Admin",
+	PARENT: "Parent"
 };
 
 
@@ -64,5 +65,5 @@ const USER_STRING = {
 module.exports = {
 	GENDER,
 	ENDPOINT,
-	USER_STRING
+	ENTITY_TYPE
 }

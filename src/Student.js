@@ -1,5 +1,6 @@
 const Class = require("./Class");
 const Edupage = require("./Edupage");
+const {ENTITY_TYPE} = require("./enums");
 const Parent = require("./Parent");
 const User = require("./User");
 
@@ -52,7 +53,7 @@ class Student extends User {
 		/**
 		 * @type {string}
 		 */
-		this.userString = "Student" + this.id;
+		this.userString = ENTITY_TYPE.STUDENT + this.id;
 
 
 		/**

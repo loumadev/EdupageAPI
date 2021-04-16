@@ -4,7 +4,7 @@ const error = require("debug")("edupage:error");
 const {default: fetch} = require("node-fetch");
 const CookieJar = require("../lib/CookieJar");
 const {LoginError, ParseError, EdupageError, APIError, MessageError} = require("./exceptions");
-const {GENDER, ENDPOINT} = require("./enums");
+const {GENDER, ENDPOINT, ENTITY_TYPE} = require("./enums");
 const Edupage = require("./Edupage");
 const RawData = require("../lib/RawData");
 const Attachement = require("./Attachement");
@@ -22,6 +22,9 @@ debug.log = console.log.bind(console);
  */
 /**
  * @typedef {import("./Message")} Message
+ */
+/**
+ * @typedef {import("./enums").EntityType} EntityType
  */
 
 class User extends RawData {
@@ -257,9 +260,9 @@ class User extends RawData {
 
 		data.id = id || null;
 
-		if(type == "ucitel") return new (require("./Teacher"))(data, edupage);
-		if(type == "student") return new (require("./Student"))(data, edupage);
-		if(type == "rodic") return new (require("./Parent"))(data, edupage);
+		if(type == ENTITY_TYPE.TEACHER) return new (require("./Teacher"))(data, edupage);
+		if(type == ENTITY_TYPE.STUDENT) return new (require("./Student"))(data, edupage);
+		if(type == ENTITY_TYPE.PARENT) return new (require("./Parent"))(data, edupage);
 
 		const user = new User(data, edupage);
 		user.userString = userString;
@@ -271,12 +274,12 @@ class User extends RawData {
 	 *
 	 * @static
 	 * @param {string} userString
-	 * @return {{id: string, type: string, wildcard: boolean}} 
+	 * @return {{id: string, type: EntityType, wildcard: boolean}} 
 	 * @memberof User
 	 */
 	static parseUserString(userString) {
 		const id = (userString.match(/-?\d+/) || [])[0];
-		const type = ((userString.match(/[a-z]+/i) || [])[0] || "").toLowerCase();
+		const type = ((userString.match(/[a-z]+/i) || [])[0] || "");
 		const wildcard = userString.indexOf("*") > -1;
 
 		return {id, type, wildcard};
