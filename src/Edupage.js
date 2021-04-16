@@ -7,7 +7,7 @@ const Student = require("./Student");
 const Teacher = require("./Teacher");
 const User = require("./User");
 const {btoa, iterate} = require("../lib/utils");
-const {ENDPOINT} = require("./enums");
+const {ENDPOINT, API_STATUS} = require("./enums");
 const Class = require("./Class");
 const Classroom = require("./Classroom");
 const Parent = require("./Parent");
@@ -259,7 +259,7 @@ class Edupage extends RawData {
 			encodeBody: false
 		});
 
-		if(res.status !== "ok") throw new APIError(`Failed to upload file: Invalid status received '${res.status}'`, res);
+		if(res.status !== API_STATUS.OK) throw new APIError(`Failed to upload file: Invalid status received '${res.status}'`, res);
 
 		return new Attachement(res.data, this);
 	}

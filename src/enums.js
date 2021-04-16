@@ -13,6 +13,11 @@
  * @typedef {string} EntityType
  */
 
+/**
+ * Edupage API resporse status
+ * @typedef {string} APIStatus
+ */
+
 
 
 /**
@@ -60,10 +65,19 @@ const ENTITY_TYPE = {
 	PARENT: "Parent"
 };
 
+/**
+ * @enum {APIStatus}
+ */
+const API_STATUS = {
+	OK: "ok",
+	FAIL: "fail"
+};
+
 
 
 module.exports = {
 	GENDER,
 	ENDPOINT,
-	ENTITY_TYPE
+	ENTITY_TYPE,
+	API_STATUS
 }

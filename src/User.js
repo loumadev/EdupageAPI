@@ -4,7 +4,7 @@ const error = require("debug")("edupage:error");
 const {default: fetch} = require("node-fetch");
 const CookieJar = require("../lib/CookieJar");
 const {LoginError, ParseError, EdupageError, APIError, MessageError} = require("./exceptions");
-const {GENDER, ENDPOINT, ENTITY_TYPE} = require("./enums");
+const {GENDER, ENDPOINT, ENTITY_TYPE, API_STATUS} = require("./enums");
 const Edupage = require("./Edupage");
 const RawData = require("../lib/RawData");
 const Attachement = require("./Attachement");
@@ -160,7 +160,7 @@ class User extends RawData {
 		});
 
 		//Request failed
-		if(res.status !== "ok") {
+		if(res.status !== API_STATUS.OK) {
 			error(`Received invalid status from the server '${res.status}'`);
 			throw new APIError(`Failed to send message: Invalid status received '${res.status}'`, res);
 		}

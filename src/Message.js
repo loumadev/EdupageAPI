@@ -5,7 +5,7 @@ const {iterate} = require("../lib/utils");
 const Attachement = require("./Attachement");
 const Class = require("./Class");
 const Edupage = require("./Edupage");
-const {ENDPOINT, ENTITY_TYPE} = require("./enums");
+const {ENDPOINT, ENTITY_TYPE, API_STATUS} = require("./enums");
 const {APIError, EdupageError, MessageError} = require("./exceptions");
 const Parent = require("./Parent");
 const Plan = require("./Plan");
@@ -338,7 +338,7 @@ class Message extends RawData {
 		});
 
 		//Request failed
-		if(res.status !== "ok") {
+		if(res.status !== API_STATUS.OK) {
 			error(`[Reply] Received invalid status from the server '${res.status}'`);
 			throw new APIError(`Failed to send message: Invalid status received '${res.status}'`, res);
 		}
@@ -477,7 +477,7 @@ class Message extends RawData {
 		});
 
 		//Invalid response
-		if(res.status !== "ok") throw new APIError(`Failed to refresh message: Invalid status received '${res.status}'`, this, res);
+		if(res.status !== API_STATUS.OK) throw new APIError(`Failed to refresh message: Invalid status received '${res.status}'`, this, res);
 
 		//Parse message data of each reply
 		res.data.reakcie.forEach(e => {
