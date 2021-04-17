@@ -20,6 +20,8 @@ const Timetable = require("./Timetable");
 const Message = require("./Message");
 const Plan = require("./Plan");
 const Attachement = require("./Attachement");
+const Grade = require("./Grade");
+const Session = require("./Session");
 
 debug.log = console.log.bind(console);
 
@@ -35,6 +37,11 @@ class Edupage extends RawData {
 		 * @type {User|Teacher|Student}
 		 */
 		this.user = null;
+
+		/**
+		 * @type {Session[]}
+		 */
+		this.sessions = [];
 
 		/**
 		 * @type {Student[]}
@@ -151,6 +158,11 @@ class Edupage extends RawData {
 		//Load created timeline items
 		const _created = await this.api({url: ENDPOINT.TIMELINE_GET_CREATED_ITEMS, data: {odkedy: this.getYearStart()}});
 
+		//Load grades
+		const _grades_html = await this.api({url: ENDPOINT.GRADES_DATA, method: "GET", type: "text"});
+		const _grades = Grade.parse(_grades_html);
+		this._data = {...this._data, _grades};
+
 		//Merge all timeline items together and filter them down
 		this._data.timelineItems = [..._timeline.timelineItems, ..._created.data.items].filter((e, i, arr) =>
 			//Remove duplicated items
@@ -162,6 +174,7 @@ class Edupage extends RawData {
 		);
 
 		//Parse json and create Objects
+		this.sessions = Object.values(this._data._grades.settings.obdobia).map(data => new Session(data));
 		this.classes = Object.values(this._data.dbi.classes).map(data => new Class(data));
 		this.classrooms = Object.values(this._data.dbi.classrooms).map(data => new Classroom(data, this));
 		this.teachers = Object.values(this._data.dbi.teachers).map(data => new Teacher(data, this));
@@ -181,6 +194,7 @@ class Edupage extends RawData {
 		this.timeline = this.timelineItems.filter(e => e.type != "confirmation");
 
 		//Init objects if needed
+		this.sessions.forEach(e => e.init(this));
 		this.classes.forEach(e => e.init(this));
 
 		//Parse current user
@@ -419,6 +433,7 @@ class Edupage extends RawData {
 		if(endpoint == ENDPOINT.TIMELINE_UPLOAD_ATTACHEMENT) url = `/timeline/?akcia=uploadAtt`;
 		if(endpoint == ENDPOINT.ELEARNING_TEST_DATA) url = `/elearning/?cmd=MaterialPlayer&akcia=getETestData&ts=${new Date().getTime()}`;
 		if(endpoint == ENDPOINT.ELEARNING_CARDS_DATA) url = `/elearning/?cmd=EtestCreator&akcia=getCardsData`;
+		if(endpoint == ENDPOINT.GRADES_DATA) url = `/znamky/?barNoSkin=1`;
 
 		if(!url) throw new TypeError(`Invalid API endpoint '${endpoint}'`);
 		else return this.baseUrl + url;
