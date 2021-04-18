@@ -169,6 +169,11 @@ class Edupage extends RawData {
 		const _grades = Grade.parse(_grades_html);
 		this._data = {...this._data, _grades};
 
+		//Transform events Object into Array here rather than on each Grade iteration for better performance
+		this._data._grades._events = {};
+		iterate(_grades.data.vsetkyUdalosti)
+			.forEach(([i, provider, object]) => this._data._grades._events[provider] = Object.values(object));
+
 		//Merge all timeline items together and filter them down
 		this._data.timelineItems = [..._timeline.timelineItems, ..._created.data.items].filter((e, i, arr) =>
 			//Remove duplicated items
@@ -191,7 +196,7 @@ class Edupage extends RawData {
 		this.plans = Object.values(this._data.dbi.plans).map(data => new Plan(data, this));
 		this.timetables = iterate(this._data.dp.dates).map(([i, date, data]) => new Timetable(data, date, this));
 		this.homeworks = this._data.homeworks.map(data => new Homework(data, this));
-		//this.grades = Object.values(this._data._grades.data.vsetkyZnamky).map(data => new Grade(data, this));
+		this.grades = Object.values(this._data._grades.data.vsetkyZnamky).map(data => new Grade(data, this));
 
 		//Create Message objects for each timeline item
 		this._data.timelineItems
