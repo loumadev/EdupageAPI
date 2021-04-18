@@ -7,6 +7,7 @@ const Class = require("./Class");
 const Edupage = require("./Edupage");
 const {ENDPOINT, ENTITY_TYPE, API_STATUS} = require("./enums");
 const {APIError, EdupageError, MessageError} = require("./exceptions");
+const Homework = require("./Homework");
 const Parent = require("./Parent");
 const Plan = require("./Plan");
 const Student = require("./Student");
@@ -195,6 +196,11 @@ class Message extends RawData {
 		 */
 		this.replies = [];
 
+		/**
+		 * @type {Homework}
+		 */
+		this.homework = null;
+
 		if(this.edupage) Message.prototype.init.call(this);
 	}
 
@@ -292,6 +298,11 @@ class Message extends RawData {
 		if(this._data.data.attachements) {
 			const attchs = this._data.data.attachements;
 			this.attachements = Object.keys(attchs).map(e => new Attachement({src: e, name: attchs[e]}, this.edupage));
+		}
+
+		//Add homework
+		if(this._data.data.superid) {
+			this.homework = this.edupage.homeworks.find(e => e.superId == this._data.data.superid);
 		}
 
 		//TODO: implement this._data.participantGroups = {

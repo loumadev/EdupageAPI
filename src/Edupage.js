@@ -99,6 +99,11 @@ class Edupage extends RawData {
 		 */
 		this.plans = [];
 
+		/**
+		 * @type {Homework[]}
+		 */
+		this.homeworks = [];
+
 
 		/**
 		 * @type {ASC}
@@ -194,6 +199,7 @@ class Edupage extends RawData {
 			.forEach(data => this.timelineItems.unshift(new Message(data, this)));
 
 		//Filter out confirmation messages
+		//TODO: filter out types prefixed with `h_`?
 		this.timeline = this.timelineItems.filter(e => e.type != "confirmation");
 
 		//Init objects if needed
