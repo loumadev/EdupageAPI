@@ -38,7 +38,7 @@ class Grade extends RawData {
 		/**
 		 * @type {Date}
 		 */
-		this.createdDate = data.datum ? new Date(data.datum) : null;
+		this.creationDate = data.datum ? new Date(data.datum) : null;
 
 		/**
 		 * @type {Session}
