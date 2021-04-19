@@ -7,7 +7,8 @@ const Period = require("./Period");
 const Subject = require("./Subject");
 const Teacher = require("./Teacher");
 const User = require("./User");
-const {ASSIGNMENT_TYPE, ASSIGNMENT_GROUP} = require("./enums");
+const {ASSIGNMENT_TYPE, ASSIGNMENT_GROUP, ENDPOINT} = require("./enums");
+const {EdupageError, APIError} = require("./exceptions");
 
 debug.log = console.log.bind(console);
 
@@ -181,6 +182,36 @@ class Assignment extends RawData {
 
 		this.grades = this.edupage.grades.filter(e => this.superId == e.superId);
 		this.grades.forEach(e => e.assignment = this);
+	}
+
+	/**
+	 * Fetches results + material data for assignment
+	 * Usually the structure is: `{resultsData: {...}, materialData: {...}, ...}`
+	 * Fetched data are cached into `this._data._resultsData`
+	 * @return {Promise<RawDataObject>} Non-parsed raw data object
+	 * @memberof Assignment
+	 */
+	async getData() {
+		if(!this.edupage) throw new EdupageError(`Message does not have assigned Edupage instance yet`);
+
+		//Load data
+		const res = await this.edupage.api({
+			url: ENDPOINT.TIMELINE_CREATE_CONFIRMATION,
+			data: {
+				"superid": this.superId
+			}
+		});
+
+		//Request failed
+		if(!res.superid) {
+			error(`[Reply] Received invalid status from the server '${res.status}'`);
+			throw new APIError(`Failed to send message: Invalid status received '${res.status}'`, res);
+		}
+
+		//Cahce data
+		this._data._resultsData = res;
+
+		return res;
 	}
 
 	/**

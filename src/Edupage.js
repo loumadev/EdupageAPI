@@ -467,6 +467,7 @@ class Edupage extends RawData {
 		if(endpoint == ENDPOINT.TIMELINE_FLAG_HOMEWORK) url = `/timeline/?akcia=homeworkFlag`;
 		if(endpoint == ENDPOINT.TIMELINE_UPLOAD_ATTACHEMENT) url = `/timeline/?akcia=uploadAtt`;
 		if(endpoint == ENDPOINT.ELEARNING_TEST_DATA) url = `/elearning/?cmd=MaterialPlayer&akcia=getETestData&ts=${new Date().getTime()}`;
+		if(endpoint == ENDPOINT.ELEARNING_TEST_RESULTS) url = `/elearning/?cmd=EtestCreator&akcia=getResultsData`;
 		if(endpoint == ENDPOINT.ELEARNING_CARDS_DATA) url = `/elearning/?cmd=EtestCreator&akcia=getCardsData`;
 		if(endpoint == ENDPOINT.GRADES_DATA) url = `/znamky/?barNoSkin=1`;
 
