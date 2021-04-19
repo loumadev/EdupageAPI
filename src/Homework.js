@@ -116,6 +116,11 @@ class Homework extends RawData {
 		this.state = data.stavhodnotenia;
 
 		/**
+		 * @type {boolean}
+		 */
+		this.isSeen = this.state != "new";
+
+		/**
 		 * @type {string}
 		 */
 		this.comment = data.komentarPridelenie || "";
