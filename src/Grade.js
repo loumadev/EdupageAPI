@@ -176,7 +176,7 @@ class Grade extends RawData {
 		this._data._event = this.edupage._data._grades._events[this.provider].find(e => e.UdalostID == this.eventId);
 
 		if(!this._data._event) {
-			error(`[Grade] Cannot find evnet with ID '${this.eventId}'`);
+			error(`[Grade] Cannot find event with ID '${this.eventId}'`);
 			return;
 		}
 
@@ -221,7 +221,7 @@ class Grade extends RawData {
 		try {
 			settings = JSON.parse(_settings);
 		} catch(e) {
-			error(`[Grade-parser] Failed to parse settigns as JSON`, _settings);
+			error(`[Grade-parser] Failed to parse settings as JSON`, _settings);
 		}
 
 		try {
