@@ -85,6 +85,12 @@ class Assignment extends RawData {
 		this.toDate = new Date(data.datetimeto || data.dateto);
 
 		/**
+		 * @type {number}
+		 * Time to complete the assignment in seconds
+		 */
+		this.duration = Math.floor((this.toDate.getTime() - this.fromDate.getTime()) / 1000);
+
+		/**
 		 * @type {Period}
 		 */
 		this.period = null;
@@ -154,8 +160,6 @@ class Assignment extends RawData {
 		 * @type {Grade[]}
 		 */
 		this.grades = [];
-
-		//TODO: Fix owner, subject, period
 
 
 		if(this.edupage) Assignment.prototype.init.call(this);
