@@ -195,8 +195,8 @@ class Edupage extends RawData {
 		this.periods = Object.values(this._data.dbi.periods).map(data => new Period(data));
 		this.plans = Object.values(this._data.dbi.plans).map(data => new Plan(data, this));
 		this.timetables = iterate(this._data.dp.dates).map(([i, date, data]) => new Timetable(data, date, this));
-		this.homeworks = this._data.homeworks.map(data => new Homework(data, this));
 		this.grades = Object.values(this._data._grades.data.vsetkyZnamky).map(data => new Grade(data, this));
+		this.homeworks = this._data.homeworks.map(data => new Homework(data, this));
 
 		//Create Message objects for each timeline item
 		this._data.timelineItems

@@ -3,6 +3,7 @@ const error = require("debug")("edupage:error");
 const RawData = require("../lib/RawData");
 const Class = require("./Class");
 const Edupage = require("./Edupage");
+const Grade = require("./Grade");
 const Parent = require("./Parent");
 const Period = require("./Period");
 const Season = require("./Season");
@@ -139,6 +140,11 @@ class Homework extends RawData {
 		 */
 		this.stateUpdatedBy = null;
 
+		/**
+		 * @type {Grade[]}
+		 */
+		this.grades = [];
+
 
 		if(this.edupage) Homework.prototype.init.call(this);
 	}
@@ -156,6 +162,9 @@ class Homework extends RawData {
 
 		if(this._data.period) this.period = this.edupage.periods.find(e => e.id == this._data.period);
 		if(this._data.studentStav?.nastavil_userid) this.stateUpdatedBy = this.edupage.getUserByUserString(this._data.studentStav?.nastavil_userid);
+
+		this.grades = this.edupage.grades.filter(e => this.superId == e.superId);
+		this.grades.forEach(e => e.homework = this);
 	}
 }
 

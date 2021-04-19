@@ -3,6 +3,7 @@ const error = require("debug")("edupage:error");
 const RawData = require("../lib/RawData");
 const Class = require("./Class");
 const Edupage = require("./Edupage");
+const Homework = require("./Homework");
 const Plan = require("./Plan");
 const Season = require("./Season");
 const Student = require("./Student");
@@ -157,6 +158,21 @@ class Grade extends RawData {
 		 */
 		this.provider = data.provider;
 
+		/**
+		 * @type {string}
+		 */
+		this.superId = null;
+
+		/**
+		 * @type {boolean}
+		 */
+		this.isClassified = false;
+
+		/**
+		 * @type {Homework}
+		 */
+		this.homework = null;
+
 		if(this.edupage) Grade.prototype.init.call(this);
 	}
 
@@ -168,18 +184,22 @@ class Grade extends RawData {
 	init(edupage = null) {
 		if(edupage) this.edupage = edupage;
 
+		//Assign general properties
 		this.season = this.edupage.seasons.find(e => e.id == this._data.mesiac);
 		this.subject = this.edupage.subjects.find(e => e.id == this._data.predmetid);
 		this.student = this.edupage.students.find(e => e.id == this._data.studentid);
 		this.teacher = this.edupage.teachers.find(e => e.id == this._data.ucitelid);
 
+		//Find event
 		this._data._event = this.edupage._data._grades._events[this.provider].find(e => e.UdalostID == this.eventId);
 
+		//Error handling in case event wasn't find 
 		if(!this._data._event) {
 			error(`[Grade] Cannot find event with ID '${this.eventId}'`);
 			return;
 		}
 
+		//Assign event properties
 		this.plan = this.edupage.plans.find(e => e.id == this._data._event.planid);
 		this.class = this.edupage.classes.find(e => e.id == this._data._event.TriedaID);
 		this.classes = this._data._event.Triedy.map(id => this.edupage.classes.find(e => e.id == id));
@@ -190,11 +210,18 @@ class Grade extends RawData {
 		this.weight = this._data._event.p_vaha ? +this._data._event.p_vaha / 20 : 1;
 		this.average = this._data._event.priemer;
 
+		//Find material assigned to Grade
+		if(this._data._event.moredata?.elearning_superid) {
+			this.superId = this._data._event.moredata.elearning_superid.toString();
+			this.isClassified = true;
+		}
+
+		//Simple points calculations
 		if(this.type == "3") {
 			const max = parseFloat(this._data._event.p_vaha_body);
 			const pts = parseFloat(this.value);
 
-			//This is going to invalid for fallback values but whatever ¯\_(ツ)_/¯
+			//This is going to be invalid for fallback values but whatever ¯\_(ツ)_/¯
 			this.maxPoints = isNaN(max) ? 100 : max;
 			this.points = isNaN(pts) ? 100 : pts;
 			this.percentage = this.points / this.maxPoints * 100;
