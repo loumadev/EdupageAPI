@@ -7,12 +7,12 @@ const Class = require("./Class");
 const Edupage = require("./Edupage");
 const {ENDPOINT, ENTITY_TYPE, API_STATUS} = require("./enums");
 const {APIError, EdupageError, MessageError} = require("./exceptions");
-const Homework = require("./Homework");
 const Parent = require("./Parent");
 const Plan = require("./Plan");
 const Student = require("./Student");
 const Teacher = require("./Teacher");
 const User = require("./User");
+const Assignment = require("./Assignment");
 
 debug.log = console.log.bind(console);
 
@@ -197,9 +197,9 @@ class Message extends RawData {
 		this.replies = [];
 
 		/**
-		 * @type {Homework}
+		 * @type {Assignment}
 		 */
-		this.homework = null;
+		this.assignment = null;
 
 		if(this.edupage) Message.prototype.init.call(this);
 	}
@@ -302,7 +302,7 @@ class Message extends RawData {
 
 		//Add homework
 		if(this._data.data.superid) {
-			this.homework = this.edupage.homeworks.find(e => e.superId == this._data.data.superid);
+			this.assignment = this.edupage.assignments.find(e => e.superId == this._data.data.superid);
 		}
 
 		//TODO: implement this._data.participantGroups = {

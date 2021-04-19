@@ -3,7 +3,7 @@ const error = require("debug")("edupage:error");
 const RawData = require("../lib/RawData");
 const Class = require("./Class");
 const Edupage = require("./Edupage");
-const Homework = require("./Homework");
+const Assignment = require("./Assignment");
 const Plan = require("./Plan");
 const Season = require("./Season");
 const Student = require("./Student");
@@ -169,9 +169,9 @@ class Grade extends RawData {
 		this.isClassified = false;
 
 		/**
-		 * @type {Homework}
+		 * @type {Assignment}
 		 */
-		this.homework = null;
+		this.assignment = null;
 
 		if(this.edupage) Grade.prototype.init.call(this);
 	}

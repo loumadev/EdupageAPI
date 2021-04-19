@@ -18,6 +18,17 @@
  * @typedef {string} APIStatus
  */
 
+/**
+ * Assignment type
+ * @typedef {string} AssignmentType
+ */
+
+/**
+ * 
+ * Assignment group
+ * @typedef {AssignmentType[]} AssignmentGroup
+ */
+
 
 
 /**
@@ -74,11 +85,48 @@ const API_STATUS = {
 	FAIL: "fail"
 };
 
+/**
+ * @enum {AssignmentType}
+ */
+const ASSIGNMENT_TYPE = {
+	HOMEWORK: "hw",
+	ETEST_HOMEWORK: "etesthw",
+	BIG_EXAM: "bexam",
+	EXAM: "exam",
+	SMALL_EXAM: "sexam",
+	ORAL_EXAM: "oexam",
+	REPORT_EXAM: "rexam",
+	TESTING: "testing",
+	TEST: "test",
+	PROJECT_EXAM: "pexam",
+	ETEST: "etest",
+	ETEST_PRINT: "etestprint",
+	ETEST_LESSON: "etestlesson",
+	LESSON: "lekcia",
+	PROJECT: "projekt",
+	RESULT: "result",
+	CURRICULUM: "ucivo",
+	TIMELINE: "timeline"
+};
+
+/**
+ * @enum {AssignmentGroup}
+ */
+const ASSIGNMENT_GROUP = {
+	HOMEWORK: ["hw", "etesthw"],
+	EXAM: ["bexam", "sexam", "oexam", "rexam", "testing"],
+	TEST: ["test", "etest", "etestprint"],
+	PROJECT: ["pexam", "projekt"],
+	PRESENTATION: ["etestlesson", "lekcia"],
+	OTHER: ["result", "ucivo", "timeline"]
+};
 
 
 module.exports = {
 	GENDER,
 	ENDPOINT,
 	ENTITY_TYPE,
-	API_STATUS
+	API_STATUS,
+	ASSIGNMENT_TYPE,
+	ASSIGNMENT_GROUP
 }

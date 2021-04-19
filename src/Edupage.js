@@ -23,6 +23,8 @@ const Attachement = require("./Attachement");
 const Grade = require("./Grade");
 const Season = require("./Season");
 const Homework = require("./Homework");
+const Assignment = require("./Assignment");
+const Test = require("./Test");
 
 debug.log = console.log.bind(console);
 
@@ -100,9 +102,19 @@ class Edupage extends RawData {
 		this.plans = [];
 
 		/**
+		 * @type {Assignment[]}
+		 */
+		this.assignments = [];
+
+		/**
 		 * @type {Homework[]}
 		 */
 		this.homeworks = [];
+
+		/**
+		 * @type {Test[]}
+		 */
+		this.tests = [];
 
 
 		/**
@@ -196,7 +208,16 @@ class Edupage extends RawData {
 		this.plans = Object.values(this._data.dbi.plans).map(data => new Plan(data, this));
 		this.timetables = iterate(this._data.dp.dates).map(([i, date, data]) => new Timetable(data, date, this));
 		this.grades = Object.values(this._data._grades.data.vsetkyZnamky).map(data => new Grade(data, this));
-		this.homeworks = this._data.homeworks.map(data => new Homework(data, this));
+
+		//Create assignments and add them to arrays
+		this._data.homeworks.forEach(data => {
+			const assignment = Assignment.from(data, this);
+
+			if(assignment instanceof Homework) this.homeworks.push(assignment);
+			if(assignment instanceof Test) this.tests.push(assignment);
+
+			this.assignments.push(assignment);
+		});
 
 		//Create Message objects for each timeline item
 		this._data.timelineItems
