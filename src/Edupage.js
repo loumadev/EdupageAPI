@@ -21,7 +21,7 @@ const Message = require("./Message");
 const Plan = require("./Plan");
 const Attachement = require("./Attachement");
 const Grade = require("./Grade");
-const Session = require("./Session");
+const Season = require("./Season");
 const Homework = require("./Homework");
 
 debug.log = console.log.bind(console);
@@ -40,9 +40,9 @@ class Edupage extends RawData {
 		this.user = null;
 
 		/**
-		 * @type {Session[]}
+		 * @type {Season[]}
 		 */
-		this.sessions = [];
+		this.seasons = [];
 
 		/**
 		 * @type {Student[]}
@@ -185,7 +185,7 @@ class Edupage extends RawData {
 		);
 
 		//Parse json and create Objects
-		this.sessions = Object.values(this._data._grades.settings.obdobia).map(data => new Session(data));
+		this.seasons = Object.values(this._data._grades.settings.obdobia).map(data => new Season(data));
 		this.classes = Object.values(this._data.dbi.classes).map(data => new Class(data));
 		this.classrooms = Object.values(this._data.dbi.classrooms).map(data => new Classroom(data, this));
 		this.teachers = Object.values(this._data.dbi.teachers).map(data => new Teacher(data, this));
@@ -208,7 +208,7 @@ class Edupage extends RawData {
 		this.timeline = this.timelineItems.filter(e => e.type != "confirmation");
 
 		//Init objects if needed
-		this.sessions.forEach(e => e.init(this));
+		this.seasons.forEach(e => e.init(this));
 		this.classes.forEach(e => e.init(this));
 
 		//Parse current user

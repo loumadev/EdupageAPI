@@ -5,12 +5,12 @@ const Edupage = require("./Edupage");
 
 debug.log = console.log.bind(console);
 
-class Session extends RawData {
+class Season extends RawData {
 	/**
-	 * Creates an instance of Session.
+	 * Creates an instance of Season.
 	 * @param {import("../lib/RawData").RawDataObject} [data={}]
 	 * @param {Edupage} [edupage=null]
-	 * @memberof Session
+	 * @memberof Season
 	 */
 	constructor(data = {}, edupage = null) {
 		super(data);
@@ -51,9 +51,9 @@ class Session extends RawData {
 		this.index = +data.poradie;
 
 		/**
-		 * @type {Session}
+		 * @type {Season}
 		 */
-		this.supSession = null;
+		this.supSeason = null;
 
 		/**
 		 * @type {string[]}
@@ -61,16 +61,16 @@ class Session extends RawData {
 		this.types = data.typy;
 
 		/**
-		 * @type {Session}
+		 * @type {Season}
 		 */
-		this.classificationSession = null;
+		this.classificationSeason = null;
 
 		/**
 		 * @type {boolean}
 		 */
 		this.isClassification = !!data.klasifikacny;
 
-		if(this.edupage) Session.prototype.init.call(this);
+		if(this.edupage) Season.prototype.init.call(this);
 	}
 
 	/**
@@ -86,9 +86,9 @@ class Session extends RawData {
 		this.fromDate = new Date(this._data.od.replace("Y0", year).replace("Y1", year + 1));
 		this.toDate = new Date(this._data.do.replace("Y0", year).replace("Y1", year + 1));
 
-		this.supSession = this.edupage.sessions.find(e => e.id == this._data.nadobdobie) || null;
-		if(this.isClassification) this.classificationSession = this.edupage.sessions.find(e => e.id == this._data.klasifikacny) || null;
+		this.supSeason = this.edupage.seasons.find(e => e.id == this._data.nadobdobie) || null;
+		if(this.isClassification) this.classificationSeason = this.edupage.seasons.find(e => e.id == this._data.klasifikacny) || null;
 	}
 }
 
-module.exports = Session;
+module.exports = Season;

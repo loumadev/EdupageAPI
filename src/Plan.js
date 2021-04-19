@@ -1,7 +1,7 @@
 const RawData = require("../lib/RawData");
 const Class = require("./Class");
 const Edupage = require("./Edupage");
-const Session = require("./Session");
+const Season = require("./Season");
 const Student = require("./Student");
 const Subject = require("./Subject");
 const Teacher = require("./Teacher");
@@ -133,9 +133,9 @@ class Plan extends RawData {
 		this.studentIds = data.students;
 
 		/**
-		 * @type {Session}
+		 * @type {Season}
 		 */
-		this.session = null;
+		this.season = null;
 
 		/**
 		 * @type {string}
@@ -190,7 +190,7 @@ class Plan extends RawData {
 	init(edupage = null) {
 		if(edupage) this.edupage = edupage;
 
-		if(this._data.obdobie) this.session = this.edupage.sessions.find(e => e.id == this._data.obdobie);
+		if(this._data.obdobie) this.season = this.edupage.seasons.find(e => e.id == this._data.obdobie);
 
 		this.subject = this.edupage.subjects.find(e => e.id == this.subjectId);
 		this.teacher = this.edupage.teachers.find(e => e.id == this.teacherId);
