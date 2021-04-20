@@ -157,6 +157,12 @@ class Edupage extends RawData {
 		});
 	}
 
+	/**
+	 * Logs user in for this instance
+	 *
+	 * @return {Promise<import("../lib/RawData").RawDataObject>} 
+	 * @memberof Edupage
+	 */
 	async refresh() {
 		//Load global edupage data
 		const _html = await this.api({url: ENDPOINT.DASHBOARD_GET_USER, method: "GET", type: "text"});
@@ -246,8 +252,6 @@ class Edupage extends RawData {
 		this.user.cookies = _temp.cookies;
 		this.user.isLoggedIn = _temp.isLoggedIn;
 		this.user.email = this._data.userrow.p_mail;
-
-		return this._data;
 	}
 
 	/**

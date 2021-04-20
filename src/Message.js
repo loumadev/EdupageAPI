@@ -515,6 +515,13 @@ class Message extends RawData {
 		return {firstname, lastname};
 	}
 
+	/**
+	 *
+	 * @private
+	 * @param {string} userString
+	 * @return {{recipient: User|Teacher|Student|Parent|Plan|Class, wildcard: boolean}} 
+	 * @memberof Message
+	 */
 	getRecipient(userString) {
 		//Ignore parents just for now
 		userString = userString.replace("Only", "");

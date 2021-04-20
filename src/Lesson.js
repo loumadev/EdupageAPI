@@ -3,6 +3,7 @@ const Class = require("./Class");
 const Classroom = require("./Classroom");
 const Edupage = require("./Edupage");
 const {ENDPOINT} = require("./enums");
+const Homework = require("./Homework");
 const Period = require("./Period");
 const Student = require("./Student");
 const Subject = require("./Subject");
@@ -40,49 +41,20 @@ class Lesson extends RawData {
 		this.date = new Date(data.flags.dp0.date);
 
 		/**
-		 * @type {string}
-		 */
-		this.periodId = data.flags.dp0.period;
-
-		/**
-		 * @type {string}
-		 */
-		this.subjectId = data.flags.dp0.subjectid;
-
-		/**
 		 * @type {string[]}
 		 */
-		this.classIds = data.flags.dp0.classids;
-
-		/**
-		 * @type {string[]}
-		 */
-		this.classroomIds = data.flags.dp0.classroomids;
-
-		/**
-		 * @type {string[]}
-		 */
-		this.studentIds = data.flags.dp0.studentids;
-
-		/**
-		 * @type {string[]}
-		 */
-		this.teacherIds = data.flags.dp0.teacherids;
-
-		/**
-		 * @type {string[]}
-		 */
+		//TODO
 		this.homeworkIds = data.flags.dp0.homeworkids;
 
 		/**
 		 * @type {string}
 		 */
-		this.homeworkNote = data.flags.dp0.note_homework || null;
+		this.homeworkNote = data.flags.dp0.note_homework;
 
 		/**
 		 * @type {string}
 		 */
-		this.absentNote = data.flags.dp0.note_student_absent || null;
+		this.absentNote = data.flags.dp0.note_student_absent;
 
 		/**
 		 * @type {string}
@@ -131,7 +103,7 @@ class Lesson extends RawData {
 		this.teachers = [];
 
 		/**
-		 * @type {any[]}
+		 * @type {Homework[]}
 		 */
 		this.homeworks = [];
 
@@ -146,15 +118,20 @@ class Lesson extends RawData {
 	init(edupage = null) {
 		if(edupage) this.edupage = edupage;
 
-		this.period = this.edupage.periods.find(e => e.id == this.periodId);
-		this.subject = this.edupage.subjects.find(e => e.id == this.subjectId);
-		this.classes = this.classIds.map(id => this.edupage.classes.find(e => e.id == id));
-		this.classrooms = this.classroomIds.map(id => this.edupage.classrooms.find(e => e.id == id));
-		this.students = this.studentIds.map(id => this.edupage.students.find(e => e.id == id));
-		this.teachers = this.teacherIds.map(id => this.edupage.teachers.find(e => e.id == id));
+		this.period = this.edupage.periods.find(e => e.id == this._data.flags.dp0.period);
+		this.subject = this.edupage.subjects.find(e => e.id == this._data.flags.dp0.subjectid);
+		this.classes = this._data.flags.dp0.classids.map(id => this.edupage.classes.find(e => e.id == id));
+		this.classrooms = this._data.flags.dp0.classroomids.map(id => this.edupage.classrooms.find(e => e.id == id));
+		this.students = this._data.flags.dp0.studentids.map(id => this.edupage.students.find(e => e.id == id));
+		this.teachers = this._data.flags.dp0.teacherids.map(id => this.edupage.teachers.find(e => e.id == id));
 		//TODO: this.homeworks // "2021-04-07:01AC6375F9899C7BC2C0"
 	}
 
+	/**
+	 *
+	 * @return {Promise<boolean>}  
+	 * @memberof Lesson
+	 */
 	async signIntoLesson() {
 		if(!this.isOnlineLesson) throw new Error(`Cannot sign into this lesson`);
 

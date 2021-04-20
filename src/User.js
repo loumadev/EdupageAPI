@@ -178,6 +178,13 @@ class User extends RawData {
 		return new (require("./Message"))(res.changes[0], this.edupage);
 	}
 
+	/**
+	 *
+	 * @param {string} username
+	 * @param {string} password
+	 * @return {Promise<User>} 
+	 * @memberof User
+	 */
 	async login(username, password) {
 		if(!username || !password) throw new LoginError(`Invalid credentials`);
 		this.cookies = new CookieJar();
@@ -242,6 +249,11 @@ class User extends RawData {
 		});
 	}
 
+	/**
+	 *
+	 * @return {string} UserString
+	 * @memberof User
+	 */
 	getUserString() {
 		return this.userString;
 	}

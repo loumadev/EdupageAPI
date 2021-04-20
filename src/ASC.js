@@ -18,7 +18,7 @@ class ASC extends RawData {
 		/**
 		 * @type {Edupage|string}
 		 */
-		this.edupage = edupage || data.string || null;
+		this.edupage = edupage;
 
 		/**
 		 * @type {string}
@@ -77,6 +77,13 @@ class ASC extends RawData {
 		this.firstDayOfWeek = data.firstDayOfWeek;
 	}
 
+	/**
+	 *
+	 * @static
+	 * @param {string} html
+	 * @return {import("../lib/RawData").RawDataObject} 
+	 * @memberof ASC
+	 */
 	static parse(html) {
 		const data = {};
 		const matches = [...html.matchAll(/ASC\.([a-zA-Z0-9_$]+)\s?=\s?([\s\S]+?);/g)];

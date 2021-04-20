@@ -21,11 +21,6 @@ class Student extends User {
 		this.edupage = edupage;
 
 		/**
-		 * @type {string}
-		 */
-		this.classId = data.classid;
-
-		/**
 		 * @type {number}
 		 */
 		this.number = +data.number;
@@ -88,14 +83,18 @@ class Student extends User {
 	init(edupage = null) {
 		if(edupage) this.edupage = edupage;
 
-		this.class = this.edupage.classes.find(e => e.id == this.classId);
+		this.class = this.edupage.classes.find(e => e.id == this._data.classid);
 		this.parent1 = this.parent1 ? this.edupage.parents.find(e => e.id == this.parent1.id) : this.parent1;
 		this.parent2 = this.parent2 ? this.edupage.parents.find(e => e.id == this.parent2.id) : this.parent2;
 		this.parent3 = this.parent3 ? this.edupage.parents.find(e => e.id == this.parent3.id) : this.parent3;
-
-
 	}
 
+	/**
+	 *
+	 * @param {boolean} [parents=false]
+	 * @return {string} 
+	 * @memberof Student
+	 */
 	getUserString(parents = false) {
 		return parents ?
 			this.userString.split(/(?<=[a-z])(?=[0-9])/).join("Only") :

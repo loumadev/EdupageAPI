@@ -39,12 +39,7 @@ class Plan extends RawData {
 		/**
 		 * @type {string}
 		 */
-		this.customClassId = data.triedaid;
-
-		/**
-		 * @type {string}
-		 */
-		this.teacherId = data.ucitelid;
+		this.customClassId = data.triedaid;;
 
 		/**
 		 * @type {string}
@@ -80,7 +75,7 @@ class Plan extends RawData {
 		/**
 		 * @type {boolean}
 		 */
-		this.valid = !!+data.valid;
+		this.isValid = !!+data.valid;
 
 		/**
 		 * @type {Date}
@@ -98,11 +93,6 @@ class Plan extends RawData {
 		this.otherId = data.ineid;
 
 		/**
-		 * @type {string[]}
-		 */
-		this.teacherIds = data.ucitelids;
-
-		/**
 		 * @type {number}
 		 */
 		this.topicsCount = data.countTopics;
@@ -118,19 +108,9 @@ class Plan extends RawData {
 		this.standardsCount = data.countStandards;
 
 		/**
-		 * @type {string[]}
-		 */
-		this.classIds = data.triedy.map(e => e.toString());
-
-		/**
 		 * @type {string}
 		 */
 		this.timetableGroup = data.rozvrhy_skupinaMeno || null;
-
-		/**
-		 * @type {string[]}
-		 */
-		this.studentIds = data.students;
 
 		/**
 		 * @type {Season}
@@ -192,12 +172,12 @@ class Plan extends RawData {
 
 		if(this._data.obdobie) this.season = this.edupage.seasons.find(e => e.id == this._data.obdobie);
 
-		this.subject = this.edupage.subjects.find(e => e.id == this.subjectId);
-		this.teacher = this.edupage.teachers.find(e => e.id == this.teacherId);
+		this.subject = this.edupage.subjects.find(e => e.id == this._data.predmetid);
+		this.teacher = this.edupage.teachers.find(e => e.id == this._data.ucitelid);
 
-		this.classes = this.classIds.map(e => this.edupage.classes.find(t => t.id == e));
-		this.teachers = this.teacherIds.map(e => this.edupage.teachers.find(t => t.id == e));
-		this.students = this.studentIds.map(e => this.edupage.students.find(t => t.id == e));
+		this.classes = this._data.triedy.map(e => this.edupage.classes.find(t => t.id == e.toString()));
+		this.teachers = this._data.ucitelids.map(e => this.edupage.teachers.find(t => t.id == e));
+		this.students = this._data.students.map(e => this.edupage.students.find(t => t.id == e));
 	}
 }
 
