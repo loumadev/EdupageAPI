@@ -211,7 +211,7 @@ class Edupage extends RawData {
 		this.subjects = Object.values(this._data.dbi.subjects).map(data => new Subject(data));
 		this.periods = Object.values(this._data.dbi.periods).map(data => new Period(data));
 		this.plans = Object.values(this._data.dbi.plans).map(data => new Plan(data, this));
-		this.timetables = iterate(this._data.dp.dates).map(([i, date, data]) => new Timetable(data, date, this));
+		this.timetables = iterate(this._data.dp.dates).map(([i, date, data]) => new Timetable(data, date));
 		this.grades = Object.values(this._data._grades.data.vsetkyZnamky).map(data => new Grade(data, this));
 
 		//Create assignments and add them to arrays
@@ -236,6 +236,8 @@ class Edupage extends RawData {
 		//Init objects if needed
 		this.seasons.forEach(e => e.init(this));
 		this.classes.forEach(e => e.init(this));
+		debugger;
+		this.timetables.forEach(e => e.init(this));
 
 		//Parse current user
 		const _temp = this.user;

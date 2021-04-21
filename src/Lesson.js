@@ -1,9 +1,9 @@
 const RawData = require("../lib/RawData");
+const Assignment = require("./Assignment");
 const Class = require("./Class");
 const Classroom = require("./Classroom");
 const Edupage = require("./Edupage");
 const {ENDPOINT} = require("./enums");
-const Homework = require("./Homework");
 const Period = require("./Period");
 const Student = require("./Student");
 const Subject = require("./Subject");
@@ -39,12 +39,6 @@ class Lesson extends RawData {
 		 * @type {Date}
 		 */
 		this.date = new Date(data.flags.dp0.date);
-
-		/**
-		 * @type {string[]}
-		 */
-		//TODO
-		this.homeworkIds = data.flags.dp0.homeworkids;
 
 		/**
 		 * @type {string}
@@ -103,9 +97,9 @@ class Lesson extends RawData {
 		this.teachers = [];
 
 		/**
-		 * @type {Homework[]}
+		 * @type {Assignment[]}
 		 */
-		this.homeworks = [];
+		this.assignments = [];
 
 		if(this.edupage) Lesson.prototype.init.call(this);
 	}
@@ -124,7 +118,9 @@ class Lesson extends RawData {
 		this.classrooms = this._data.flags.dp0.classroomids.map(id => this.edupage.classrooms.find(e => e.id == id));
 		this.students = this._data.flags.dp0.studentids.map(id => this.edupage.students.find(e => e.id == id));
 		this.teachers = this._data.flags.dp0.teacherids.map(id => this.edupage.teachers.find(e => e.id == id));
-		//TODO: this.homeworks // "2021-04-07:01AC6375F9899C7BC2C0"
+		this.assignments = this._data.flags.dp0.homeworkids.map(id =>
+			this.edupage.assignments.find(e => e.hwkid && e.hwkid.includes(id.split(":")[1] || id))
+		);
 
 		//Set the lesson start time
 		const d = this.period.startTime;
