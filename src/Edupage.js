@@ -361,12 +361,13 @@ class Edupage extends RawData {
 
 				const tryLogIn = async () => {
 					debug(`[API] Logging in...`);
-					await this.user.login().then(() => {
-						tryFetch(++tryCount - 1);
-					}).catch(err => {
-						error(`[API] Failed to log in user:`, err);
-						reject(err)
-					});
+					await this.user.login(this.user.credentials.username, this.user.credentials.password)
+						.then(() => {
+							tryFetch(++tryCount - 1);
+						}).catch(err => {
+							error(`[API] Failed to log in user:`, err);
+							reject(err)
+						});
 				};
 
 				//If there are too many tries, reject the promise
