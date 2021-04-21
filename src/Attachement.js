@@ -43,7 +43,7 @@ class Attachement extends RawData {
 	}
 
 	toJSON() {
-		return JSON.stringify({src: this.src, name: this.name});
+		return {[this._data.file]: this.name};
 	}
 }
 
