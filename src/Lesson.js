@@ -123,7 +123,7 @@ class Lesson extends RawData {
 		);
 
 		//Set the lesson start time
-		const d = this.period.startTime;
+		const d = this.period.startTime.split(":");
 		this.date.setHours(+d[0], +d[1]);
 	}
 
