@@ -288,7 +288,7 @@ class Edupage extends RawData {
 	/**
 	 *
 	 * @param {Date} date
-	 * @return {Timetable} 
+	 * @return {Timetable|undefined} 
 	 * @memberof Edupage
 	 */
 	getTimetableForDate(date) {
