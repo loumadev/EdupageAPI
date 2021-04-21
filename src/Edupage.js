@@ -160,7 +160,6 @@ class Edupage extends RawData {
 	/**
 	 * Logs user in for this instance
 	 *
-	 * @return {Promise<import("../lib/RawData").RawDataObject>} 
 	 * @memberof Edupage
 	 */
 	async refresh() {
