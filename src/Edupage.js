@@ -287,6 +287,16 @@ class Edupage extends RawData {
 	}
 
 	/**
+	 *
+	 * @param {Date} date
+	 * @return {Timetable} 
+	 * @memberof Edupage
+	 */
+	getTimetableForDate(date) {
+		return this.timetables.find(e => Edupage.compareDay(e.date, date));
+	}
+
+	/**
 	 * 
 	 * @param {string} filepath 
 	 * @returns {Promise<Attachement>}
@@ -436,6 +446,23 @@ class Edupage extends RawData {
 			};
 			tryFetch();
 		});
+	}
+
+	/**
+	 *
+	 * @param {Date|number|string} date1
+	 * @param {Date|number|string} date2
+	 * @return {boolean} true if day of the dates is same, otherwise false
+	 * @memberof Edupage
+	 */
+	static compareDay(date1, date2) {
+		//Convert primitives to Date object
+		if(typeof date1 === "number" || typeof date1 == "string") date1 = new Date(date1);
+		if(typeof date2 === "number" || typeof date2 == "string") date2 = new Date(date2);
+
+		return date1.getDate() == date2.getDate() &&
+			date1.getMonth() == date2.getMonth() &&
+			date1.getFullYear() == date2.getFullYear();
 	}
 
 	/**

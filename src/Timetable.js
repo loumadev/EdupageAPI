@@ -20,9 +20,9 @@ class Timetable extends RawData {
 		this.edupage = edupage;
 
 		/**
-		 * @type {string} 
+		 * @type {Date} 
 		 */
-		this.date = date;
+		this.date = new Date(date);
 
 		/**
 		 * @type {Lesson[]} 
