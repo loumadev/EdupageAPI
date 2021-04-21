@@ -19,10 +19,6 @@ class Class extends RawData {
 		 */
 		this.edupage = edupage;
 
-		/**
-		 * @type {string}
-		 */
-		this.classroomId = data.classroomid;
 
 		/**
 		 * @type {number}
@@ -43,17 +39,6 @@ class Class extends RawData {
 		 * @type {string}
 		 */
 		this.short = data.short;
-
-		/**
-		 * @type {string}
-		 */
-		this.teacherId = data.teacherid;
-
-		/**
-		 * @type {string}
-		 */
-		this.teacher2Id = data.teacher2id;
-
 
 		/**
 		 * @type {Classroom}
@@ -81,9 +66,9 @@ class Class extends RawData {
 	init(edupage = null) {
 		if(edupage) this.edupage = edupage;
 
-		this.classroom = this.edupage.classrooms.find(e => e.id == this.classroomId);
-		this.teacher = this.edupage.teachers.find(e => e.id == this.teacherId);
-		this.teacher2 = this.edupage.teachers.find(e => e.id == this.teacher2Id);
+		this.classroom = this.edupage.classrooms.find(e => e.id == this._data.classroomid);
+		this.teacher = this.edupage.teachers.find(e => e.id == this._data.teacherid);
+		this.teacher2 = this.edupage.teachers.find(e => e.id == this._data.teacher2id);
 	}
 }
 
