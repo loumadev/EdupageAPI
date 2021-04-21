@@ -125,6 +125,10 @@ class Lesson extends RawData {
 		this.students = this._data.flags.dp0.studentids.map(id => this.edupage.students.find(e => e.id == id));
 		this.teachers = this._data.flags.dp0.teacherids.map(id => this.edupage.teachers.find(e => e.id == id));
 		//TODO: this.homeworks // "2021-04-07:01AC6375F9899C7BC2C0"
+
+		//Set the lesson start time
+		const d = this.period.startTime;
+		this.date.setHours(+d[0], +d[1]);
 	}
 
 	/**
