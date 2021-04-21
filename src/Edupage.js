@@ -236,7 +236,6 @@ class Edupage extends RawData {
 		//Init objects if needed
 		this.seasons.forEach(e => e.init(this));
 		this.classes.forEach(e => e.init(this));
-		debugger;
 		this.timetables.forEach(e => e.init(this));
 
 		//Parse current user
