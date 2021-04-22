@@ -7,7 +7,7 @@ const {LoginError, ParseError, EdupageError, APIError, MessageError} = require("
 const {GENDER, ENDPOINT, ENTITY_TYPE, API_STATUS} = require("./enums");
 const Edupage = require("./Edupage");
 const RawData = require("../lib/RawData");
-const Attachement = require("./Attachement");
+const Attachment = require("./Attachment");
 
 debug.log = console.log.bind(console);
 
@@ -127,7 +127,7 @@ class User extends RawData {
 	 * @prop {string} text
 	 * @prop {boolean} [important=false]
 	 * @prop {boolean} [parents=false]
-	 * @prop {Attachement[]} [attachements=[]]
+	 * @prop {Attachment[]} [attachments=[]]
 	 */
 
 	/**
@@ -141,18 +141,18 @@ class User extends RawData {
 			text = "",
 			important = false,
 			parents = false,
-			attachements = []
+			attachments = []
 		} = options;
 
 		if(!this.edupage) throw new EdupageError(`User does not have assigned Edupage instance yet`);
 
 		//Post message
-		console.log(JSON.stringify(attachements.reduce((a, b) => ({...a, ...b.toJSON()}), {})));
+		console.log(JSON.stringify(attachments.reduce((a, b) => ({...a, ...b.toJSON()}), {})));
 		//throw 1;
 		const res = await this.edupage.api({
 			url: ENDPOINT.TIMELINE_CREATE_ITEM,
 			data: {
-				attachements: JSON.stringify(attachements.reduce((a, b) => ({...a, ...b.toJSON()}), {})),
+				attachments: JSON.stringify(attachments.reduce((a, b) => ({...a, ...b.toJSON()}), {})),
 				receipt: (+important).toString(),
 				selectedUser: this.getUserString(parents),
 				text: text,

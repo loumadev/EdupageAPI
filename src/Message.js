@@ -2,7 +2,7 @@ const debug = require("debug")("edupage:log");
 const error = require("debug")("edupage:error");
 const RawData = require("../lib/RawData");
 const {iterate} = require("../lib/utils");
-const Attachement = require("./Attachement");
+const Attachment = require("./Attachment");
 const Class = require("./Class");
 const Edupage = require("./Edupage");
 const {ENDPOINT, ENTITY_TYPE, API_STATUS} = require("./enums");
@@ -187,9 +187,9 @@ class Message extends RawData {
 		this.replyOf = null;
 
 		/**
-		 * @type {Attachement[]}
+		 * @type {Attachment[]}
 		 */
-		this.attachements = [];
+		this.attachments = [];
 
 		/**
 		 * @type {Message[]}
@@ -294,10 +294,10 @@ class Message extends RawData {
 			}
 		}
 
-		//Add attachements
-		if(this._data.data.attachements) {
-			const attchs = this._data.data.attachements;
-			this.attachements = Object.keys(attchs).map(e => new Attachement({src: e, name: attchs[e]}, this.edupage));
+		//Add attachments
+		if(this._data.data.attachments) {
+			const attchs = this._data.data.attachments;
+			this.attachments = Object.keys(attchs).map(e => new Attachment({src: e, name: attchs[e]}, this.edupage));
 		}
 
 		//Add homework
@@ -320,7 +320,7 @@ class Message extends RawData {
 	 * @prop {string} text
 	 * @prop {User|Teacher|Student|Parent} [recipient=null]
 	 * @prop {boolean} [parents=false]
-	 * @prop {Attachement[]} [attachements=[]]
+	 * @prop {Attachment[]} [attachments=[]]
 	 */
 
 	/**
@@ -333,7 +333,7 @@ class Message extends RawData {
 			text,
 			recipient = null,
 			parents = false,
-			attachements = []
+			attachments = []
 		} = options;
 
 		const res = await this.edupage.api({
@@ -344,7 +344,7 @@ class Message extends RawData {
 					? this.owner.getUserString(parents)
 					: (recipient ? recipient.getUserString(parents) : ""),
 				"text": text,
-				"moredata": JSON.stringify({attachements})
+				"moredata": JSON.stringify({attachments})
 			}
 		});
 
