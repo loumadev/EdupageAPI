@@ -289,11 +289,66 @@ class Edupage extends RawData {
 	/**
 	 *
 	 * @param {Date} date
-	 * @return {Timetable|undefined} 
+	 * @return {Promise<Timetable|undefined>} 
 	 * @memberof Edupage
 	 */
-	getTimetableForDate(date) {
-		return this.timetables.find(e => Edupage.compareDay(e.date, date));
+	async getTimetableForDate(date) {
+		const timetable = this.timetables.find(e => Edupage.compareDay(e.date, date));
+
+		if(timetable) return timetable;
+		return (await this.fetchTimetablesForDates(date, date))[0];
+	}
+
+	/**
+	 *
+	 * @param {Date} fromDate
+	 * @param {Date} toDate
+	 * @return {Promise<Timetable[]>} 
+	 * @memberof Edupage
+	 */
+	async fetchTimetablesForDates(fromDate, toDate) {
+		//Get 'gpid' if it doesn't exists yet
+		if(!this.ASC.gpid) {
+			debug(`[Timetable] 'gpid' property does not exists, trying to fetch it...`);
+			try {
+				const _html = await this.api({url: ENDPOINT.DASHBOARD_GET_CLASSBOOK, method: "GET", type: "text"});
+				const ids = [..._html.matchAll(/gpid="?(\d+)"?/gi)].map(e => e[1]);
+
+				if(ids.length) this.ASC.gpid = ids[ids.length - 1];
+				else throw new Error("Cannot find gpid value");
+			} catch(err) {
+				debug(`[Timetable] Could not get 'gpid' property`, err);
+				throw new EdupageError("Could not get 'gpid' property: " + err.message);
+			}
+			debug(`[Timetable] 'gpid' property fetched!`);
+		}
+
+		//Load and parse data
+		const _html = await this.api({
+			url: ENDPOINT.DASHBOARD_GET_TIMETABLE,
+			method: "POST",
+			type: "text",
+			data: new URLSearchParams({
+				gpid: this.ASC.gpid,
+				gsh: this.ASC.gsecHash,
+				action: "loadData",
+				datefrom: Edupage.dateToString(fromDate),
+				dateto: Edupage.dateToString(toDate),
+			}).toString(),
+			encodeBody: false
+		});
+		const _json = Timetable.parse(_html);
+		const timetables = iterate(_json.dates).map(([i, date, data]) => new Timetable(data, date, this));
+
+		//Update timetables
+		timetables.forEach(e => {
+			const i = this.timetables.findIndex(t => e.date.getTime() == t.date.getTime());
+
+			if(i > -1) this.timetables[i] = e;
+			else this.timetables.push(e);
+		});
+
+		return timetables;
 	}
 
 	/**
@@ -330,7 +385,7 @@ class Edupage extends RawData {
 	/**
 	 * @typedef {Object} APIOptions
 	 * @prop {string|ENDPOINT} url
-	 * @prop {Object<string, any>|stream.Readable|Buffer} [data={}]
+	 * @prop {Object<string, any>|stream.Readable|Buffer|string} [data={}]
 	 * @prop {Object<string, any>} [headers={}]
 	 * @prop {string} [method="POST"]
 	 * @prop {boolean} [encodeBody=true]
@@ -401,8 +456,8 @@ class Edupage extends RawData {
 						...headers
 					},
 					"body": "POST" == method ? (
-						encodeBody ? this.encodeRequestBody(data) : (
-							"string" == typeof data || data instanceof stream.Readable || data instanceof Buffer ? data : JSON.stringify(data)
+						"string" == typeof data || data instanceof stream.Readable || data instanceof Buffer ? data : (
+							encodeBody ? this.encodeRequestBody(data) : JSON.stringify(data)
 						)
 					) : undefined,
 					"method": method,
@@ -467,6 +522,16 @@ class Edupage extends RawData {
 	}
 
 	/**
+	 *
+	 * @param {Date} date
+	 * @return {string} string representation of the date 
+	 * @memberof Edupage
+	 */
+	static dateToString(date) {
+		return date.toISOString().slice(0, 10);
+	}
+
+	/**
 	 * Converts Object to form body
 	 * @private
 	 * @param {Object<string, any>} data 
@@ -489,6 +554,8 @@ class Edupage extends RawData {
 		let url = null;
 
 		if(endpoint == ENDPOINT.DASHBOARD_GET_USER) url = `/user/?`;
+		if(endpoint == ENDPOINT.DASHBOARD_GET_CLASSBOOK) url = `/dashboard/eb.php?barNoSkin=1`;
+		if(endpoint == ENDPOINT.DASHBOARD_GET_TIMETABLE) url = `/gcall`;
 		if(endpoint == ENDPOINT.DASHBOARD_SIGN_ONLINE_LESSON) url = `/dashboard/server/onlinelesson.js?__func=getOnlineLessonOpenUrl`;
 		if(endpoint == ENDPOINT.TIMELINE_GET_DATA) url = `/timeline/?akcia=getData`;
 		if(endpoint == ENDPOINT.TIMELINE_GET_REPLIES) url = `/timeline/?akcia=getRepliesItem`;

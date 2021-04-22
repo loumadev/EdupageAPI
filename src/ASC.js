@@ -72,6 +72,11 @@ class ASC extends RawData {
 		this.gsecHash = data.gsechash;
 
 		/**
+		 * @type {string}
+		 */
+		this.gpid = null;
+
+		/**
 		 * @type {number}
 		 */
 		this.firstDayOfWeek = data.firstDayOfWeek;
