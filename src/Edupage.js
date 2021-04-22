@@ -338,7 +338,7 @@ class Edupage extends RawData {
 			encodeBody: false
 		});
 		const _json = Timetable.parse(_html);
-		const timetables = iterate(_json.dates).map(([i, date, data]) => new Timetable(data, date, this));
+		const timetables = iterate(_json.dates).map(([i, date, data]) => new Timetable(data, date,));
 
 		//Update timetables
 		timetables.forEach(e => {
