@@ -1,7 +1,7 @@
 {
 	"name": "edupage-api",
-	"version": "0.2.0",
-	"description": "Simple API package to manage your EduPage account.",
+	"version": "0.7.0",
+	"description": "Simple node.js package to manage your EduPage account.",
 	"main": "index.js",
 	"scripts": {
 		"debug": "set DEBUG=edupage:* && node ./test/test.js"
@@ -25,9 +25,12 @@
 		"promise"
 	],
 	"author": "Jaroslav Louma",
-	"license": "ISC",
+	"license": "GPL-3.0",
 	"bugs": {
 		"url": "https://github.com/loumadev/EdupageAPI/issues"
 	},
-	"homepage": "https://github.com/loumadev/EdupageAPI#readme"
+	"homepage": "https://github.com/loumadev/EdupageAPI#readme",
+	"dependencies": {
+		"node-fetch": "^2.6.0"
+	}
 }
