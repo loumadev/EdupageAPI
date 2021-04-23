@@ -1,6 +1,21 @@
 # EdupageAPI
 This is an unofficial Node.js implementation of the Edupage API. This module is not maintained, authorized, or sponsored by Edupage. Edupage's internal API could change at any time, and break functionality of this module. If you find bugs, have any questions or suggestions for features, please let me know and submit an issue.
 
+## Table of Contents
+* [Overview](#overview)
+* [Requirements](#requirements)
+* [Installation](#installation)
+* [Usage](#usage)
+* [Examples](#examples)
+  * [Get lessons for a given date](#get-lessons-for-a-given-date)
+  * [Get homework assignments for the next day](#get-lessons-for-a-given-date)
+  * [Get timetables for specific date range](#get-timetables-for-specific-date-range)
+  * [Sign into an online lesson](#sign-into-an-online-lesson)
+  * [Send a message to the user](#send-a-message-to-the-user)
+  * [Send a message with an attachment](#send-a-message-with-an-attachment)
+  * [Get the material data and results of an assignment](#get-the-material-data-and-results-of-an-assignment)
+* [API](#api)
+
 ## Overview
 **EdupageAPI** is a module to easily access and interact with your Edupage account. All the basic types like *students*, *teachers*, *subjects*, *timetables*, *messages* are stored into the groups with user-friendly API to get data and do basic actions (*obtaining lessons*, *replying to messages*...). You can also a send message marked as **Important**, which is not possible using the official Edupage application (unless you have an account with teacher privileges).
 
@@ -215,9 +230,45 @@ const edupage = new Edupage();
 ```
 
 # API
-Here you can find representations of all classes, interfaces and enums. In code, you shouldn't be creating any instances of the following classes except for `Edupage` class. All required classes are created internally. Most of the classes contain `Edupage` instance
+Here you can find representations of all classes, interfaces and enums. In code, you shouldn't be creating any instances of the following classes except for `Edupage` class. All required classes are created internally. Most of the classes contain `Edupage` instance.
 
 **Note:** following snippets are not actual valid code.
+
+## API Content
+* [Classes](#classes)
+  * [class ASC](#class-asc)
+  * [class Assignment](#class-assignment)
+  * [class Attachment](#class-attachment)
+  * [class Class](#class-class)
+  * [class Classroom](#class-classroom)
+  * [class Edupage](#class-edupage)
+  * [class Grade](#class-grade)
+  * [class Homework](#class-homework)
+  * [class Lesson](#class-lesson)
+  * [class Message](#class-message)
+  * [class Parent](#class-parent)
+  * [class Period](#class-period)
+  * [class Plan](#class-plan)
+  * [class RawData](#class-rawdata)
+  * [class Season](#class-season)
+  * [class Student](#class-student)
+  * [class Subject](#class-subject)
+  * [class Teacher](#class-teacher)
+  * [class Test](#class-test)
+  * [class Timetable](#class-timetable)
+  * [class User](#class-user)
+* [Interfaces](#interfaces)
+  * [interface APIOptions](#interface-apioptions)
+  * [interface MessageOptions](#interface-messageoptions)
+  * [interface MessageReplyOptions](#interface-messagereplyoptions)
+  * [interface RawDataObject](#interface-rawdataobject)
+* [Enums](#enums)
+  * [enum APIEndpoint](#enum-apiendpoint)
+  * [enum APIStatus](#enum-apistatus)
+  * [enum AssignmentType](#enum-assignmenttype)
+  * [enum AssignmentGroup](#enum-assignmentgroup)
+  * [enum EntityType](#enum-entitytype)
+  * [enum Gender](#enum-gender)
 
 ## Classes
 
@@ -337,7 +388,7 @@ class Classroom extends RawData {
 ### class Edupage
 This is the main EdupageAPI class, containing all resources fetched and parsed from the Edupage servers.
 You can access all properties and methods to obtain required data.
-The property `_data` contains original (as well as some data which are not supported yet) raw data
+The property `_data` contains original raw data. (As well as some data which are not supported yet)
 ```typescript
 class Edupage extends RawData {
     user: User | Teacher | Student;  // Gets assigned automatically after successful login() call
