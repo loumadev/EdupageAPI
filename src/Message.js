@@ -295,8 +295,8 @@ class Message extends RawData {
 		}
 
 		//Add attachments
-		if(this._data.data.attachments) {
-			const attchs = this._data.data.attachments;
+		if(this._data.data.attachements) {
+			const attchs = this._data.data.attachements;
 			this.attachments = Object.keys(attchs).map(e => new Attachment({src: e, name: attchs[e]}, this.edupage));
 		}
 
@@ -344,7 +344,7 @@ class Message extends RawData {
 					? this.owner.getUserString(parents)
 					: (recipient ? recipient.getUserString(parents) : ""),
 				"text": text,
-				"moredata": JSON.stringify({attachments})
+				"moredata": JSON.stringify({attachements: attachments})
 			}
 		});
 

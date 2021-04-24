@@ -147,12 +147,10 @@ class User extends RawData {
 		if(!this.edupage) throw new EdupageError(`User does not have assigned Edupage instance yet`);
 
 		//Post message
-		console.log(JSON.stringify(attachments.reduce((a, b) => ({...a, ...b.toJSON()}), {})));
-		//throw 1;
 		const res = await this.edupage.api({
 			url: ENDPOINT.TIMELINE_CREATE_ITEM,
 			data: {
-				attachments: JSON.stringify(attachments.reduce((a, b) => ({...a, ...b.toJSON()}), {})),
+				attachements: JSON.stringify(attachments.reduce((a, b) => ({...a, ...b.toJSON()}), {})),
 				receipt: (+important).toString(),
 				selectedUser: this.getUserString(parents),
 				text: text,
