@@ -72,7 +72,7 @@ const edupage = new Edupage();
     const lessons = timetable.lessons;
 
     console.log(lessons);
-});
+})();
 ```
 
 ### Get homework assignments for the next day
@@ -97,7 +97,7 @@ const edupage = new Edupage();
     const homeworks = lessons.reduce((arr, lesson) => (arr.push(...lesson.assignments), arr), []);
 
     console.log(homeworks);
-});
+})();
 ```
 
 ### Get timetables for specific date range
@@ -121,7 +121,7 @@ const edupage = new Edupage();
     const timetables = await edupage.fetchTimetablesForDates(from, to);
 
     console.log(timetables);
-});
+})();
 ```
 
 ### Sign into an online lesson
@@ -154,7 +154,7 @@ const edupage = new Edupage();
 
 		console.log(success);
 	}
-});
+})();
 ```
 
 ### Send a message to the user
@@ -178,7 +178,7 @@ const edupage = new Edupage();
 
     //Send the message
     await classmate.sendMessage(options);
-});
+})();
 ```
 
 ### Send a message with an attachment
@@ -205,7 +205,7 @@ const edupage = new Edupage();
 
     //Send the message
     await teacher.sendMessage(options);
-});
+})();
 ```
 
 ### Get the material data and results of an assignment
@@ -226,7 +226,7 @@ const edupage = new Edupage();
     const {materialData, resultsData} = await assignment.getData();
 
     console.log(materialData, resultsData);
-});
+})();
 ```
 
 # API
