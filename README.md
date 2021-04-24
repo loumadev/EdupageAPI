@@ -825,10 +825,10 @@ Using this interface you can specify the API options.
 ```typescript
 interface APIOptions {
     url: string | APIEndpoint;          // APIEndpoint is automatically resolved
-    data?: Object<string, any> | stream.Readable | Buffer | string = {};
+    data?: (Object<string, any> | stream.Readable | Buffer | string) = {};
     headers?: Object<string, any> = {};
     method?: string = "POST";
-    encodeBody?: boolean = true;
+    encodeBody?: boolean = true;        // Encode body as `form-urlencoded` using Edupage "special" encryption
     type?: "json" | "text" = "json";    // Response type
     autoLogin?: boolean = true;         // Log in the user automatically if they're logged out (e.g. expired session)
 }
@@ -850,7 +850,7 @@ Using this interface you can specify the message options for reply.
 ```typescript
 interface MessageReplyOptions {
     text: string;                       //  Content of the reply
-    recipient?: User | Teacher | Student | Parent = null;	// Send only to the exact user
+    recipient?: (User | Teacher | Student | Parent) = null;	// Send only to the exact user
     parents?: boolean = false;          // Include parents
     attachments?: Attachment[] = []
 }
