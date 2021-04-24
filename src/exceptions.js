@@ -32,7 +32,7 @@ class MessageError extends Error {
 	}
 }
 
-class AttachementError extends Error {
+class AttachmentError extends Error {
 	constructor(message, ...data) {
 		super(message);
 
@@ -46,5 +46,5 @@ module.exports = {
 	EdupageError,
 	APIError,
 	MessageError,
-	AttachementError
+	AttachmentError
 };

@@ -6,7 +6,7 @@ const Class = require("./src/Class");
 const Classroom = require("./src/Classroom");
 const ASC = require("./src/ASC");
 const Assignment = require("./src/Assignment");
-const Attachement = require("./src/Attachment");
+const Attachment = require("./src/Attachment");
 const Grade = require("./src/Grade");
 const Homework = require("./src/Homework");
 const Lesson = require("./src/Lesson");
@@ -34,13 +34,13 @@ const {
 	EdupageError,
 	APIError,
 	MessageError,
-	AttachementError
+	AttachmentError
 } = require("./src/exceptions");
 
 module.exports = {
 	ASC,
 	Assignment,
-	Attachement,
+	Attachment,
 	Class,
 	Classroom,
 	Edupage,
@@ -69,5 +69,5 @@ module.exports = {
 	EdupageError,
 	APIError,
 	MessageError,
-	AttachementError
+	AttachmentError
 };

@@ -15,11 +15,11 @@ const RawData = require("../lib/RawData");
 const Subject = require("./Subject");
 const Period = require("./Period");
 const ASC = require("./ASC");
-const {LoginError, EdupageError, AttachementError, APIError} = require("./exceptions");
+const {LoginError, EdupageError, AttachmentError, APIError} = require("./exceptions");
 const Timetable = require("./Timetable");
 const Message = require("./Message");
 const Plan = require("./Plan");
-const Attachement = require("./Attachment");
+const Attachment = require("./Attachment");
 const Grade = require("./Grade");
 const Season = require("./Season");
 const Homework = require("./Homework");
@@ -354,24 +354,24 @@ class Edupage extends RawData {
 	/**
 	 * 
 	 * @param {string} filepath 
-	 * @returns {Promise<Attachement>}
+	 * @returns {Promise<Attachment>}
 	 */
-	async uploadAttachement(filepath) {
+	async uploadAttachment(filepath) {
 		const CRLF = "\r\n";
 		const filename = (filepath.match(/(?:.+[\\\/])*(.+\..+)$/m) || "")[1] || "untitled.txt";
 
 		const buffer = Buffer.concat([
-			Buffer.from("--" + Attachement.formBoundary + CRLF + `Content-Disposition: form-data; name="att"; filename="${filename}"` + CRLF + CRLF, "utf8"),
+			Buffer.from("--" + Attachment.formBoundary + CRLF + `Content-Disposition: form-data; name="att"; filename="${filename}"` + CRLF + CRLF, "utf8"),
 			await fs.promises.readFile(filepath).catch(err => {
-				throw new AttachementError(`Error while reading input file: ` + err.message, err);
+				throw new AttachmentError(`Error while reading input file: ` + err.message, err);
 			}),
-			Buffer.from(CRLF + "--" + Attachement.formBoundary + "--" + CRLF, "utf8")
+			Buffer.from(CRLF + "--" + Attachment.formBoundary + "--" + CRLF, "utf8")
 		]);
 
 		const res = await this.api({
-			url: ENDPOINT.TIMELINE_UPLOAD_ATTACHEMENT,
+			url: ENDPOINT.TIMELINE_UPLOAD_ATTACHMENT,
 			headers: {
-				"content-type": `multipart/form-data; boundary=` + Attachement.formBoundary
+				"content-type": `multipart/form-data; boundary=` + Attachment.formBoundary
 			},
 			data: buffer,
 			encodeBody: false
@@ -379,7 +379,7 @@ class Edupage extends RawData {
 
 		if(res.status !== API_STATUS.OK) throw new APIError(`Failed to upload file: Invalid status received '${res.status}'`, res);
 
-		return new Attachement(res.data, this);
+		return new Attachment(res.data, this);
 	}
 
 	/**
@@ -564,7 +564,7 @@ class Edupage extends RawData {
 		if(endpoint == ENDPOINT.TIMELINE_CREATE_CONFIRMATION) url = `/timeline/?akcia=createConfirmation`;
 		if(endpoint == ENDPOINT.TIMELINE_CREATE_REPLY) url = `/timeline/?akcia=createReply`;
 		if(endpoint == ENDPOINT.TIMELINE_FLAG_HOMEWORK) url = `/timeline/?akcia=homeworkFlag`;
-		if(endpoint == ENDPOINT.TIMELINE_UPLOAD_ATTACHEMENT) url = `/timeline/?akcia=uploadAtt`;
+		if(endpoint == ENDPOINT.TIMELINE_UPLOAD_ATTACHMENT) url = `/timeline/?akcia=uploadAtt`;
 		if(endpoint == ENDPOINT.ELEARNING_TEST_DATA) url = `/elearning/?cmd=MaterialPlayer&akcia=getETestData&ts=${new Date().getTime()}`;
 		if(endpoint == ENDPOINT.ELEARNING_TEST_RESULTS) url = `/elearning/?cmd=EtestCreator&akcia=getResultsData`;
 		if(endpoint == ENDPOINT.ELEARNING_CARDS_DATA) url = `/elearning/?cmd=EtestCreator&akcia=getCardsData`;

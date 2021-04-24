@@ -53,7 +53,7 @@ Most of the objects have `_data` property, which holds raw data fetched directly
 **Note:** In production, you should be handling Promise rejections by `promise.catch()` or `try ... catch`.
 
 ### Get lessons for a given date
-This example shows how to obtain timetable (with lessons) for current date. Initially there are available 2 timetables only, but this method tries to automatically fetch and update given timetables.
+This example shows how to obtain timetable (with lessons) for current date. Initially there are available 2 to 4 timetables only, but this method tries to automatically fetch and update given timetables.
 ```javascript
 const {Edupage} = require("edupage-api");
 
@@ -90,7 +90,7 @@ const edupage = new Edupage();
     tomorrow.setDate(tomorrow.getDate() + 1);
 
     //Get lessons
-    const timetable = edupage.getTimetableForDate(tomorrow);
+    const timetable = await edupage.getTimetableForDate(tomorrow);
     const lessons = timetable.lessons;
 
     //Collect assignments
@@ -880,7 +880,7 @@ enum APIEndpoint {
     TIMELINE_CREATE_CONFIRMATION,
     TIMELINE_CREATE_REPLY,       
     TIMELINE_FLAG_HOMEWORK,      
-    TIMELINE_UPLOAD_ATTACHEMENT,
+    TIMELINE_UPLOAD_ATTACHMENT,
     ELEARNING_TEST_DATA,        
     ELEARNING_TEST_RESULTS,     
     ELEARNING_CARDS_DATA,       

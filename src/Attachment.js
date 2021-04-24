@@ -2,12 +2,12 @@ const RawData = require("../lib/RawData");
 const Edupage = require("./Edupage");
 const {btoa} = require("../lib/utils");
 
-class Attachement extends RawData {
+class Attachment extends RawData {
 	/**
-	 * Creates an instance of Attachement.
+	 * Creates an instance of Attachment.
 	 * @param {import("../lib/RawData").RawDataObject} [data={}]
 	 * @param {Edupage} [edupage=null]
-	 * @memberof Attachement
+	 * @memberof Attachment
 	 */
 	constructor(data = {}, edupage = null) {
 		super(data);
@@ -28,13 +28,13 @@ class Attachement extends RawData {
 		 */
 		this.src = null;
 
-		if(this.edupage) Attachement.prototype.init.call(this);
+		if(this.edupage) Attachment.prototype.init.call(this);
 	}
 
 	/**
 	 * 
 	 * @param {Edupage} [edupage=null]
-	 * @memberof Attachement
+	 * @memberof Attachment
 	 */
 	init(edupage = null) {
 		if(edupage) this.edupage = edupage;
@@ -47,6 +47,6 @@ class Attachement extends RawData {
 	}
 }
 
-Attachement.formBoundary = "------EdupageAPIBoundary" + btoa((+new Date * Math.random()).toString()).slice(0, 16);
+Attachment.formBoundary = "------EdupageAPIBoundary" + btoa((+new Date * Math.random()).toString()).slice(0, 16);
 
-module.exports = Attachement;
+module.exports = Attachment;
