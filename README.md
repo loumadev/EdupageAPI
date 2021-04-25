@@ -273,7 +273,7 @@ Here you can find representations of all classes, interfaces and enums. In code,
 ## Classes
 
 ### class ASC
-This class holds basic an information about a school and logged user.
+This class holds the basic information about a school and logged user.
 ```typescript
 class ASC extends RawData {
     edupage: Edupage;
@@ -297,7 +297,7 @@ class ASC extends RawData {
 ```
 
 ### class Assignment
-This class holds an information about an assignment such as homework, test, presentation...
+This class holds the information about an assignment such as homework, test, presentation...
 ```typescript
 class Assignment extends RawData {
     edupage: Edupage;
@@ -343,7 +343,7 @@ class Assignment extends RawData {
 ```
 
 ### class Attachment
-This class holds an information about an attachment.
+This class holds the information about an attachment.
 ```typescript
 class Attachment extends RawData {
     edupage: Edupage;
@@ -354,7 +354,7 @@ class Attachment extends RawData {
 ```
 
 ### class Class
-This class holds basic an information about a school class.
+This class holds basic the information about a school class.
 ```typescript
 class Class extends RawData {
     edupage: Edupage;
@@ -372,7 +372,7 @@ class Class extends RawData {
 ```
 
 ### class Classroom
-This class holds basic an information about a classroom.
+This class holds basic the information about a classroom.
 ```typescript
 class Classroom extends RawData {
     edupage: Edupage;

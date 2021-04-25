@@ -283,7 +283,7 @@ class Edupage extends RawData {
 	 * @memberof Edupage
 	 */
 	getYearStart(time = true) {
-		return (this._data._edubar.year_turnover || `${this.year}-${this.ASC.schoolyearTurnover}`) + time ? " 00:00:00" : "";
+		return (this._data._edubar.year_turnover || `${this.year}-${this.ASC.schoolyearTurnover}`) + (time ? " 00:00:00" : "");
 	}
 
 	/**
@@ -598,7 +598,7 @@ class Edupage extends RawData {
 		const match2 = (html.match(/edubar\(([\s\S]*?)\);/) || "")[1];
 
 		try {
-			data._edubar = JSON.parse(html) || {};
+			data._edubar = JSON.parse(match2) || {};
 		} catch(e) {
 			if(match) error(`Failed to parse edubar data from html`);
 			error(`Failed to parse JSON from edubar html`, match2);
