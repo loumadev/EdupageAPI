@@ -167,7 +167,7 @@ class Edupage extends RawData {
 		const _html = await this.api({url: ENDPOINT.DASHBOARD_GET_USER, method: "GET", type: "text"});
 		const _json = Edupage.parse(_html);
 		this._data = {...this._data, ..._json};
-		this.year = this._data.dp.year;
+		this.year = this._data._edubar.autoYear || this._data._edubar.selectedYear;
 
 		//Parse ASC data
 		const _asc = ASC.parse(_html);
@@ -188,7 +188,7 @@ class Edupage extends RawData {
 
 		//Transform events Object into Array here rather than on each Grade iteration for better performance
 		this._data._grades._events = {};
-		iterate(_grades.data.vsetkyUdalosti)
+		iterate(_grades.data?.vsetkyUdalosti || {})
 			.forEach(([i, provider, object]) => this._data._grades._events[provider] = Object.values(object));
 
 		//Merge all timeline items together and filter them down
@@ -202,17 +202,17 @@ class Edupage extends RawData {
 		);
 
 		//Parse json and create Objects
-		this.seasons = Object.values(this._data._grades.settings.obdobia).map(data => new Season(data));
-		this.classes = Object.values(this._data.dbi.classes).map(data => new Class(data));
-		this.classrooms = Object.values(this._data.dbi.classrooms).map(data => new Classroom(data, this));
-		this.teachers = Object.values(this._data.dbi.teachers).map(data => new Teacher(data, this));
-		this.parents = Object.values(this._data.dbi.parents).map(data => new Parent(data, this));
-		this.students = Object.values(this._data.dbi.students).map(data => new Student(data, this));
-		this.subjects = Object.values(this._data.dbi.subjects).map(data => new Subject(data));
-		this.periods = Object.values(this._data.dbi.periods).map(data => new Period(data));
-		this.plans = Object.values(this._data.dbi.plans).map(data => new Plan(data, this));
-		this.timetables = iterate(this._data.dp.dates).map(([i, date, data]) => new Timetable(data, date));
-		this.grades = Object.values(this._data._grades.data.vsetkyZnamky).map(data => new Grade(data, this));
+		this.seasons = Object.values(this._data._grades?.settings?.obdobia || {}).map(data => new Season(data));
+		this.classes = Object.values(this._data.dbi?.classes || {}).map(data => new Class(data));
+		this.classrooms = Object.values(this._data.dbi?.classrooms || {}).map(data => new Classroom(data, this));
+		this.teachers = Object.values(this._data.dbi?.teachers || {}).map(data => new Teacher(data, this));
+		this.parents = Object.values(this._data.dbi?.parents || {}).map(data => new Parent(data, this));
+		this.students = Object.values(this._data.dbi?.students || {}).map(data => new Student(data, this));
+		this.subjects = Object.values(this._data.dbi?.subjects || {}).map(data => new Subject(data));
+		this.periods = Object.values(this._data.dbi?.periods || {}).map(data => new Period(data));
+		this.plans = Object.values(this._data.dbi?.plans || {}).map(data => new Plan(data, this));
+		this.timetables = iterate(this._data?.dp?.dates || {}).map(([i, date, data]) => new Timetable(data, date));
+		this.grades = Object.values(this._data._grades?.data?.vsetkyZnamky || {}).map(data => new Grade(data, this));
 
 		//Create assignments and add them to arrays
 		this._data.homeworks.forEach(data => {
@@ -283,7 +283,7 @@ class Edupage extends RawData {
 	 * @memberof Edupage
 	 */
 	getYearStart(time = true) {
-		return `${this.year}-${this.ASC.schoolyearTurnover}${time ? " 00:00:00" : ""}`;
+		return (this._data._edubar.year_turnover || `${this.year}-${this.ASC.schoolyearTurnover}`) + time ? " 00:00:00" : "";
 	}
 
 	/**
@@ -307,7 +307,7 @@ class Edupage extends RawData {
 	 * @memberof Edupage
 	 */
 	async fetchTimetablesForDates(fromDate, toDate) {
-		//Get 'gpid' if it doesn't exists yet
+		//Get 'gpid' if it doesn't exist yet
 		if(!this.ASC.gpid) {
 			debug(`[Timetable] 'gpid' property does not exists, trying to fetch it...`);
 			try {
@@ -581,16 +581,30 @@ class Edupage extends RawData {
 	 * @returns {import("../lib/RawData").RawDataObject}
 	 */
 	static parse(html) {
+		let data = {
+			_edubar: {}
+		};
+
 		const match = (html.match(/\.userhome\((.+?)\);$/m) || "")[1];
 
 		try {
-			return JSON.parse(match);
+			data = {...JSON.parse(match)};
 		} catch(e) {
 			if(match) error(`Failed to parse JSON from Edupage html`);
 			else error(`Failed to parse Edupage html`);
-
-			return {};
 		}
+
+		//Parse additional edubar data
+		const match2 = (html.match(/edubar\(([\s\S]*?)\);/) || "")[1];
+
+		try {
+			data._edubar = JSON.parse(html) || {};
+		} catch(e) {
+			if(match) error(`Failed to parse edubar data from html`);
+			error(`Failed to parse JSON from edubar html`, match2);
+		}
+
+		return data;
 	}
 }
 
