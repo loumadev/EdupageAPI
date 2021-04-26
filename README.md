@@ -141,19 +141,18 @@ const edupage = new Edupage();
     const timetable = await edupage.getTimetableForDate(date);
 
     //Get your lesson
-	//Note: This will return second lesson in array, not second period.
-	//      In case you want to access second period you may want:
-	//      `timetable.lessons.find(e => e.lesson.name == "2")`
+    //Note: This will return second lesson in array, not second period.
+    //      In case you want to access second period you may want:
+    //      `timetable.lessons.find(e => e.period.id == "3")`
     const lesson = timetable.lessons[1];
 
-	//You should check if the lesson is online
-	if(lesson.isOnlineLesson) {
+    //You should check if the lesson is an online lesson
+    if(lesson.isOnlineLesson) {
+    	//Sign it (this method may not be successful, in such case it will return `false`)
+    	const success = await lesson.signIntoLesson();
 
-		//Sign it (this method may not be successful, in such case it will return `false`)
-		const success = await lesson.signIntoLesson();
-
-		console.log(success);
-	}
+    	console.log(success);
+    }
 })();
 ```
 
@@ -619,7 +618,7 @@ class Parent extends User {
 This class holds the information about a school period.
 ```typescript
 class Period extends RawData {
-    id: string;
+    id: string;    // Starts from 1
 
     name: string;
     short: string;
