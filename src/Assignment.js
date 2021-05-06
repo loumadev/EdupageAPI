@@ -196,7 +196,7 @@ class Assignment extends RawData {
 
 		//Load data
 		const res = await this.edupage.api({
-			url: ENDPOINT.TIMELINE_CREATE_CONFIRMATION,
+			url: ENDPOINT.ELEARNING_TEST_RESULTS,
 			data: {
 				"superid": this.superId
 			}
@@ -208,7 +208,7 @@ class Assignment extends RawData {
 			throw new APIError(`Failed to send message: Invalid status received '${res.status}'`, res);
 		}
 
-		//Cahce data
+		//Cache data
 		this._data._resultsData = res;
 
 		return res;
