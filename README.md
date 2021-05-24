@@ -801,7 +801,7 @@ class User extends RawData {
 
     getUserString(): string;
 
-    async sendMessage(options: MessageOptions): void;
+    async sendMessage(options: MessageOptions): Message;
     
     async login(
     	username: string,
