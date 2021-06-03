@@ -586,7 +586,7 @@ class Message extends RawData {
     isLiked: boolean;
     isDone: boolean;
     isStarred: boolean;
-    isWildcardRecipient: boolean;     // Determines whether exact recipient is known (you should be using `recipientUserString` it this is true)
+    isWildcardRecipient: boolean;     // Determines whether exact recipient is known (you should be using `recipientUserString` if this is true)
 
     async markAsSeen(): Promise<void>;
     async markAsLiked(state?: boolean = true): Promise<boolean>;
@@ -594,7 +594,7 @@ class Message extends RawData {
     async markAsStarred(state?: boolean = true): Promise<boolean>;
 
     async reply(options: MessageReplyOptions): void;
-    async refresh(data?: RawDataObject = null): void;	// To refresh message content (e.g. replies), call this method (ignoring `data` paramenter)
+    async refresh(data?: RawDataObject = null): void;	// To refresh message content (e.g. replies) call this method (ignoring `data` paramenter)
 }
 ```
 
