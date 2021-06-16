@@ -2,10 +2,14 @@ const Edupage = require("./Edupage");
 const {GENDER, ENTITY_TYPE} = require("./enums");
 const User = require("./User");
 
+/**
+ * @typedef {import("../lib/RawData").RawDataObject} RawDataObject
+ */
+
 class Parent extends User {
 	/**
 	 * Creates an instance of Parent.
-	 * @param {import("../lib/RawData").RawDataObject} [data={}]
+	 * @param {RawDataObject} [data={}]
 	 * @param {Edupage} [edupage=null]
 	 * @memberof Parent
 	 */

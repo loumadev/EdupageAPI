@@ -6,10 +6,14 @@ const Lesson = require("./Lesson");
 
 debug.log = console.log.bind(console);
 
+/**
+ * @typedef {import("../lib/RawData").RawDataObject} RawDataObject
+ */
+
 class Timetable extends RawData {
 	/**
 	 * Creates an instance of Timetable.
-	 * @param {import("../lib/RawData").RawDataObject} [data={}]
+	 * @param {RawDataObject} [data={}]
 	 * @param {string} [date=null]
 	 * @param {Edupage} [edupage=null]
 	 * @memberof Timetable
@@ -56,7 +60,7 @@ class Timetable extends RawData {
 	 *
 	 * @static
 	 * @param {string} html
-	 * @return {import("../lib/RawData").RawDataObject} 
+	 * @return {RawDataObject} 
 	 * @memberof Timetable
 	 */
 	static parse(html) {

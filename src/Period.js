@@ -1,9 +1,13 @@
 const RawData = require("../lib/RawData");
 
+/**
+ * @typedef {import("../lib/RawData").RawDataObject} RawDataObject
+ */
+
 class Period extends RawData {
 	/**
 	 * Creates an instance of Period.
-	 * @param {import("../lib/RawData").RawDataObject} [data=null]
+	 * @param {RawDataObject} [data=null]
 	 * @memberof Period
 	 */
 	constructor(data = null) {

@@ -6,10 +6,14 @@ const Student = require("./Student");
 const Subject = require("./Subject");
 const Teacher = require("./Teacher");
 
+/**
+ * @typedef {import("../lib/RawData").RawDataObject} RawDataObject
+ */
+
 class Plan extends RawData {
 	/**
 	 * Creates an instance of Plan.
-	 * @param {import("../lib/RawData").RawDataObject} [data={}]
+	 * @param {RawDataObject} [data={}]
 	 * @param {Edupage} [edupage=null]
 	 * @memberof Plan
 	 */
@@ -39,7 +43,7 @@ class Plan extends RawData {
 		/**
 		 * @type {string}
 		 */
-		this.customClassId = data.triedaid;;
+		this.customClassId = data.triedaid;
 
 		/**
 		 * @type {string}

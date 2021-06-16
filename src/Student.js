@@ -4,10 +4,14 @@ const {ENTITY_TYPE} = require("./enums");
 const Parent = require("./Parent");
 const User = require("./User");
 
+/**
+ * @typedef {import("../lib/RawData").RawDataObject} RawDataObject
+ */
+
 class Student extends User {
 	/**
 	 * Creates an instance of Student.
-	 * @param {import("../lib/RawData").RawDataObject} [data={}]
+	 * @param {RawDataObject} [data={}]
 	 * @param {Edupage} [edupage=null]
 	 * @memberof Student
 	 */
@@ -98,7 +102,7 @@ class Student extends User {
 	getUserString(parents = false) {
 		return parents ?
 			this.userString.split(/(?<=[a-z])(?=[0-9])/).join("Only") :
-			this.userString
+			this.userString;
 	}
 }
 

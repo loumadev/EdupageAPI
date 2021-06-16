@@ -2,10 +2,14 @@ const RawData = require("../lib/RawData");
 const Edupage = require("./Edupage");
 const {btoa} = require("../lib/utils");
 
+/**
+ * @typedef {import("../lib/RawData").RawDataObject} RawDataObject
+ */
+
 class Attachment extends RawData {
 	/**
 	 * Creates an instance of Attachment.
-	 * @param {import("../lib/RawData").RawDataObject} [data={}]
+	 * @param {RawDataObject} [data={}]
 	 * @param {Edupage} [edupage=null]
 	 * @memberof Attachment
 	 */

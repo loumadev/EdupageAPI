@@ -3,10 +3,14 @@ const Classroom = require("./Classroom");
 const Edupage = require("./Edupage");
 const Teacher = require("./Teacher");
 
+/**
+ * @typedef {import("../lib/RawData").RawDataObject} RawDataObject
+ */
+
 class Class extends RawData {
 	/**
 	 * Creates an instance of Class.
-	 * @param {import("../lib/RawData").RawDataObject} [data={}]
+	 * @param {RawDataObject} [data={}]
 	 * @param {Edupage} [edupage=null]
 	 * @memberof Class
 	 */

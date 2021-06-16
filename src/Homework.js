@@ -1,10 +1,14 @@
 const Assignment = require("./Assignment");
 const Edupage = require("./Edupage");
 
+/**
+ * @typedef {import("../lib/RawData").RawDataObject} RawDataObject
+ */
+
 class Homework extends Assignment {
 	/**
 	 * Creates an instance of Homework.
-	 * @param {import("../lib/RawData").RawDataObject} [data={}]
+	 * @param {RawDataObject} [data={}]
 	 * @param {Edupage} [edupage=null]
 	 * @memberof Homework
 	 */

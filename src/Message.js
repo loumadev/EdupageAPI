@@ -16,10 +16,14 @@ const Assignment = require("./Assignment");
 
 debug.log = console.log.bind(console);
 
+/**
+ * @typedef {import("../lib/RawData").RawDataObject} RawDataObject
+ */
+
 class Message extends RawData {
 	/**
 	 * Creates an instance of Message.
-	 * @param {import("../lib/RawData").RawDataObject} [data={}]
+	 * @param {RawDataObject} [data={}]
 	 * @param {Edupage} [edupage=null]
 	 * @memberof Message
 	 */
@@ -472,7 +476,7 @@ class Message extends RawData {
 
 	/**
 	 * 
-	 * @param {import("../lib/RawData").RawDataObject} [data=null]
+	 * @param {RawDataObject} [data=null]
 	 * @memberof Message
 	 */
 	async refresh(data = null) {
@@ -519,7 +523,7 @@ class Message extends RawData {
 	 *
 	 * @private
 	 * @param {string} userString
-	 * @return {{recipient: User|Teacher|Student|Parent|Plan|Class, wildcard: boolean}} 
+	 * @return {{recipient: (User | Teacher | Student | Parent | Plan | Class), wildcard: boolean}} 
 	 * @memberof Message
 	 */
 	getRecipient(userString) {

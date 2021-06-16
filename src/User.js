@@ -12,6 +12,10 @@ const Attachment = require("./Attachment");
 debug.log = console.log.bind(console);
 
 /**
+ * @typedef {import("../lib/RawData").RawDataObject} RawDataObject
+ */
+
+/**
  * @typedef {import("./Teacher")} Teacher
  */
 /**
@@ -30,7 +34,7 @@ debug.log = console.log.bind(console);
 class User extends RawData {
 	/**
 	 * Creates an instance of User.
-	 * @param {import("../lib/RawData").RawDataObject} [data={}]
+	 * @param {RawDataObject} [data={}]
 	 * @param {Edupage} [edupage=null]
 	 * @memberof User
 	 */
@@ -240,7 +244,7 @@ class User extends RawData {
 					password
 				};
 
-				debug(`[Login] Login successful`)
+				debug(`[Login] Login successful`);
 				resolve(this);
 			}).catch(err => {
 				error(`[Login] Failed to login user:`, err);
@@ -262,7 +266,7 @@ class User extends RawData {
 	 * Creates an instance of Student or Teacher from user data.
 	 * @static
 	 * @param {string} userString
-	 * @param {import("../lib/RawData").RawDataObject} [data={}]
+	 * @param {RawDataObject} [data={}]
 	 * @param {Edupage} [edupage=null]
 	 * @return {User|Teacher|Student|Parent}
 	 * @memberof User
