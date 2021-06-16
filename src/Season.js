@@ -5,10 +5,14 @@ const Edupage = require("./Edupage");
 
 debug.log = console.log.bind(console);
 
+/**
+ * @typedef {import("../lib/RawData").RawDataObject} RawDataObject
+ */
+
 class Season extends RawData {
 	/**
 	 * Creates an instance of Season.
-	 * @param {import("../lib/RawData").RawDataObject} [data={}]
+	 * @param {RawDataObject} [data={}]
 	 * @param {Edupage} [edupage=null]
 	 * @memberof Season
 	 */

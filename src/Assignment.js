@@ -217,7 +217,7 @@ class Assignment extends RawData {
 	/**
 	 * Creates an instance of Homework or Test from homework data.
 	 * @static
-	 * @param {import("../lib/RawData").RawDataObject} [data={}]
+	 * @param {RawDataObject} [data={}]
 	 * @param {Edupage} [edupage=null]
 	 * @return {Assignment|Homework|Test}
 	 * @memberof Assignment

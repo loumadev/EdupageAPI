@@ -132,4 +132,4 @@ module.exports = {
 	API_STATUS,
 	ASSIGNMENT_TYPE,
 	ASSIGNMENT_GROUP
-}
+};

@@ -28,6 +28,14 @@ const Test = require("./Test");
 
 debug.log = console.log.bind(console);
 
+/**
+ * @typedef {import("../lib/RawData").RawDataObject} RawDataObject
+ */
+
+/**
+ * @typedef {import("./enums").APIEndpoint} APIEndpoint
+ */
+
 class Edupage extends RawData {
 	/**
 	 * Creates an instance of Edupage.
@@ -401,8 +409,7 @@ class Edupage extends RawData {
 	 * @memberof Edupage
 	 */
 	async api(options) {
-		let {
-			url,
+		const {
 			headers = {},
 			data = {},
 			method = "POST",
@@ -410,6 +417,8 @@ class Edupage extends RawData {
 			type = "json",
 			autoLogin = true
 		} = options;
+
+		let url = options.url;
 
 		return new Promise((resolve, reject) => {
 			const tryFetch = (tryCount = 0) => {
@@ -422,7 +431,7 @@ class Edupage extends RawData {
 							tryFetch(++tryCount - 1);
 						}).catch(err => {
 							error(`[API] Failed to log in user:`, err);
-							reject(err)
+							reject(err);
 						});
 				};
 
@@ -545,7 +554,7 @@ class Edupage extends RawData {
 	/**
 	 * Returns endpoint URL
 	 * @private
-	 * @param {import("./enums").APIEndpoint} endpoint
+	 * @param {APIEndpoint} endpoint
 	 * @return {string} Endpoint URL
 	 */
 	buildRequestUrl(endpoint) {
@@ -578,7 +587,7 @@ class Edupage extends RawData {
 	 * Parses raw JSON data from html
 	 * @private
 	 * @param {string} html 
-	 * @returns {import("../lib/RawData").RawDataObject}
+	 * @returns {RawDataObject}
 	 */
 	static parse(html) {
 		let data = {
