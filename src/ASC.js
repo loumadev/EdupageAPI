@@ -5,10 +5,14 @@ const Edupage = require("./Edupage");
 
 debug.log = console.log.bind(console);
 
+/**
+ * @typedef {import("../lib/RawData").RawDataObject} RawDataObject
+ */
+
 class ASC extends RawData {
 	/**
 	 * Creates an instance of ASC.
-	 * @param {import("../lib/RawData").RawDataObject} [data={}]
+	 * @param {RawDataObject} [data={}]
 	 * @param {Edupage} [edupage=null]
 	 * @memberof ASC
 	 */
@@ -86,7 +90,7 @@ class ASC extends RawData {
 	 *
 	 * @static
 	 * @param {string} html
-	 * @return {import("../lib/RawData").RawDataObject} 
+	 * @return {RawDataObject} 
 	 * @memberof ASC
 	 */
 	static parse(html) {
