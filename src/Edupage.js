@@ -25,6 +25,7 @@ const Season = require("./Season");
 const Homework = require("./Homework");
 const Assignment = require("./Assignment");
 const Test = require("./Test");
+const Application = require("./Application");
 
 debug.log = console.log.bind(console);
 
@@ -35,6 +36,7 @@ debug.log = console.log.bind(console);
 /**
  * @typedef {import("./enums").APIEndpoint} APIEndpoint
  */
+
 
 class Edupage extends RawData {
 	/**
@@ -123,6 +125,12 @@ class Edupage extends RawData {
 		 * @type {Test[]}
 		 */
 		this.tests = [];
+
+		/**
+		 * @experimental
+		 * @type {Application[]}
+		 */
+		this.applications = [];
 
 
 		/**
@@ -221,6 +229,7 @@ class Edupage extends RawData {
 		this.plans = Object.values(this._data.dbi?.plans || {}).map(data => new Plan(data, this));
 		this.timetables = iterate(this._data?.dp?.dates || {}).map(([i, date, data]) => new Timetable(data, date));
 		this.grades = Object.values(this._data._grades?.data?.vsetkyZnamky || {}).map(data => new Grade(data, this));
+		this.applications = Object.values(this._data.dbi?.process_types || {}).map(data => new Application(data, this));
 
 		//Create assignments and add them to arrays
 		this._data.homeworks.forEach(data => {
@@ -308,7 +317,6 @@ class Edupage extends RawData {
 	}
 
 	/**
-	 *
 	 * @param {Date} fromDate
 	 * @param {Date} toDate
 	 * @return {Promise<Timetable[]>} 
@@ -333,7 +341,7 @@ class Edupage extends RawData {
 
 		//Load and parse data
 		const _html = await this.api({
-			url: ENDPOINT.DASHBOARD_GET_TIMETABLE,
+			url: ENDPOINT.DASHBOARD_GCALL,
 			method: "POST",
 			type: "text",
 			data: new URLSearchParams({
@@ -564,7 +572,7 @@ class Edupage extends RawData {
 
 		if(endpoint == ENDPOINT.DASHBOARD_GET_USER) url = `/user/?`;
 		if(endpoint == ENDPOINT.DASHBOARD_GET_CLASSBOOK) url = `/dashboard/eb.php?barNoSkin=1`;
-		if(endpoint == ENDPOINT.DASHBOARD_GET_TIMETABLE) url = `/gcall`;
+		if(endpoint == ENDPOINT.DASHBOARD_GCALL) url = `/gcall`;
 		if(endpoint == ENDPOINT.DASHBOARD_SIGN_ONLINE_LESSON) url = `/dashboard/server/onlinelesson.js?__func=getOnlineLessonOpenUrl`;
 		if(endpoint == ENDPOINT.TIMELINE_GET_DATA) url = `/timeline/?akcia=getData`;
 		if(endpoint == ENDPOINT.TIMELINE_GET_REPLIES) url = `/timeline/?akcia=getRepliesItem`;

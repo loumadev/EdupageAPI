@@ -18,6 +18,7 @@ const Season = require("./src/Season");
 const Subject = require("./src/Subject");
 const Test = require("./src/Test");
 const Timetable = require("./src/Timetable");
+const Application = require("./src/Application");
 
 const {
 	GENDER,
@@ -39,6 +40,7 @@ const {
 
 module.exports = {
 	ASC,
+	Application,
 	Assignment,
 	Attachment,
 	Class,

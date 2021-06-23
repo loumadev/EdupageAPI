@@ -24,7 +24,6 @@
  */
 
 /**
- * 
  * Assignment group
  * @typedef {AssignmentType[]} AssignmentGroup
  */
@@ -37,7 +36,7 @@
 const ENDPOINT = {
 	DASHBOARD_GET_USER: 1,
 	DASHBOARD_GET_CLASSBOOK: 2,
-	DASHBOARD_GET_TIMETABLE: 3,
+	DASHBOARD_GCALL: 3,
 	DASHBOARD_SIGN_ONLINE_LESSON: 4,
 	TIMELINE_GET_DATA: 5,
 	TIMELINE_GET_REPLIES: 6,

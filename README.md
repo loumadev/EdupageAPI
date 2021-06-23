@@ -148,10 +148,10 @@ const edupage = new Edupage();
 
     //You should check if the lesson is an online lesson
     if(lesson.isOnlineLesson) {
-    	//Sign it (this method may not be successful, in such case it will return `false`)
-    	const success = await lesson.signIntoLesson();
+        //Sign it (this method may not be successful, in such case it will return `false`)
+        const success = await lesson.signIntoLesson();
 
-    	console.log(success);
+        console.log(success);
     }
 })();
 ```
@@ -171,8 +171,8 @@ const edupage = new Edupage();
 
     //Configure the message
     const options = {
-    	text: "Hello there!",   //Message content
-    	important: true         //Make this message marked as important
+        text: "Hello there!",   //Message content
+        important: true         //Make this message marked as important
     };
 
     //Send the message
@@ -198,8 +198,8 @@ const edupage = new Edupage();
 
     //Configure the message
     const options = {
-    	text: "Sending my homework!",  //Message content
-    	attachments: [attachment]      //Array of attachments
+        text: "Sending my homework!",  //Message content
+        attachments: [attachment]      //Array of attachments
     };
 
     //Send the message
@@ -228,14 +228,42 @@ const edupage = new Edupage();
 })();
 ```
 
+### Post COVID-19 infectivity application
+🚨 This example is experimental, you should avoid using it in production until stable version!
+Are you annoyed sending each week a new infectivity application? You can make that programmatically now! The following snipped shows how to post Covid-19 infectivity application with current date.
+```javascript
+const {Edupage} = require("edupage-api");
+
+const edupage = new Edupage();
+
+(async () => {
+    await edupage.login("username", "password");
+
+    //Get an application you want to post
+    const application = edupage.applications.find(e => e.id == "teacher_infectivity_2_20210517");
+
+    //Get today's date
+    const today = new Date();
+
+    //Post the application
+    const success = await application.post({
+        date: Edupage.dateToString(today)    //Processing for the values is not supported, so you have to make it yourself
+    });
+
+    //Console.log the result (🚨 This might not be precise!)
+    console.log(success);
+})();
+```
+
 # API
 Here you can find representations of all classes, interfaces and enums. In code, you shouldn't be creating any instances of the following classes except for `Edupage` class. All required classes are created internally. Most of the classes contain `Edupage` instance.
 
 **Note:** following snippets are not actual valid code.
 
-## API Content
+## API Contents
 * [Classes](#classes)
   * [class ASC](#class-asc)
+  * [class Application](#class-application)
   * [class Assignment](#class-assignment)
   * [class Attachment](#class-attachment)
   * [class Class](#class-class)
@@ -295,6 +323,40 @@ class ASC extends RawData {
 }
 ```
 
+### class Application
+**🚨 This is an experimental class, you should not be using this class in production**
+This class holds the information about an application (e.g. Covid-19 infectivity)
+```typescript
+class Application extends RawData {
+    edupage: Edupage;
+
+    id: string;
+    name: string;
+
+    dateFrom: Date;
+    dateTo: Date;
+
+    parameters: string[];           // List of parameters to be passed to `Application.post(...)`
+    
+    availableFor: EntityType;       // Usually `ENTITY_TYPE.STUDENT` or `ENTITY_TYPE.TEACHER`
+
+    isEnabled: boolean;             // Determines wheter the application is enabled in your Edupage
+    isTextOptional: boolean;		// Unknown property
+    isAdvancedWorkflow: boolean;    // Unknown property
+    isSimpleWorkflow: boolean;      // Unknown property
+
+    // Creates draft for the application
+    async createDraft(): Promise<string>;
+    
+    // Posts the application
+    // 🚨 This method might not return accurate result
+    static post(
+        parameters: RawDataObject = {},     // Parameters from `Application.parameters`
+        draftId?: string = null             // Draft ID (created internally if not provided)
+    ): Promise<boolean>;
+}
+```
+
 ### class Assignment
 This class holds the information about an assignment such as homework, test, presentation...
 ```typescript
@@ -335,8 +397,8 @@ class Assignment extends RawData {
     async getData(): Promise<RawDataObject>;
     
     static from(
-    	data: RawDataObject,
-    	edupage: Edupage
+        data: RawDataObject,
+        edupage: Edupage
     ): Assignment | Homework | Test;
 }
 ```
@@ -423,13 +485,13 @@ class Edupage extends RawData {
     async getTimetableForDate(date: Date): Promise<Timetable | undefined>;  // Note: Calls `fetchTimetablesForDates` method internally if the given timetable is missing
     
     async fetchTimetablesForDates(   // Fetches the timetables from Edupage (+caching and updating existing)
-    	fromDate: Date,
-    	toDate: Date
+        fromDate: Date,
+        toDate: Date
     ): Promise<Timetable[]>
 
     async login(
-    	username: string,
-    	password: string
+        username: string,
+        password: string
     ): Promise<User | Teacher | Student>;
     
     async refresh(): void;          // Refreshes all fields of the current instance by fetching new a data from the Edupage
@@ -437,12 +499,12 @@ class Edupage extends RawData {
     async api(options: APIOptions): Promise<RawDataObject | string>;
 
     static compareDay(
-    	date1: Date | number | string,
-    	date2: Date | number | string
+        date1: Date | number | string,
+        date2: Date | number | string
     ): boolean;
 
     static dateToString(            // Converts Date into string (Example: "2020-05-17")
-    	date: Date
+        date: Date
     ): string;
 }
 ```
@@ -559,13 +621,13 @@ class Message extends RawData {
     doneDate: Date;
 
     likedBy: ({
-    	user: User | Teacher | Student | Parent,
-    	date: Date
+        user: User | Teacher | Student | Parent,
+        date: Date
     })[];
     
     seenBy: ({
-    	user: User | Teacher | Student | Parent,
-    	date: Date
+        user: User | Teacher | Student | Parent,
+        date: Date
     })[];
 
     text: string;
@@ -792,8 +854,8 @@ class User extends RawData {
     email?: string;
     cookies?: CookieJar;
     credentials?: {
-    	username: string,
-    	password: string
+        username: string,
+        password: string
     };
 
     isLoggedIn: boolean;
@@ -804,14 +866,14 @@ class User extends RawData {
     async sendMessage(options: MessageOptions): Message;
     
     async login(
-    	username: string,
-    	password: string
+        username: string,
+        password: string
     ): Promise<User>;
 
     static from(
-    	userString: string,
-    	data?: RawDataObject = {},
-    	edupage?: Edupage = null
+        userString: string,
+        data?: RawDataObject = {},
+        edupage?: Edupage = null
     ): User | Teacher | Student | Parent;
 }
 ```
