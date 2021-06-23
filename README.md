@@ -229,7 +229,8 @@ const edupage = new Edupage();
 ```
 
 ### Post COVID-19 infectivity application
-🚨 This example is experimental, you should avoid using it in production until stable version!
+**🚨 This example is experimental, you should avoid using it in production until stable version!**
+
 Are you annoyed sending each week a new infectivity application? You can make that programmatically now! The following snipped shows how to post Covid-19 infectivity application with current date.
 ```javascript
 const {Edupage} = require("edupage-api");
@@ -325,6 +326,7 @@ class ASC extends RawData {
 
 ### class Application
 **🚨 This is an experimental class, you should not be using this class in production**
+
 This class holds the information about an application (e.g. Covid-19 infectivity)
 ```typescript
 class Application extends RawData {
