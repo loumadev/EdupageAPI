@@ -342,7 +342,7 @@ class Application extends RawData {
     
     availableFor: EntityType;       // Usually `ENTITY_TYPE.STUDENT` or `ENTITY_TYPE.TEACHER`
 
-    isEnabled: boolean;             // Determines wheter the application is enabled in your Edupage
+    isEnabled: boolean;             // Determines whether the application is enabled in your Edupage
     isTextOptional: boolean;		// Unknown property
     isAdvancedWorkflow: boolean;    // Unknown property
     isSimpleWorkflow: boolean;      // Unknown property
@@ -377,8 +377,8 @@ class Assignment extends RawData {
     grades: Grade[];
 
     creationDate: Date;      // Time when was the assignment created
-    fromDate: Date;          // Time from when is the assignemnt available for students
-    toDate: Date;            // Time until the assignemnt is available for students
+    fromDate: Date;          // Time from when is the assignment available for students
+    toDate: Date;            // Time until the assignment is available for students
     duration: number;        // Number of seconds for students to submit the assignment
 
     title: string;
@@ -471,7 +471,7 @@ class Edupage extends RawData {
 
     timelineItems: Message[];       // Contains all timeline items (including confirmations)
     timeline: Message[];            // Contains only visible items (messages, assignments, grades...)
-    assignments: Assignment[];      // Contains all assignmnets (homework assignments, tests and other)
+    assignments: Assignment[];      // Contains all assignments (homework assignments, tests and other)
     homeworks: Homework[];          // Contains assignments type of homework
     tests: Test[];                  // Contains assignments type of test
 
