@@ -1,6 +1,6 @@
 {
 	"name": "edupage-api",
-	"version": "0.7.5",
+	"version": "0.7.6",
 	"description": "Simple node.js package to manage your EduPage account.",
 	"main": "index.js",
 	"scripts": {

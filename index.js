@@ -26,7 +26,8 @@ const {
 	ENTITY_TYPE,
 	API_STATUS,
 	ASSIGNMENT_TYPE,
-	ASSIGNMENT_GROUP
+	ASSIGNMENT_GROUP,
+	TIMELINE_ITEM_TYPE
 } = require("./src/enums");
 
 const {
@@ -66,6 +67,7 @@ module.exports = {
 	API_STATUS,
 	ASSIGNMENT_TYPE,
 	ASSIGNMENT_GROUP,
+	TIMELINE_ITEM_TYPE,
 	LoginError,
 	ParseError,
 	EdupageError,
