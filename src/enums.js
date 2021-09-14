@@ -28,6 +28,11 @@
  * @typedef {AssignmentType[]} AssignmentGroup
  */
 
+/**
+ * Timeline item type
+ * @typedef {string} TimelineItemType
+ */
+
 
 
 /**
@@ -123,6 +128,52 @@ const ASSIGNMENT_GROUP = {
 	OTHER: ["result", "ucivo", "timeline"]
 };
 
+/**
+ * @enum {TimelineItemType}
+ */
+const TIMELINE_ITEM_TYPE = {
+	MESSAGE: "sprava",
+	MESSAGE_TO_SUBTITUTER: "spravasuplujucemu",
+	NOTICEBOARD: "nastenka",
+	GRADE_ANNOUNCEMENT: "nastenka",
+	GRADE: "znamka",
+	NOTE: "vcelicka",
+	HOMEWORK: "homework",
+	HOMEWORK_STUDENT_STATE: "homework",
+	ABSENCE_NOTE: "ospravedlnenka",
+	ABSENCE_NOTE_REMINDER: "ospravedlnenka_reminder",
+	PROCESS: "process",
+	PROCESS_ADMIN: "processadmin",
+	STUDENT_ABSENT: "student_absent",
+	ACCIDENT: "accident",
+	EVENT: "event",
+	TIMETABLE: "timetable",
+	SUBSTITUTION: "substitution",
+	CANTEEN_MENU: "stravamenu",
+	CANTEEN_CREDIT: "strava_kredit",
+	CANTEEN_SUSPEND_REINSTATE_ORDERS: "strava_prerusObnovObj",
+	CANTEEN_OPENING: "strava_vydaj",
+	SURVEY: "anketa",
+	PLAN: "plan",
+	SETTINGS: "settings",
+	ALBUM: "album",
+	NEWS: "news",
+	TEST_ASSIGNMENT: "testpridelenie",
+	TEST_RESULT: "testvysledok",
+	CHAT: "chat",
+	CHECK_IN: "pipnutie",
+	CONSULTATION_MESSAGE: "konzultaciemsg",
+	CONSULTATION: "konzultacie",
+	PAYMENTS: "payments",
+	SIGN_IN: "signin",
+	CURRICULUM: "ucivo",
+	CURRICULUM_REMINDER: "ucivo_reminder",
+	BLACKBOARD: "bb",
+	STUDENT_PICKUP: "odchadzka",
+	TIMETABLE_CLOUD_GENERATE: "ttcloudgen",
+	CONFIRMATION: "confirmation"
+};
+
 
 module.exports = {
 	GENDER,
@@ -130,5 +181,6 @@ module.exports = {
 	ENTITY_TYPE,
 	API_STATUS,
 	ASSIGNMENT_TYPE,
-	ASSIGNMENT_GROUP
+	ASSIGNMENT_GROUP,
+	TIMELINE_ITEM_TYPE
 };

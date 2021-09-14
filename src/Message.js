@@ -5,7 +5,7 @@ const {iterate} = require("../lib/utils");
 const Attachment = require("./Attachment");
 const Class = require("./Class");
 const Edupage = require("./Edupage");
-const {ENDPOINT, ENTITY_TYPE, API_STATUS} = require("./enums");
+const {ENDPOINT, ENTITY_TYPE, API_STATUS, TIMELINE_ITEM_TYPE} = require("./enums");
 const {APIError, EdupageError, MessageError} = require("./exceptions");
 const Parent = require("./Parent");
 const Plan = require("./Plan");
@@ -240,7 +240,7 @@ class Message extends RawData {
 					if(e.pomocny_zaznam) return;
 					if(e.timelineid == this._data.item?.timelineid) return;
 					if(e.cas_pridania == this._data.cas_pridania) return;
-					if(e.typ == "confirmation") {
+					if(e.typ == TIMELINE_ITEM_TYPE.CONFIRMATION) {
 						const data = Message.parseUsername(e.vlastnik_meno);
 						const user = this.edupage.getUserByUserString(e.vlastnik) || User.from(e.vlastnik, data, this.edupage);
 
@@ -286,7 +286,7 @@ class Message extends RawData {
 		}
 
 		//Add reply
-		if(this._data.reakcia_na && this._data.typ != "confirmation") {
+		if(this._data.reakcia_na && this._data.typ != TIMELINE_ITEM_TYPE.CONFIRMATION) {
 			//Find root message
 			const message = this.edupage.timelineItems.find(e => e.id == this._data.reakcia_na);
 

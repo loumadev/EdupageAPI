@@ -7,7 +7,7 @@ const Student = require("./Student");
 const Teacher = require("./Teacher");
 const User = require("./User");
 const {btoa, iterate} = require("../lib/utils");
-const {ENDPOINT, API_STATUS} = require("./enums");
+const {ENDPOINT, API_STATUS, TIMELINE_ITEM_TYPE} = require("./enums");
 const Class = require("./Class");
 const Classroom = require("./Classroom");
 const Parent = require("./Parent");
@@ -311,7 +311,7 @@ class Edupage extends RawData {
 				t.timelineid == e.timelineid
 			))
 			//Remove useless items created only for notification to be sent
-			&& !(e.typ == "sprava" && e.pomocny_zaznam && arr.some(t => t.timelineid == e.reakcia_na))
+			&& !(e.typ == TIMELINE_ITEM_TYPE.MESSAGE && e.pomocny_zaznam && arr.some(t => t.timelineid == e.reakcia_na))
 		);
 
 		//Reset values to prevent mutating the old ones
@@ -351,7 +351,7 @@ class Edupage extends RawData {
 
 		//Filter out confirmation messages
 		//TODO: filter out types prefixed with `h_`?
-		this.timeline = this.timelineItems.filter(e => e.type != "confirmation");
+		this.timeline = this.timelineItems.filter(e => e.type != TIMELINE_ITEM_TYPE.CONFIRMATION);
 
 		//Init objects if needed
 		this.seasons.forEach(e => e.init(this));
