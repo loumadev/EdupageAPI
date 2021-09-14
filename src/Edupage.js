@@ -174,41 +174,138 @@ class Edupage extends RawData {
 	}
 
 	/**
-	 * Logs user in for this instance
-	 *
+	 * Refreshes all fields in `Edupage` instance
 	 * @memberof Edupage
 	 */
 	async refresh() {
-		//Load global edupage data
-		const _html = await this.api({url: ENDPOINT.DASHBOARD_GET_USER, method: "GET", type: "text"});
+		//Refresh global Edupage data
+		await this.refreshEdupage(false);
+
+		//Refresh timeline data
+		await this.refreshTimeline(false);
+
+		//Refresh created timeline items
+		await this.refreshCreatedItems(false);
+
+		//Refresh grades
+		await this.refreshGrades(false);
+
+		//Update Edupage fields
+		this._updateInternalValues();
+	}
+
+	/**
+	 * Fetches global Edupage data (such as teachers, classes, classrooms, subjects...)
+	 * and updates internal values.
+	 * This includes ASC refresh.
+	 * @param {boolean} [_update=true] Tells whether to update internal values or not.
+	 * Can be tweaked if are calling multiple "refresh" methods at once, so you don't
+	 * have to recalculate internal values every time and save some performance.
+	 * @memberof Edupage
+	 */
+	async refreshEdupage(_update = true) {
+		//Fetch data as HTML
+		const _html = await this.api({
+			url: ENDPOINT.DASHBOARD_GET_USER,
+			method: "GET",
+			type: "text"
+		});
 		const _json = Edupage.parse(_html);
 		this._data = {...this._data, ..._json};
 		this.year = this._data._edubar.autoYear || this._data._edubar.selectedYear;
 
-		//Parse ASC data
+		//Parse ASC data from fetched HTML
 		const _asc = ASC.parse(_html);
 		this._data = {...this._data, ASC: _asc};
 		this.ASC = new ASC(this._data.ASC, this);
 
-		//Load timeline data
-		const _timeline = await this.api({url: ENDPOINT.TIMELINE_GET_DATA, data: {datefrom: this.getYearStart(false)}});
+		if(_update) this._updateInternalValues();
+	}
+
+	/**
+	 * Fetches timeline data (messages, notifications...)
+	 * and updates internal values.
+	 * @param {boolean} [_update=true] Tells whether to update internal values or not.
+	 * Can be tweaked if are calling multiple "refresh" methods at once, so you don't
+	 * have to recalculate internal values every time and save some performance.
+	 * @memberof Edupage
+	 */
+	async refreshTimeline(_update = true) {
+
+		//Fetch timeline data
+		const _timeline = await this.api({
+			url: ENDPOINT.TIMELINE_GET_DATA,
+			data: {
+				datefrom: this.getYearStart(false)
+			}
+		});
+
+		//Add values to source object
 		this._data = {...this._data, ..._timeline};
 
-		//Load created timeline items
-		const _created = await this.api({url: ENDPOINT.TIMELINE_GET_CREATED_ITEMS, data: {odkedy: this.getYearStart()}});
+		if(_update) this._updateInternalValues();
+	}
 
-		//Load grades
-		const _grades_html = await this.api({url: ENDPOINT.GRADES_DATA, method: "GET", type: "text"});
+	/**
+	 * Fetches timeline items data created by currently
+	 * logged user and updates internal values.
+	 * @param {boolean} [_update=true] Tells whether to update internal values or not.
+	 * Can be tweaked if are calling multiple "refresh" methods at once, so you don't
+	 * have to recalculate internal values every time and save some performance.
+	 * @memberof Edupage
+	 */
+	async refreshCreatedItems(_update = true) {
+		//Fetch created items data
+		const _created = await this.api({
+			url: ENDPOINT.TIMELINE_GET_CREATED_ITEMS,
+			data: {
+				odkedy: this.getYearStart()
+			}
+		});
+
+		//Add values to source object
+		this._data = {...this._data, _created};
+
+		if(_update) this._updateInternalValues();
+	}
+
+	/**
+	 * Fetches grades of currently logged
+	 * user and updates internal values.
+	 * @param {boolean} [_update=true] Tells whether to update internal values or not.
+	 * Can be tweaked if are calling multiple "refresh" methods at once, so you don't
+	 * have to recalculate internal values every time and save some performance.
+	 * @memberof Edupage
+	 */
+	async refreshGrades(_update = true) {
+		//Fetch created items data
+		const _grades_html = await this.api({
+			url: ENDPOINT.GRADES_DATA,
+			method: "GET",
+			type: "text"
+		});
+
+		//Parse values and add them to source object
 		const _grades = Grade.parse(_grades_html);
 		this._data = {...this._data, _grades};
 
+		if(_update) this._updateInternalValues();
+	}
+
+	/**
+	 * Internal method to update all the fields in Edupage instance.  Should be called
+	 * after any of "refresh" methods (in case `_update` argument is set to `false`)
+	 * @memberof Edupage
+	 */
+	_updateInternalValues() {
+		//return;
 		//Transform events Object into Array here rather than on each Grade iteration for better performance
 		this._data._grades._events = {};
-		iterate(_grades.data?.vsetkyUdalosti || {})
+		iterate(this._data._grades.data?.vsetkyUdalosti || {})
 			.forEach(([i, provider, object]) => this._data._grades._events[provider] = Object.values(object));
 
 		//Merge all timeline items together and filter them down
-		this._data.timelineItems = [..._timeline.timelineItems, ..._created.data.items].filter((e, i, arr) =>
+		this._data.timelineItems = [...this._data.timelineItems, ...this._data._created.data.items].filter((e, i, arr) =>
 			//Remove duplicated items
 			i == arr.findIndex(t => (
 				t.timelineid == e.timelineid

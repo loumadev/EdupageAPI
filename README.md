@@ -496,7 +496,15 @@ class Edupage extends RawData {
         password: string
     ): Promise<User | Teacher | Student>;
     
-    async refresh(): void;          // Refreshes all fields of the current instance by fetching new a data from the Edupage
+    async refresh(): void;                                        // Refreshes all values in current instance
+    async refreshEdupage(_update?: boolean = true): void;         // Refreshes global Edupage data (such as teachers, classes, classrooms, subjects...)
+    async refreshTimeline(_update?: boolean = true): void;        // Refreshes timeline data (messages, notifications...)
+    async refreshCreatedItems(_update?: boolean = true): void;    // Refreshes timeline items data created by currently logged user
+    async refreshGrades(_update?: boolean = true): void;          // Refreshes grades of currently logged  user
+
+    _updateInternalValues(): void;                                // Updates all fields of the current instance (called internally after
+	                                                              // any of the "refresh" methods, if `_update` is set to `true`)
+
     async uploadAttachment(filepath: string): Promise<Attachment>;
     async api(options: APIOptions): Promise<RawDataObject | string>;
 
