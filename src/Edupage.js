@@ -314,6 +314,12 @@ class Edupage extends RawData {
 			&& !(e.typ == "sprava" && e.pomocny_zaznam && arr.some(t => t.timelineid == e.reakcia_na))
 		);
 
+		//Reset values to prevent mutating the old ones
+		this.timelineItems = [];
+		this.assignments = [];
+		this.homeworks = [];
+		this.tests = [];
+
 		//Parse json and create Objects
 		this.seasons = Object.values(this._data._grades?.settings?.obdobia || {}).map(data => new Season(data));
 		this.classes = Object.values(this._data.dbi?.classes || {}).map(data => new Class(data));
