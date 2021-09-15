@@ -548,7 +548,7 @@ class Edupage extends RawData {
 
 				//If there are too many tries, reject the promise
 				if(tryCount > 1) {
-					error(`[API] Request terminated due to mutiple failures`);
+					error(`[API] Request terminated due to multiple failures`);
 					return reject(new Error("Failed to send request multiple times"));
 				}
 
