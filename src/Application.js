@@ -3,7 +3,7 @@ const error = require("debug")("edupage:error");
 const {APIError, EdupageError, ParseError} = require("./exceptions");
 const RawData = require("../lib/RawData");
 const Edupage = require("./Edupage");
-const {ENDPOINT, API_STATUS} = require("./enums");
+const {ENDPOINT, API_STATUS, TIMELINE_ITEM_TYPE} = require("./enums");
 
 debug.log = console.log.bind(console);
 
@@ -101,7 +101,7 @@ class Application extends RawData {
 		const res = await this.edupage.api({
 			url: ENDPOINT.TIMELINE_CREATE_ITEM,
 			data: {
-				typ: "process",
+				typ: TIMELINE_ITEM_TYPE.PROCESS,
 				selectedProcessType: this.id,
 				selectedUser: this.edupage.user.getUserString(false)
 			}

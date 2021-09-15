@@ -4,7 +4,7 @@ const error = require("debug")("edupage:error");
 const {default: fetch} = require("node-fetch");
 const CookieJar = require("../lib/CookieJar");
 const {LoginError, ParseError, EdupageError, APIError, MessageError} = require("./exceptions");
-const {GENDER, ENDPOINT, ENTITY_TYPE, API_STATUS} = require("./enums");
+const {GENDER, ENDPOINT, ENTITY_TYPE, API_STATUS, TIMELINE_ITEM_TYPE} = require("./enums");
 const Edupage = require("./Edupage");
 const RawData = require("../lib/RawData");
 const Attachment = require("./Attachment");
@@ -158,7 +158,7 @@ class User extends RawData {
 				receipt: (+important).toString(),
 				selectedUser: this.getUserString(parents),
 				text: text,
-				typ: "sprava"
+				typ: TIMELINE_ITEM_TYPE.MESSAGE
 				//TODO: add polls support
 			}
 		});
