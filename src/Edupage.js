@@ -15,7 +15,7 @@ const RawData = require("../lib/RawData");
 const Subject = require("./Subject");
 const Period = require("./Period");
 const ASC = require("./ASC");
-const {LoginError, EdupageError, AttachmentError, APIError} = require("./exceptions");
+const {LoginError, EdupageError, AttachmentError, APIError, FatalError, ParseError} = require("./exceptions");
 const Timetable = require("./Timetable");
 const Message = require("./Message");
 const Plan = require("./Plan");
@@ -706,22 +706,22 @@ class Edupage extends RawData {
 		};
 
 		const match = (html.match(/\.userhome\((.+?)\);$/m) || "")[1];
+		if(!match) return FatalError.throw(new ParseError("Failed to parse Edupage data from html"), {html});
 
 		try {
 			data = {...JSON.parse(match)};
 		} catch(e) {
-			if(match) error(`Failed to parse JSON from Edupage html`);
-			else error(`Failed to parse Edupage html`);
+			return FatalError.throw(new ParseError("Failed to parse JSON from Edupage html"), {html, match, e});
 		}
 
 		//Parse additional edubar data
 		const match2 = (html.match(/edubar\(([\s\S]*?)\);/) || "")[1];
+		if(!match2) return FatalError.throw(new ParseError("Failed to parse edubar data from html"), {html});
 
 		try {
 			data._edubar = JSON.parse(match2) || {};
 		} catch(e) {
-			if(match) error(`Failed to parse edubar data from html`);
-			error(`Failed to parse JSON from edubar html`, match2);
+			return FatalError.throw(new ParseError("Failed to parse JSON from edubar html"), {html, match2, e});
 		}
 
 		return data;

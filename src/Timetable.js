@@ -2,6 +2,7 @@ const debug = require("debug")("edupage:log");
 const error = require("debug")("edupage:error");
 const RawData = require("../lib/RawData");
 const Edupage = require("./Edupage");
+const {FatalError, ParseError} = require("./exceptions");
 const Lesson = require("./Lesson");
 
 debug.log = console.log.bind(console);
@@ -66,16 +67,12 @@ class Timetable extends RawData {
 	static parse(html) {
 		const match = html.match(/classbook\.fill\([\s\S]*?,\s?([\s\S]+?)(?:,\s?\[[\s\S]*?\])?\);/mi);
 
-		if(!match || !match[1]) {
-			error(`Failed to parse timetable data from html`, match);
-			return {};
-		}
+		if(!match || !match[1]) return FatalError.throw(new ParseError("Failed to parse timetable data from html"), {html, match});
 
 		try {
 			return JSON.parse(match[1]);
 		} catch(e) {
-			error(`Failed to parse JSON from timetable html`, match[1]);
-			return {};
+			return FatalError.throw(new ParseError("Failed to parse JSON from timetable html"), {html, match});
 		}
 	}
 }

@@ -36,7 +36,8 @@ const {
 	EdupageError,
 	APIError,
 	MessageError,
-	AttachmentError
+	AttachmentError,
+	FatalError
 } = require("./src/exceptions");
 
 module.exports = {
@@ -73,5 +74,6 @@ module.exports = {
 	EdupageError,
 	APIError,
 	MessageError,
-	AttachmentError
+	AttachmentError,
+	FatalError
 };

@@ -9,6 +9,7 @@ const Season = require("./Season");
 const Student = require("./Student");
 const Subject = require("./Subject");
 const Teacher = require("./Teacher");
+const {FatalError, ParseError} = require("./exceptions");
 
 debug.log = console.log.bind(console);
 
@@ -239,22 +240,22 @@ class Grade extends RawData {
 		const _settings = (html.match(/initZnamkovanieSettings\(([\s\S]*?)\);/) || "")[1];
 		const _data = (html.match(/znamkyStudentViewer\(([\s\S]*?)\);/) || "")[1];
 
-		if(!_settings) error(`[Grade-parser] Failed to parse settings from html`, _settings);
-		if(!_data) error(`[Grade-parser] Failed to parse data from html`, _data);
+		let settings = {};
+		let data = {};
 
-		var settings = {};
-		var data = {};
+		if(!_settings) return FatalError.throw(new ParseError("Failed to parse grade settings from html"), {html});
+		if(!_data) return FatalError.throw(new ParseError("Failed to parse grade data from html"), {html});
 
 		try {
 			settings = JSON.parse(_settings);
 		} catch(e) {
-			error(`[Grade-parser] Failed to parse settings as JSON`, _settings);
+			return FatalError.throw(new ParseError("Failed to parse grade settings as JSON"), {html, _settings});
 		}
 
 		try {
 			data = JSON.parse(_data);
 		} catch(e) {
-			error(`[Grade-parser] Failed to parse data as JSON`, _data);
+			return FatalError.throw(new ParseError("Failed to parse grade data as JSON"), {html, _data});
 		}
 
 		return {settings, data};
