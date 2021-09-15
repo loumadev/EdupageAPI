@@ -297,6 +297,7 @@ Here you can find representations of all classes, interfaces and enums. In code,
   * [enum AssignmentGroup](#enum-assignmentgroup)
   * [enum EntityType](#enum-entitytype)
   * [enum Gender](#enum-gender)
+  * [enum TimelineItemType](#enum-timelineitemtype)
 
 ## Classes
 
