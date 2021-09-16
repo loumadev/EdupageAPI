@@ -8,18 +8,24 @@ const path = require("path");
 class LoginError extends Error {
 	constructor(message) {
 		super(message);
+
+		this.name = "LoginError";
 	}
 }
 
 class ParseError extends Error {
 	constructor(message) {
 		super(message);
+
+		this.name = "ParseError";
 	}
 }
 
 class EdupageError extends Error {
 	constructor(message) {
 		super(message);
+
+		this.name = "EdupageError";
 	}
 }
 
@@ -27,6 +33,7 @@ class APIError extends Error {
 	constructor(message, ...data) {
 		super(message);
 
+		this.name = "APIError";
 		this.data = data;
 	}
 }
@@ -35,6 +42,7 @@ class MessageError extends Error {
 	constructor(message, ...data) {
 		super(message);
 
+		this.name = "MessageError";
 		this.data = data;
 	}
 }
@@ -43,6 +51,7 @@ class AttachmentError extends Error {
 	constructor(message, ...data) {
 		super(message);
 
+		this.name = "AttachmentError";
 		this.data = data;
 	}
 }
