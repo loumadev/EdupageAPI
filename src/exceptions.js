@@ -60,10 +60,11 @@ class FatalError extends Error {
 		const filename = `fatal_error_${date.toISOString().replace(/:/g, "-").replace(/\..\d*/, "")}.json`;
 		const dirname = path.resolve(__dirname, "../logs");
 		const file = path.join(dirname, filename);
+		const err = Object.getOwnPropertyNames(error).reduce((obj, prop) => ((obj[prop] = error[prop]), obj), {});	//To convert `Error` object to Object literal
 
 		//Create logs direcory and save error log
 		if(!fs.existsSync(dirname)) fs.mkdirSync(dirname);
-		fs.writeFileSync(file, JSON.stringify({error, data}, null, "\t"));
+		fs.writeFileSync(file, JSON.stringify({error: err, data}, null, "\t"));
 
 		const message = `
 #
