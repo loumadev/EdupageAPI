@@ -3,7 +3,7 @@ const debug = require("debug")("edupage:log");
 const error = require("debug")("edupage:error");
 const {default: fetch} = require("node-fetch");
 const CookieJar = require("../lib/CookieJar");
-const {LoginError, ParseError, EdupageError, APIError, MessageError} = require("./exceptions");
+const {LoginError, ParseError, EdupageError, APIError, MessageError, FatalError} = require("./exceptions");
 const {GENDER, ENDPOINT, ENTITY_TYPE, API_STATUS, TIMELINE_ITEM_TYPE} = require("./enums");
 const Edupage = require("./Edupage");
 const RawData = require("../lib/RawData");
@@ -217,21 +217,16 @@ class User extends RawData {
 				const ESID = url?.match(/(?:ESID|PSID)=(.+?)\b/)?.[1];
 
 				//Validate parsed data
-				if(origin == "portal") {
-					error(`[Login] Edupage server did not redirect login request to proper origin ('${origin}')`);
-					return reject(new EdupageError(`Edupage server did not redirect login request to proper origin`));
-				}
+				const __data = {html, err, url, origin, ESID};
+				if(origin == "portal") return FatalError.throw(new EdupageError("Edupage server did not redirect login request to proper origin"), __data);
+				if(!url) return FatalError.throw(new ParseError("Failed to parse redirect URL"), __data);
+				if(!origin) return FatalError.throw(new ParseError("Failed to parse edupage origin from redirect URL"), __data);
+				if(!ESID) return FatalError.throw(new ParseError("Failed to parse ESID parameter from URL"), __data);
+
+				//Login error occurred (usually wrong password)
 				if(err) {
 					error(`[Login] Error box showed:`, err);
 					return reject(new LoginError(`Failed to login: ${err}`));
-				}
-				if(!url) {
-					error(`[Login] Failed to parse redirect URL '${url}'`);
-					return reject(new ParseError(`Cannot parse redirect URL`));
-				}
-				if(!ESID) {
-					error(`[Login] Failed to parse ESID parameter from URL '${ESID}' ('${url}')`);
-					return reject(new ParseError(`Cannot parse ESID parameter from URL`));
 				}
 
 				//Setup properties

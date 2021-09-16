@@ -1,6 +1,6 @@
 const debug = require("debug")("edupage:log");
 const error = require("debug")("edupage:error");
-const {APIError, EdupageError, ParseError} = require("./exceptions");
+const {APIError, EdupageError, ParseError, FatalError} = require("./exceptions");
 const RawData = require("../lib/RawData");
 const Edupage = require("./Edupage");
 const {ENDPOINT, API_STATUS, TIMELINE_ITEM_TYPE} = require("./enums");
@@ -114,10 +114,7 @@ class Application extends RawData {
 
 		const draft = (res.redirect?.match(/draft=(\d+)/) || "")[1];
 
-		if(!draft) {
-			error(`Failed to parse draft id`, res.redirect);
-			throw new ParseError(`Failed to parse draft id from redirect url`);
-		}
+		if(!draft) return FatalError.throw(new ParseError("Failed to parse draft id from redirect URL"), {res, draft, this: this});
 
 		return draft;
 	}
