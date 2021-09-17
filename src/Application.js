@@ -114,7 +114,7 @@ class Application extends RawData {
 
 		const draft = (res.redirect?.match(/draft=(\d+)/) || "")[1];
 
-		if(!draft) return FatalError.throw(new ParseError("Failed to parse draft id from redirect URL"), {res, draft, this: this});
+		if(!draft) return FatalError.throw(new ParseError("Failed to parse draft id from redirect URL"), {res, draft, _data: this._data});
 
 		return draft;
 	}
