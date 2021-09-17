@@ -9,7 +9,7 @@ const Season = require("./Season");
 const Student = require("./Student");
 const Subject = require("./Subject");
 const Teacher = require("./Teacher");
-const {FatalError, ParseError} = require("./exceptions");
+const {FatalError, ParseError, EdupageError} = require("./exceptions");
 
 debug.log = console.log.bind(console);
 
@@ -180,6 +180,7 @@ class Grade extends RawData {
 	/**
 	 * 
 	 * @param {Edupage} [edupage=null]
+	 * @returns {any}
 	 * @memberof Grade
 	 */
 	init(edupage = null) {
@@ -191,14 +192,15 @@ class Grade extends RawData {
 		this.student = this.edupage.students.find(e => e.id == this._data.studentid);
 		this.teacher = this.edupage.teachers.find(e => e.id == this._data.ucitelid);
 
-		//Find event
-		this._data._event = this.edupage._data._grades._events[this.provider].find(e => e.UdalostID == this.eventId);
+		if(!this.provider) return FatalError.warn(new EdupageError("Failed to init the Grade object: Invalid provider"), {_data: this._data});
 
-		//Error handling in case event wasn't find 
-		if(!this._data._event) {
-			error(`[Grade] Cannot find event with ID '${this.eventId}'`);
-			return;
-		}
+		//Get all events for provider 
+		const eventsByProvider = this.edupage._data._grades._events[this.provider];
+		if(!eventsByProvider) return FatalError.warn(new EdupageError("Failed to init the Grade object: Cannot find provider"), {_data: this._data, eventsByProvider});
+
+		//Find event
+		this._data._event = eventsByProvider.find(e => e.UdalostID == this.eventId);
+		if(!this._data._event) return FatalError.warn(new EdupageError("Failed to init the Grade object: Cannot find event by id"), {_data: this._data, eventsByProvider});
 
 		//Assign event properties
 		this.plan = this.edupage.plans.find(e => e.id == this._data._event.planid);
