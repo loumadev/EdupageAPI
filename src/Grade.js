@@ -194,13 +194,9 @@ class Grade extends RawData {
 
 		if(!this.provider) return FatalError.warn(new EdupageError("Failed to init the Grade object: Invalid provider"), {_data: this._data});
 
-		//Get all events for provider 
-		const eventsByProvider = this.edupage._data._grades._events[this.provider];
-		if(!eventsByProvider) return FatalError.warn(new EdupageError("Failed to init the Grade object: Cannot find provider"), {_data: this._data, eventsByProvider});
-
 		//Find event
-		this._data._event = eventsByProvider.find(e => e.UdalostID == this.eventId);
-		if(!this._data._event) return FatalError.warn(new EdupageError("Failed to init the Grade object: Cannot find event by id"), {_data: this._data, eventsByProvider});
+		this._data._event = (this.edupage._data._grades._events[this.provider] || []).find(e => e.UdalostID == this.eventId);
+		if(!this._data._event) return;	//Edupage don't handle such case
 
 		//Assign event properties
 		this.plan = this.edupage.plans.find(e => e.id == this._data._event.planid);
