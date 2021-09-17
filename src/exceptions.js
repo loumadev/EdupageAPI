@@ -57,6 +57,8 @@ class AttachmentError extends Error {
 }
 
 class FatalError extends Error {
+	static warningsEnabled = !process.argv.includes("--edu-disable-warnings=true");
+
 	/**
 	 * @static
 	 * @param {Error} error
@@ -80,7 +82,7 @@ class FatalError extends Error {
 # A fatal error has occurred!
 #
 # This is probably not your fault!
-# If this often happens, please consider reporting an issue.
+# If this happens often, please consider reporting a bug.
 #
 # Error thrown:
 #  ${error.stack.split("\n").join("\n#  ")}
@@ -91,7 +93,7 @@ class FatalError extends Error {
 #  Node.js version: ${process.version}
 #  Error log: ${file}
 #
-# If you would like to submit a bug report, please visit:
+# If you would like to submit an issue, please visit:
 #  > https://github.com/loumadev/EdupageAPI/issues
 #  (Please, include this error message + error log)
 #
@@ -99,6 +101,56 @@ class FatalError extends Error {
 		//Log error to stderr and exit process
 		console.error(message);
 		process.exitCode = 1;
+
+		//To comply jslint
+		return undefined;
+	}
+
+	/**
+	 * @static
+	 * @param {Error} error
+	 * @param {RawDataObject} data
+	 * @returns {any}
+	 * @memberof FatalError
+	 */
+	static warn(error, data) {
+		if(!this.warningsEnabled) return;
+
+		const date = new Date();
+		const filename = `warning_${date.toISOString().replace(/:/g, "-").replace(/\..\d*/, "")}.json`;
+		const dirname = path.resolve(__dirname, "../logs");
+		const file = path.join(dirname, filename);
+		const err = Object.getOwnPropertyNames(error).reduce((obj, prop) => ((obj[prop] = error[prop]), obj), {});	//To convert `Error` object to Object literal
+
+		//Create logs direcory and save error log
+		if(!fs.existsSync(dirname)) fs.mkdirSync(dirname);
+		fs.writeFileSync(file, JSON.stringify({error: err, data}, null, "\t"));
+
+		const message = `
+#
+# An error has occurred!
+#
+# This is probably not your fault!
+# It should not cause the program to crash, but some functionality can be limited.
+# If this happens often, please consider reporting a bug.
+# You can disable the warnings by including "--edu-disable-warnings=true" as a CLI argument.
+#
+# Error thrown:
+#  ${error.stack.split("\n").join("\n#  ")}
+#
+# Summary:
+#  Time: ${date.toString()}
+#  EdupageAPI version: v${require("../package.json").version}
+#  Node.js version: ${process.version}
+#  Error log: ${file}
+#
+# If you would like to submit an issue, please visit:
+#  > https://github.com/loumadev/EdupageAPI/issues
+#  (Please, include this error message + error log)
+#
+`;
+		//Log warning to stderr
+		console.warn(message);
 
 		//To comply jslint
 		return undefined;
