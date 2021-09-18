@@ -360,8 +360,7 @@ class Edupage extends RawData {
 
 		//Parse current user
 		const _temp = this.user;
-		const id = (this._data.userid.match(/\d+/) || [])[0];
-		const user = this.getUserById(id);
+		const user = this.getUserByUserString(this._data.userid);
 
 		//Error handling
 		if(!user) throw new EdupageError(`Failed to load currently logged in user`);
@@ -387,13 +386,21 @@ class Edupage extends RawData {
 	/**
 	 *
 	 * @param {string} userString
+	 * @return {string} 
+	 * @memberof Edupage
+	 */
+	getUserIdByUserString(userString) {
+		return (userString.match(/-?\d+/) || "")[0];
+	}
+
+	/**
+	 *
+	 * @param {string} userString
 	 * @return {User|Teacher|Student|Parent|undefined} 
 	 * @memberof Edupage
 	 */
 	getUserByUserString(userString) {
-		const id = (userString.match(/-?\d+/) || "")[0];
-
-		return this.getUserById(id);
+		return this.getUserById(this.getUserIdByUserString(userString));
 	}
 
 	/**
