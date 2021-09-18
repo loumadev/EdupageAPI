@@ -213,7 +213,7 @@ class User extends RawData {
 				debug(`[Login] Parsing html data...`);
 				const err = html.match(/<div.*?class=".*?errorbox".*?>(.*?)</)?.[1]?.trim?.();
 				const url = html.match(/window\.open\("(.*?)"/)?.[1];
-				const origin = url?.match(/(\w*?).edupage.org/)?.[1];
+				const origin = url?.match(/https?:\/\/(.*?).edupage.org/)?.[1];
 				const ESID = url?.match(/(?:ESID|PSID)=(.+?)\b/)?.[1];
 
 				//Validate parsed data
