@@ -104,7 +104,7 @@ const edupage = new Edupage();
 ### Get timetables for specific date range
 If you need to access multiple timetables at once, you can use this method.
 
-**Note:** You shouldn't be calling this method in loop for same date range, use instead `getTimetableForDate` method which reads from cache.
+**Note:** You shouldn't be calling this method in loop for same date range, use `getTimetableForDate` method instead which reads from cache.
 ```javascript
 const {Edupage} = require("edupage-api");
 
@@ -143,7 +143,7 @@ const edupage = new Edupage();
 
     //Get your lesson
     //Note: This will return second lesson in array, not second period.
-    //      In case you want to access second period you may want:
+    //      In case you want to access second period you may need:
     //      `timetable.lessons.find(e => e.period.id == "3")`
     const lesson = timetable.lessons[1];
 
