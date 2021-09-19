@@ -14,6 +14,7 @@ This is an unofficial Node.js implementation of the Edupage API. This module is 
   * [Send a message to the user](#send-a-message-to-the-user)
   * [Send a message with an attachment](#send-a-message-with-an-attachment)
   * [Get the material data and results of an assignment](#get-the-material-data-and-results-of-an-assignment)
+  * [Post COVID-19 infectivity application](#post-covid-19-infectivity-application)
 * [API](#api)
 
 ## Overview
