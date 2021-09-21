@@ -171,7 +171,8 @@ const TIMELINE_ITEM_TYPE = {
 	BLACKBOARD: "bb",
 	STUDENT_PICKUP: "odchadzka",
 	TIMETABLE_CLOUD_GENERATE: "ttcloudgen",
-	CONFIRMATION: "confirmation"
+	CONFIRMATION: "confirmation",
+	CONTEST: "contest"
 };
 
 

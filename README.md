@@ -1080,6 +1080,7 @@ enum TimelineItemType {
 	BLACKBOARD = "bb",
 	STUDENT_PICKUP = "odchadzka",
 	TIMETABLE_CLOUD_GENERATE = "ttcloudgen",
-	CONFIRMATION = "confirmation"
+	CONFIRMATION = "confirmation",
+	CONTEST = "contest"
 }
 ```
