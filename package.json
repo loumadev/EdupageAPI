@@ -1,6 +1,6 @@
 {
 	"name": "edupage-api",
-	"version": "0.7.11",
+	"version": "0.7.12",
 	"description": "Simple node.js package to manage your EduPage account.",
 	"main": "index.js",
 	"scripts": {
@@ -31,6 +31,7 @@
 	},
 	"homepage": "https://github.com/loumadev/EdupageAPI#readme",
 	"dependencies": {
-		"node-fetch": "^2.6.0"
+		"node-fetch": "^2.6.0",
+		"debug": "^4.3.2"
 	}
 }
