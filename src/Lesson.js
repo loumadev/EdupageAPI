@@ -1,3 +1,4 @@
+const {FatalError} = require("./exceptions");
 const RawData = require("../lib/RawData");
 const Assignment = require("./Assignment");
 const Class = require("./Class");
@@ -112,6 +113,7 @@ class Lesson extends RawData {
 	 * 
 	 * @param {Edupage} [edupage=null]
 	 * @memberof Lesson
+	 * @returns {void}
 	 */
 	init(edupage = null) {
 		if(edupage) this.edupage = edupage;
@@ -126,9 +128,18 @@ class Lesson extends RawData {
 			this.edupage.assignments.find(e => e.hwkid && e.hwkid.includes(id.split(":")[1] || id))
 		);
 
-		//Set the lesson start time
-		const d = this.period.startTime.split(":");
-		this.date.setHours(+d[0], +d[1]);
+		if(!this.period) {
+			return FatalError.warn(new ReferenceError("Failed to find period for lesson"), {
+				query: this._data.flags.dp0.period,
+				periods: this.edupage.periods,
+				_data_lesson: this._data,
+				_data_edupage: this.edupage._data.dbi?.periods
+			});
+		} else {
+			//Set the lesson start time
+			const d = this.period.startTime.split(":");
+			this.date.setHours(+d[0], +d[1]);
+		}
 	}
 
 	/**
