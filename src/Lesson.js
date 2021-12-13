@@ -128,15 +128,27 @@ class Lesson extends RawData {
 			this.edupage.assignments.find(e => e.hwkid && e.hwkid.includes(id.split(":")[1] || id))
 		);
 
+		//In case the period is not specified
 		if(!this.period) {
-			return FatalError.warn(new ReferenceError("Failed to find period for lesson"), {
-				query: this._data.flags.dp0.period,
+			const periodId = this._data.flags.dp0.period;
+
+			//There is a period id, but it's not in the periods list
+			if(periodId) return FatalError.warn(new ReferenceError("Failed to find period for lesson"), {
+				query: periodId,
 				periods: this.edupage.periods,
 				_data_lesson: this._data,
 				_data_edupage: this.edupage._data.dbi?.periods
 			});
-		} else {
-			//Set the lesson start time
+
+			//There is no period id specified, so use time at least
+			this.period = Period.getInvalid({
+				startTime: this._data.flags.dp0.starttime,
+				endTime: this._data.flags.dp0.endtime,
+			});
+		}
+
+		//Set the lesson start time
+		if(this.period.startTime) {
 			const d = this.period.startTime.split(":");
 			this.date.setHours(+d[0], +d[1]);
 		}

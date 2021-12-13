@@ -505,7 +505,7 @@ class Edupage extends RawData {
     async refreshGrades(_update?: boolean = true): void;          // Refreshes grades of currently logged  user
 
     _updateInternalValues(): void;                                // Updates all fields of the current instance (called internally after
-	                                                              // any of the "refresh" methods, if `_update` is set to `true`)
+                                                                  // any of the "refresh" methods, if `_update` is set to `true`)
 
     async uploadAttachment(filepath: string): Promise<Attachment>;
     async api(options: APIOptions): Promise<RawDataObject | string>;
@@ -699,6 +699,14 @@ class Period extends RawData {
 
     startTime: string;
     endTime: string;
+
+    getInvalid(data?: {    //Creates new invalid Period
+        id?: string?,
+        name?: string,
+        short?: string,
+        startTime?: string,
+        endTime?: string
+    } = null): Period;
 }
 ```
 
@@ -1041,46 +1049,46 @@ enum Gender {
 This enum contains records about the timeline item types.
 ```typescript
 enum TimelineItemType {
-	MESSAGE = "sprava",
-	MESSAGE_TO_SUBTITUTER = "spravasuplujucemu",
-	NOTICEBOARD = "nastenka",
-	GRADE_ANNOUNCEMENT = "nastenka",
-	GRADE = "znamka",
-	NOTE = "vcelicka",
-	HOMEWORK = "homework",
-	HOMEWORK_STUDENT_STATE = "homework",
-	ABSENCE_NOTE = "ospravedlnenka",
-	ABSENCE_NOTE_REMINDER = "ospravedlnenka_reminder",
-	PROCESS = "process",
-	PROCESS_ADMIN = "processadmin",
-	STUDENT_ABSENT = "student_absent",
-	ACCIDENT = "accident",
-	EVENT = "event",
-	TIMETABLE = "timetable",
-	SUBSTITUTION = "substitution",
-	CANTEEN_MENU = "stravamenu",
-	CANTEEN_CREDIT = "strava_kredit",
-	CANTEEN_SUSPEND_REINSTATE_ORDERS = "strava_prerusObnovObj",
-	CANTEEN_OPENING = "strava_vydaj",
-	SURVEY = "anketa",
-	PLAN = "plan",
-	SETTINGS = "settings",
-	ALBUM = "album",
-	NEWS = "news",
-	TEST_ASSIGNMENT = "testpridelenie",
-	TEST_RESULT = "testvysledok",
-	CHAT = "chat",
-	CHECK_IN = "pipnutie",
-	CONSULTATION_MESSAGE = "konzultaciemsg",
-	CONSULTATION = "konzultacie",
-	PAYMENTS = "payments",
-	SIGN_IN = "signin",
-	CURRICULUM = "ucivo",
-	CURRICULUM_REMINDER = "ucivo_reminder",
-	BLACKBOARD = "bb",
-	STUDENT_PICKUP = "odchadzka",
-	TIMETABLE_CLOUD_GENERATE = "ttcloudgen",
-	CONFIRMATION = "confirmation",
-	CONTEST = "contest"
+    MESSAGE = "sprava",
+    MESSAGE_TO_SUBTITUTER = "spravasuplujucemu",
+    NOTICEBOARD = "nastenka",
+    GRADE_ANNOUNCEMENT = "nastenka",
+    GRADE = "znamka",
+    NOTE = "vcelicka",
+    HOMEWORK = "homework",
+    HOMEWORK_STUDENT_STATE = "homework",
+    ABSENCE_NOTE = "ospravedlnenka",
+    ABSENCE_NOTE_REMINDER = "ospravedlnenka_reminder",
+    PROCESS = "process",
+    PROCESS_ADMIN = "processadmin",
+    STUDENT_ABSENT = "student_absent",
+    ACCIDENT = "accident",
+    EVENT = "event",
+    TIMETABLE = "timetable",
+    SUBSTITUTION = "substitution",
+    CANTEEN_MENU = "stravamenu",
+    CANTEEN_CREDIT = "strava_kredit",
+    CANTEEN_SUSPEND_REINSTATE_ORDERS = "strava_prerusObnovObj",
+    CANTEEN_OPENING = "strava_vydaj",
+    SURVEY = "anketa",
+    PLAN = "plan",
+    SETTINGS = "settings",
+    ALBUM = "album",
+    NEWS = "news",
+    TEST_ASSIGNMENT = "testpridelenie",
+    TEST_RESULT = "testvysledok",
+    CHAT = "chat",
+    CHECK_IN = "pipnutie",
+    CONSULTATION_MESSAGE = "konzultaciemsg",
+    CONSULTATION = "konzultacie",
+    PAYMENTS = "payments",
+    SIGN_IN = "signin",
+    CURRICULUM = "ucivo",
+    CURRICULUM_REMINDER = "ucivo_reminder",
+    BLACKBOARD = "bb",
+    STUDENT_PICKUP = "odchadzka",
+    TIMETABLE_CLOUD_GENERATE = "ttcloudgen",
+    CONFIRMATION = "confirmation",
+    CONTEST = "contest"
 }
 ```
