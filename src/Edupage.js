@@ -8,6 +8,7 @@ const Teacher = require("./Teacher");
 const User = require("./User");
 const {btoa, iterate} = require("../lib/utils");
 const {ENDPOINT, API_STATUS, TIMELINE_ITEM_TYPE} = require("./enums");
+const {SESSION_PING_INTERVAL_MS} = require("./constants");
 const Class = require("./Class");
 const Classroom = require("./Classroom");
 const Parent = require("./Parent");
@@ -147,6 +148,12 @@ class Edupage extends RawData {
 		 * @type {string}
 		 */
 		this.baseUrl = null;
+
+		//Used internally to keep track of Timeout object for session pinging 
+		Object.defineProperty(this, "_sessionPingTimeout", {
+			enumerable: false,
+			writable: true
+		});
 	}
 
 	/**
@@ -167,6 +174,8 @@ class Edupage extends RawData {
 
 				//Update edupage data
 				await this.refresh().catch(reject);
+
+				this.scheduleSessionPing();
 
 				resolve(this.user);
 			}).catch(reject);
@@ -440,7 +449,10 @@ class Edupage extends RawData {
 				const _html = await this.api({url: ENDPOINT.DASHBOARD_GET_CLASSBOOK, method: "GET", type: "text"});
 				const ids = [..._html.matchAll(/gpid="?(\d+)"?/gi)].map(e => e[1]);
 
-				if(ids.length) this.ASC.gpid = ids[ids.length - 1];
+						if(ids.length) {
+							this.ASC.gpids = ids;
+							this.ASC.gpid = ids[ids.length - 1];
+						}
 				else throw new Error("Cannot find gpid value");
 			} catch(err) {
 				debug(`[Timetable] Could not get 'gpid' property`, err);
@@ -632,6 +644,91 @@ class Edupage extends RawData {
 	}
 
 	/**
+	 * Sends a session ping request
+	 * @returns {Promise<boolean>} Whether the ping was successful
+	 */
+	async pingSession() {
+		debug(`[Login] Sening a session ping request...`);
+
+		const gpids = this.ASC.gpids;
+		const success = await this.api({
+			url: ENDPOINT.SESSION_PING,
+			method: "POST",
+			type: "text",
+			data: {
+				gpids: gpids.join(";")
+			}
+		}).then(data => {
+			if(data == "notlogged") return false;
+			else if(data == "OK") return true;
+
+			try {
+				const obj = JSON.parse(data);
+				if(obj.status == "notlogged") return false;
+				else return true;
+			} catch(err) {
+				FatalError.throw(new ParseError(`Failed to parse session ping response as JSON: ${err.message}`), {data, gpids});
+			}
+		}).catch(err => {
+			FatalError.warn(new APIError(`Failed to ping session: ${err.message}`), {err, gpids});
+			return null;
+		});
+
+		this.scheduleSessionPing();
+
+		//Failed to ping session
+		if(success === null) {
+			error(`[Login] Failed to ping session`);
+			return false;
+		}
+
+		//Successfully pinged session
+		if(success) {
+			debug(`[Login] Successfully pinged session`);
+			return true;
+		}
+
+		//Session is not logged in
+		if(!success) {
+			warn(`[Login] Session is not logged in, trying to log in...`);
+			const loggedIn = await this.user.login(this.user.credentials.username, this.user.credentials.password)
+				.then(() => {
+					debug(`[Login] Successfully logged in`);
+					return true;
+				})
+				.catch(err => {
+					error(`[Login] Failed to log in:`, err);
+					return false;
+				});
+
+			return loggedIn;
+		}
+	}
+
+	/**
+	 * Schedules a session ping request
+	 */
+	scheduleSessionPing() {
+		if(this._sessionPingTimeout) {
+			clearTimeout(this._sessionPingTimeout);
+			this._sessionPingTimeout = null;
+		}
+
+		this._sessionPingTimeout = setTimeout(() => this.pingSession(), SESSION_PING_INTERVAL_MS);
+		debug(`[Login] Scheduled session ping in ${SESSION_PING_INTERVAL_MS}ms`);
+	}
+
+	/**
+	 * Stops internal timers to prevent process from hanging infinitely.
+	 */
+	exit() {
+		if(this._sessionPingTimeout) {
+			clearTimeout(this._sessionPingTimeout);
+			this._sessionPingTimeout = null;
+		}
+	}
+
+	/**
 	 *
 	 * @param {Date|number|string} date1
 	 * @param {Date|number|string} date2
@@ -696,6 +793,7 @@ class Edupage extends RawData {
 		if(endpoint == ENDPOINT.ELEARNING_TEST_RESULTS) url = `/elearning/?cmd=EtestCreator&akcia=getResultsData`;
 		if(endpoint == ENDPOINT.ELEARNING_CARDS_DATA) url = `/elearning/?cmd=EtestCreator&akcia=getCardsData`;
 		if(endpoint == ENDPOINT.GRADES_DATA) url = `/znamky/?barNoSkin=1`;
+		if(endpoint == ENDPOINT.SESSION_PING) url = this._data?._edubar?.sessionPingUrl || `/login/eauth?portalping`;
 
 		if(!url) throw new TypeError(`Invalid API endpoint '${endpoint}'`);
 		else return this.baseUrl + url;

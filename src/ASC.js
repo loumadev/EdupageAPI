@@ -82,6 +82,11 @@ class ASC extends RawData {
 		this.gpid = null;
 
 		/**
+		 * @type {string[]}
+		 */
+		this.gpids = [];
+
+		/**
 		 * @type {number}
 		 */
 		this.firstDayOfWeek = data.firstDayOfWeek;
