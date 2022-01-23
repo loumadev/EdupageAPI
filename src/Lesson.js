@@ -1,4 +1,6 @@
-const {FatalError} = require("./exceptions");
+const debug = require("debug")("edupage:log");
+const error = require("debug")("edupage:error");
+const {FatalError, EdupageError} = require("./exceptions");
 const RawData = require("../lib/RawData");
 const Assignment = require("./Assignment");
 const Class = require("./Class");
@@ -160,28 +162,41 @@ class Lesson extends RawData {
 	 * @memberof Lesson
 	 */
 	async signIntoLesson() {
-		if(!this.isOnlineLesson) throw new Error(`Cannot sign into this lesson`);
+		return new Promise((resolve, reject) => {
+			if(!this.isOnlineLesson) return reject(new Error(`Cannot sign into this lesson`));
+			const tryFetch = async _count => {
 
-		const payload = {
-			"__args": [
-				null,
-				{
-					"click": true,
-					"date": this.date.toISOString().slice(0, 10),
-					"ol_url": this.onlineLessonURL,
-					"subjectid": this.subject.id
-				}
-			],
-			"__gsh": this.edupage.ASC.gsecHash
-		};
+				const payload = {
+					"__args": [
+						null,
+						{
+							"click": true,
+							"date": this.date.toISOString().slice(0, 10),
+							"ol_url": this.onlineLessonURL,
+							"subjectid": this.subject.id
+						}
+					],
+					"__gsh": this.edupage.ASC.gsecHash
+				};
 
-		const res = await this.edupage.api({
-			url: ENDPOINT.DASHBOARD_SIGN_ONLINE_LESSON,
-			data: payload,
-			encodeBody: false
+				this.edupage.api({
+					url: ENDPOINT.DASHBOARD_SIGN_ONLINE_LESSON,
+					data: payload,
+					encodeBody: false
+				}).then(res => {
+					resolve(res.reload != true);
+				}).catch(err => {
+					if(err.retry) {
+						debug(`[Timetable] Got retry signal, retrying...`);
+						tryFetch(err.count + 1);
+					} else {
+						error(`[Timetable] Could not fetch timetables`, err);
+						reject(new EdupageError("Failed to fetch timetables: " + err.message));
+					}
+				});
+			};
+			tryFetch(-1);
 		});
-
-		return res.reload != true;
 	}
 }
 

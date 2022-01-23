@@ -128,23 +128,36 @@ class Application extends RawData {
 	 * @memberof Application
 	 */
 	async post(parameters = {}, draftId = null) {
-		const res = await this.edupage.api({
-			url: ENDPOINT.DASHBOARD_GCALL,
-			method: "POST",
-			type: "text",
-			data: new URLSearchParams({
-				gpid: draftId || await this.createDraft(),
-				gsh: this.edupage.ASC.gsecHash,
-				action: "create",
-				_LJSL: "2052",	//Seems like some -static- (it might vary) parameter (Loaded JS Libraries), keep it for a safety
-				...parameters
-			}).toString(),
-			encodeBody: false
+		return new Promise((resolve, reject) => {
+			const tryFetch = async _count => {
+				this.edupage.api({
+					url: ENDPOINT.DASHBOARD_GCALL,
+					method: "POST",
+					type: "text",
+					data: new URLSearchParams({
+						gpid: draftId || await this.createDraft(),
+						gsh: this.edupage.ASC.gsecHash,
+						action: "create",
+						_LJSL: "2052",	//Seems like some -static- (it might vary) parameter (Loaded JS Libraries), keep it for a safety
+						...parameters
+					}).toString(),
+					encodeBody: false
+				}).then(res => {
+					const success = /"border_error":\s*false/.test(res) && !/"border_error":\s*true/.test(res);
+
+					resolve(success);
+				}).catch(err => {
+					if(err.retry) {
+						debug(`[Application] Got retry signal, retrying...`);
+						tryFetch(err.count + 1);
+					} else {
+						error(`[Application] Could not post application`, err);
+						reject(new EdupageError("Failed to post application: " + err.message));
+					}
+				});
+			};
+			tryFetch(-1);
 		});
-
-		const success = /"border_error":\s*false/.test(res) && !/"border_error":\s*true/.test(res);
-
-		return success;
 	}
 
 	/**

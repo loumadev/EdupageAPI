@@ -525,7 +525,7 @@ class Edupage extends RawData {
                                                                   // any of the "refresh" methods, if `_update` is set to `true`)
 
     async uploadAttachment(filepath: string): Promise<Attachment>;
-    async api(options: APIOptions): Promise<RawDataObject | string>;
+    async api(options: APIOptions, _count: number = 0): Promise<RawDataObject | string, Error | {retry: true, count: number}>;
 
     scheduleSessionPing(): void;
     async pingSession(): Promise<boolean>;
