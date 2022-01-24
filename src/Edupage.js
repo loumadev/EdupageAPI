@@ -1,4 +1,5 @@
 const debug = require("debug")("edupage:log");
+const warn = require("debug")("edupage:warn");
 const error = require("debug")("edupage:error");
 const fs = require("fs");
 const stream = require("stream");
@@ -8,6 +9,7 @@ const Teacher = require("./Teacher");
 const User = require("./User");
 const {btoa, iterate} = require("../lib/utils");
 const {ENDPOINT, API_STATUS, TIMELINE_ITEM_TYPE} = require("./enums");
+const {SESSION_PING_INTERVAL_MS} = require("./constants");
 const Class = require("./Class");
 const Classroom = require("./Classroom");
 const Parent = require("./Parent");
@@ -147,6 +149,12 @@ class Edupage extends RawData {
 		 * @type {string}
 		 */
 		this.baseUrl = null;
+
+		//Used internally to keep track of Timeout object for session pinging 
+		Object.defineProperty(this, "_sessionPingTimeout", {
+			enumerable: false,
+			writable: true
+		});
 	}
 
 	/**
@@ -167,6 +175,8 @@ class Edupage extends RawData {
 
 				//Update edupage data
 				await this.refresh().catch(reject);
+
+				this.scheduleSessionPing();
 
 				resolve(this.user);
 			}).catch(reject);
@@ -231,7 +241,6 @@ class Edupage extends RawData {
 	 * @memberof Edupage
 	 */
 	async refreshTimeline(_update = true) {
-
 		//Fetch timeline data
 		const _timeline = await this.api({
 			url: ENDPOINT.TIMELINE_GET_DATA,
@@ -433,48 +442,65 @@ class Edupage extends RawData {
 	 * @memberof Edupage
 	 */
 	async fetchTimetablesForDates(fromDate, toDate) {
-		//Get 'gpid' if it doesn't exist yet
-		if(!this.ASC.gpid) {
-			debug(`[Timetable] 'gpid' property does not exists, trying to fetch it...`);
-			try {
-				const _html = await this.api({url: ENDPOINT.DASHBOARD_GET_CLASSBOOK, method: "GET", type: "text"});
-				const ids = [..._html.matchAll(/gpid="?(\d+)"?/gi)].map(e => e[1]);
+		return new Promise((resolve, reject) => {
+			const tryFetch = async _count => {
+				//Get 'gpid' if it doesn't exist yet
+				if(!this.ASC.gpid) {
+					debug(`[Timetable] 'gpid' property does not exists, trying to fetch it...`);
+					try {
+						const _html = await this.api({url: ENDPOINT.DASHBOARD_GET_CLASSBOOK, method: "GET", type: "text"});
+						const ids = [..._html.matchAll(/gpid="?(\d+)"?/gi)].map(e => e[1]);
 
-				if(ids.length) this.ASC.gpid = ids[ids.length - 1];
-				else throw new Error("Cannot find gpid value");
-			} catch(err) {
-				debug(`[Timetable] Could not get 'gpid' property`, err);
-				throw new EdupageError("Could not get 'gpid' property: " + err.message);
-			}
-			debug(`[Timetable] 'gpid' property fetched!`);
-		}
+						if(ids.length) {
+							this.ASC.gpids = ids;
+							this.ASC.gpid = ids[ids.length - 1];
+						}
+						else throw new Error("Cannot find gpid value");
+					} catch(err) {
+						debug(`[Timetable] Could not get 'gpid' property`, err);
+						return reject(new EdupageError("Could not get 'gpid' property: " + err.message));
+					}
+					debug(`[Timetable] 'gpid' property fetched!`);
+				}
 
-		//Load and parse data
-		const _html = await this.api({
-			url: ENDPOINT.DASHBOARD_GCALL,
-			method: "POST",
-			type: "text",
-			data: new URLSearchParams({
-				gpid: this.ASC.gpid,
-				gsh: this.ASC.gsecHash,
-				action: "loadData",
-				datefrom: Edupage.dateToString(fromDate),
-				dateto: Edupage.dateToString(toDate),
-			}).toString(),
-			encodeBody: false
+				//Load and parse data
+				this.api({
+					url: ENDPOINT.DASHBOARD_GCALL,
+					method: "POST",
+					type: "text",
+					data: new URLSearchParams({
+						gpid: this.ASC.gpid,
+						gsh: this.ASC.gsecHash,
+						action: "loadData",
+						datefrom: Edupage.dateToString(fromDate),
+						dateto: Edupage.dateToString(toDate),
+					}).toString(),
+					encodeBody: false
+				}, _count).then(_html => {
+					const _json = Timetable.parse(_html);
+					const timetables = iterate(_json.dates).map(([i, date, data]) => new Timetable(data, date, this));
+
+					//Update timetables
+					timetables.forEach(e => {
+						const i = this.timetables.findIndex(t => e.date.getTime() == t.date.getTime());
+
+						if(i > -1) this.timetables[i] = e;
+						else this.timetables.push(e);
+					});
+
+					resolve(timetables);
+				}).catch(err => {
+					if(err.retry) {
+						debug(`[Timetable] Got retry signal, retrying...`);
+						tryFetch(err.count + 1);
+					} else {
+						error(`[Timetable] Could not fetch timetables`, err);
+						reject(new EdupageError("Failed to fetch timetables: " + err.message));
+					}
+				});
+			};
+			tryFetch(-1);
 		});
-		const _json = Timetable.parse(_html);
-		const timetables = iterate(_json.dates).map(([i, date, data]) => new Timetable(data, date, this));
-
-		//Update timetables
-		timetables.forEach(e => {
-			const i = this.timetables.findIndex(t => e.date.getTime() == t.date.getTime());
-
-			if(i > -1) this.timetables[i] = e;
-			else this.timetables.push(e);
-		});
-
-		return timetables;
 	}
 
 	/**
@@ -523,10 +549,11 @@ class Edupage extends RawData {
 	 *
 	 * @static
 	 * @param {APIOptions} options
-	 * @return {Promise<any>} 
+	 * @param {number} [_count=0]
+	 * @return {Promise<any, Error | {retry: true, count: number}>} Resolves: Response body, Rejects: Error or retry object in case of successful invalid gsecHash error resolution 
 	 * @memberof Edupage
 	 */
-	async api(options) {
+	async api(options, _count = 0) {
 		const {
 			headers = {},
 			data = {},
@@ -539,7 +566,7 @@ class Edupage extends RawData {
 		let url = options.url;
 
 		return new Promise((resolve, reject) => {
-			const tryFetch = (tryCount = 0) => {
+			const tryFetch = (tryCount = _count || 0) => {
 				debug(`[API] Trying to send request...`);
 
 				const tryLogIn = async () => {
@@ -567,7 +594,6 @@ class Edupage extends RawData {
 
 				//If url is APIEndpoint, convert it to url
 				if(typeof url === "number") {
-					debug(`[API] Translating API endpoint into URL...`);
 					url = this.buildRequestUrl(url);
 				}
 
@@ -603,6 +629,17 @@ class Edupage extends RawData {
 						//Try to log in
 						debug(`[API] Server responded with login page`);
 						tryLogIn();
+					} else if(text.includes("Error6511024354099")) {
+						//Invalid gsecHash
+						error(`[API] Invalid gsecHash, refreshing edupage...`);
+						this.refreshEdupage().then(() => {
+							debug(`[API] Edupage refreshed, trying again (${tryCount + 1})...`);
+							reject({retry: true, count: ++tryCount});
+							//tryFetch(++tryCount);
+						}).catch(err => {
+							error(`[API] Failed to refresh edupage:`, err);
+							reject(new APIError("Failed to refresh edupage while resolving Invalid gsecHash error", err));
+						});
 					} else {
 						if(type == "json") {
 							try {
@@ -629,6 +666,91 @@ class Edupage extends RawData {
 			};
 			tryFetch();
 		});
+	}
+
+	/**
+	 * Sends a session ping request
+	 * @returns {Promise<boolean>} Whether the ping was successful
+	 */
+	async pingSession() {
+		debug(`[Login] Sening a session ping request...`);
+
+		const gpids = this.ASC.gpids;
+		const success = await this.api({
+			url: ENDPOINT.SESSION_PING,
+			method: "POST",
+			type: "text",
+			data: {
+				gpids: gpids.join(";")
+			}
+		}).then(data => {
+			if(data == "notlogged") return false;
+			else if(data == "OK") return true;
+
+			try {
+				const obj = JSON.parse(data);
+				if(obj.status == "notlogged") return false;
+				else return true;
+			} catch(err) {
+				FatalError.throw(new ParseError(`Failed to parse session ping response as JSON: ${err.message}`), {data, gpids});
+			}
+		}).catch(err => {
+			FatalError.warn(new APIError(`Failed to ping session: ${err.message}`), {err, gpids});
+			return null;
+		});
+
+		this.scheduleSessionPing();
+
+		//Failed to ping session
+		if(success === null) {
+			error(`[Login] Failed to ping session`);
+			return false;
+		}
+
+		//Successfully pinged session
+		if(success) {
+			debug(`[Login] Successfully pinged session`);
+			return true;
+		}
+
+		//Session is not logged in
+		if(!success) {
+			warn(`[Login] Session is not logged in, trying to log in...`);
+			const loggedIn = await this.user.login(this.user.credentials.username, this.user.credentials.password)
+				.then(() => {
+					debug(`[Login] Successfully logged in`);
+					return true;
+				})
+				.catch(err => {
+					error(`[Login] Failed to log in:`, err);
+					return false;
+				});
+
+			return loggedIn;
+		}
+	}
+
+	/**
+	 * Schedules a session ping request
+	 */
+	scheduleSessionPing() {
+		if(this._sessionPingTimeout) {
+			clearTimeout(this._sessionPingTimeout);
+			this._sessionPingTimeout = null;
+		}
+
+		this._sessionPingTimeout = setTimeout(() => this.pingSession(), SESSION_PING_INTERVAL_MS);
+		debug(`[Login] Scheduled session ping in ${SESSION_PING_INTERVAL_MS}ms`);
+	}
+
+	/**
+	 * Stops internal timers to prevent process from hanging infinitely.
+	 */
+	exit() {
+		if(this._sessionPingTimeout) {
+			clearTimeout(this._sessionPingTimeout);
+			this._sessionPingTimeout = null;
+		}
 	}
 
 	/**
@@ -696,6 +818,7 @@ class Edupage extends RawData {
 		if(endpoint == ENDPOINT.ELEARNING_TEST_RESULTS) url = `/elearning/?cmd=EtestCreator&akcia=getResultsData`;
 		if(endpoint == ENDPOINT.ELEARNING_CARDS_DATA) url = `/elearning/?cmd=EtestCreator&akcia=getCardsData`;
 		if(endpoint == ENDPOINT.GRADES_DATA) url = `/znamky/?barNoSkin=1`;
+		if(endpoint == ENDPOINT.SESSION_PING) url = this._data?._edubar?.sessionPingUrl || `/login/eauth?portalping`;
 
 		if(!url) throw new TypeError(`Invalid API endpoint '${endpoint}'`);
 		else return this.baseUrl + url;

@@ -73,6 +73,8 @@ const edupage = new Edupage();
     const lessons = timetable.lessons;
 
     console.log(lessons);
+
+    edupage.exit(); //To exit the process
 })();
 ```
 
@@ -98,6 +100,8 @@ const edupage = new Edupage();
     const homeworks = lessons.reduce((arr, lesson) => (arr.push(...lesson.assignments), arr), []);
 
     console.log(homeworks);
+
+    edupage.exit(); //To exit the process
 })();
 ```
 
@@ -122,6 +126,8 @@ const edupage = new Edupage();
     const timetables = await edupage.fetchTimetablesForDates(from, to);
 
     console.log(timetables);
+
+    edupage.exit(); //To exit the process
 })();
 ```
 
@@ -154,6 +160,8 @@ const edupage = new Edupage();
 
         console.log(success);
     }
+
+    edupage.exit(); //To exit the process
 })();
 ```
 
@@ -178,6 +186,8 @@ const edupage = new Edupage();
 
     //Send the message
     await classmate.sendMessage(options);
+
+    edupage.exit(); //To exit the process
 })();
 ```
 
@@ -205,6 +215,8 @@ const edupage = new Edupage();
 
     //Send the message
     await teacher.sendMessage(options);
+
+    edupage.exit(); //To exit the process
 })();
 ```
 
@@ -226,6 +238,8 @@ const edupage = new Edupage();
     const {materialData, resultsData} = await assignment.getData();
 
     console.log(materialData, resultsData);
+
+    edupage.exit(); //To exit the process
 })();
 ```
 
@@ -254,6 +268,8 @@ const edupage = new Edupage();
 
     //Console.log the result (🚨 This might not be precise!)
     console.log(success);
+
+    edupage.exit(); //To exit the process
 })();
 ```
 
@@ -322,6 +338,7 @@ class ASC extends RawData {
 
     server: string;
     gsecHash: string;
+    gpids: string[];
     gpid?: string;
 }
 ```
@@ -508,7 +525,12 @@ class Edupage extends RawData {
                                                                   // any of the "refresh" methods, if `_update` is set to `true`)
 
     async uploadAttachment(filepath: string): Promise<Attachment>;
-    async api(options: APIOptions): Promise<RawDataObject | string>;
+    async api(options: APIOptions, _count: number = 0): Promise<RawDataObject | string, Error | {retry: true, count: number}>;
+
+    scheduleSessionPing(): void;
+    async pingSession(): Promise<boolean>;
+
+    exit(): void;                   // Stops internal timers to prevent process from hanging infinitely.
 
     static compareDay(
         date1: Date | number | string,
