@@ -49,7 +49,7 @@ class Edupage extends RawData {
 		super();
 
 		/**
-		 * @type {User|Teacher|Student}
+		 * @type {User | Teacher | Student}
 		 */
 		this.user = null;
 
@@ -162,7 +162,7 @@ class Edupage extends RawData {
 	 *
 	 * @param {string} [username=this.user.credentials.username]
 	 * @param {string} [password=this.user.credentials.password]
-	 * @return {Promise<User|Teacher|Student>} 
+	 * @return {Promise<User | Teacher | Student>} 
 	 * @memberof Edupage
 	 */
 	async login(username = this.user.credentials.username, password = this.user.credentials.password) {
@@ -385,7 +385,7 @@ class Edupage extends RawData {
 	/**
 	 *
 	 * @param {string} id
-	 * @return {User|Teacher|Student|Parent|undefined} 
+	 * @return {User | Teacher | Student | Parent | undefined} 
 	 * @memberof Edupage
 	 */
 	getUserById(id) {
@@ -405,7 +405,7 @@ class Edupage extends RawData {
 	/**
 	 *
 	 * @param {string} userString
-	 * @return {User|Teacher|Student|Parent|undefined} 
+	 * @return {User | Teacher | Student | Parent | undefined} 
 	 * @memberof Edupage
 	 */
 	getUserByUserString(userString) {
@@ -425,7 +425,7 @@ class Edupage extends RawData {
 	/**
 	 *
 	 * @param {Date} date
-	 * @return {Promise<Timetable|undefined>} 
+	 * @return {Promise<Timetable | undefined>} 
 	 * @memberof Edupage
 	 */
 	async getTimetableForDate(date) {
@@ -536,12 +536,12 @@ class Edupage extends RawData {
 
 	/**
 	 * @typedef {Object} APIOptions
-	 * @prop {string|ENDPOINT} url
-	 * @prop {Object<string, any>|stream.Readable|Buffer|string} [data={}]
+	 * @prop {string | ENDPOINT} url
+	 * @prop {Object<string, any> | stream.Readable | Buffer | string} [data={}]
 	 * @prop {Object<string, any>} [headers={}]
 	 * @prop {string} [method="POST"]
 	 * @prop {boolean} [encodeBody=true]
-	 * @prop {"json"|"text"} [type="json"]
+	 * @prop {"json" | "text"} [type="json"]
 	 * @prop {boolean} [autoLogin=true]
 	 */
 
@@ -755,8 +755,8 @@ class Edupage extends RawData {
 
 	/**
 	 *
-	 * @param {Date|number|string} date1
-	 * @param {Date|number|string} date2
+	 * @param {Date | number | string} date1
+	 * @param {Date | number | string} date2
 	 * @return {boolean} true if day of the dates is same, otherwise false
 	 * @memberof Edupage
 	 */

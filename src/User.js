@@ -137,7 +137,7 @@ class User extends RawData {
 	/**
 	 * 
 	 * @param {MessageOptions} options
-	 * @this {User|Teacher|Student|Parent}
+	 * @this {User | Teacher | Student | Parent}
 	 * @memberof User
 	 */
 	async sendMessage(options) {
@@ -263,7 +263,7 @@ class User extends RawData {
 	 * @param {string} userString
 	 * @param {RawDataObject} [data={}]
 	 * @param {Edupage} [edupage=null]
-	 * @return {User|Teacher|Student|Parent}
+	 * @return {User | Teacher | Student | Parent}
 	 * @memberof User
 	 */
 	static from(userString, data = {}, edupage = null) {

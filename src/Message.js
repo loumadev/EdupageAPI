@@ -148,30 +148,30 @@ class Message extends RawData {
 
 		/**
 		 * ! WARNING: This property is only accessible after calling `message.refresh()`!
-		 * @type {(User|Teacher|Student|Parent)[]}
+		 * @type {(User | Teacher | Student | Parent)[]}
 		 */
 		this.participants = [];
 
 		/**
 		 * ! WARNING: This property is only accessible after calling `message.refresh()`!
-		 * @type {({user: User|Teacher|Student|Parent, date: Date})[]}
+		 * @type {({user: User | Teacher | Student | Parent, date: Date})[]}
 		 */
 		this.likedBy = [];
 
 		/**
 		 * ! WARNING: This property is only accessible after calling `message.refresh()`!
-		 * @type {({user: User|Teacher|Student|Parent, date: Date})[]}
+		 * @type {({user: User | Teacher | Student | Parent, date: Date})[]}
 		 */
 		this.seenBy = [];
 
 
 		/**
-		 * @type {User|Teacher|Student|Parent}
+		 * @type {User | Teacher | Student | Parent}
 		 */
 		this.owner = null;
 
 		/**
-		 * @type {User|Teacher|Student|Parent|Plan|Class}
+		 * @type {User | Teacher | Student | Parent | Plan | Class}
 		 */
 		this.recipient = null;
 
@@ -322,7 +322,7 @@ class Message extends RawData {
 	/**
 	 * @typedef {Object} MessageReplyOptions
 	 * @prop {string} text
-	 * @prop {User|Teacher|Student|Parent} [recipient=null]
+	 * @prop {User | Teacher | Student | Parent} [recipient=null]
 	 * @prop {boolean} [parents=false]
 	 * @prop {Attachment[]} [attachments=[]]
 	 */

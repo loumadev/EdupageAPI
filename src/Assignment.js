@@ -51,7 +51,7 @@ class Assignment extends RawData {
 		this.superId = data.e_superid;
 
 		/**
-		 * @type {User|Teacher}
+		 * @type {User | Teacher}
 		 */
 		this.owner = null;
 
@@ -153,7 +153,7 @@ class Assignment extends RawData {
 		this.stateUpdatedDate = data.studentStav?.timestamp ? new Date(data.studentStav?.timestamp) : null;
 
 		/**
-		 * @type {User|Teacher}
+		 * @type {User | Teacher}
 		 */
 		this.stateUpdatedBy = null;
 
@@ -219,7 +219,7 @@ class Assignment extends RawData {
 	 * @static
 	 * @param {RawDataObject} [data={}]
 	 * @param {Edupage} [edupage=null]
-	 * @return {Assignment|Homework|Test}
+	 * @return {Assignment | Homework | Test}
 	 * @memberof Assignment
 	 */
 	static from(data = {}, edupage = null) {
