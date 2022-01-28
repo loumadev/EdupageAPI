@@ -3,7 +3,7 @@
 	"version": "0.8.1",
 	"description": "Simple node.js package to manage your EduPage account.",
 	"main": "index.js",
-	"typings": "lib/EdupageAPI.d.ts",
+	"typings": "types/EdupageAPI.d.ts",
 	"scripts": {
 		"debug": "set DEBUG=edupage:* && node ./test/test.js"
 	},
@@ -32,8 +32,10 @@
 	},
 	"homepage": "https://github.com/loumadev/EdupageAPI#readme",
 	"dependencies": {
-		"@types/node-fetch": "^3.0.3",
 		"debug": "^4.3.2",
 		"node-fetch": "^2.6.0"
+	},
+	"devDependencies": {
+		"typescript": "^4.5.5"
 	}
 }
