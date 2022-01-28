@@ -36,6 +36,7 @@ debug.log = console.log.bind(console);
  * @typedef {Object} LoginOptions
  * @prop {string | null | undefined} [code2FA=undefined] If the provided value is typeof `string`, it's considired as a 2FA code (should be provided after first unsuccessful login). If it's `null` the 2FA will be skipped. If omitted or `undefined` and the 2FA is requested by the Edupage, the function will resolve with `null`.
  * @prop {string} [user] Can be used to select a specific user in case there are more.
+ * @prop {string} [edupage=""] The edupage subdomain (origin) to login to. Try to set this if you have trouble logging in (e.g. incorrect password error).
  */
 
 
@@ -219,7 +220,7 @@ class User extends RawData {
 			const payload = {
 				"m": username,
 				"h": password,
-				"edupage": "",
+				"edupage": options.edupage || "",
 				"plgc": null,
 				"ajheslo": "1",
 				"hasujheslo": "1",
@@ -227,7 +228,7 @@ class User extends RawData {
 				"ajportallogin": "1",
 				"mobileLogin": "1",
 				"version": "2020.0.18",
-				"fromEdupage": "",
+				"fromEdupage": options.edupage || "",
 				"device_name": null,
 				"device_id": null,
 				"device_key": "",
@@ -236,10 +237,11 @@ class User extends RawData {
 				"edid": ""
 			};
 
+			const loginServer = options.edupage || "login1";
 			const skip2Fa = options.code2FA === null;
 			if(typeof options.code2FA === "string") payload.t2fasec = options.code2FA;
 
-			fetch("https://login1.edupage.org/login/mauth", {
+			fetch(`https://${loginServer}.edupage.org/login/mauth`, {
 				"headers": {
 					"accept": "application/json, text/javascript, */*; q=0.01",
 					"content-type": "application/x-www-form-urlencoded; charset=UTF-8"
@@ -256,9 +258,9 @@ class User extends RawData {
 				//Error handling
 				if(!json.users.length) {
 					if(json.needEdupage) {
-						reject(new LoginError(`Failed to login: Incorrect username. (This error might be also caused by missing edupage origin. In this case, please, open a new GitHub issue.)`));
+						reject(new LoginError(`Failed to login: Incorrect username. (If you are sure that the username is correct, try providing 'edupage' option)`));
 					} else {
-						reject(new LoginError(`Failed to login: Incorrect password`));
+						reject(new LoginError(`Failed to login: Incorrect password. (If you are sure that the password is correct, try providing 'edupage' option)`));
 					}
 					return;
 				}
