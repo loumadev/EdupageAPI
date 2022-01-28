@@ -35,7 +35,7 @@ debug.log = console.log.bind(console);
 /**
  * @typedef {Object} LoginOptions
  * @prop {string | null | undefined} [code2FA=undefined] If the provided value is typeof `string`, it's considired as a 2FA code (should be provided after first unsuccessful login). If it's `null` the 2FA will be skipped. If omitted or `undefined` and the 2FA is requested by the Edupage, the function will resolve with `null`.
- * @prop {string} [userId] Can be used to select a specific user in case there are more. If omitted or not found by provided userId, the first user will be selected.
+ * @prop {string} [user] Can be used to select a specific user in case there are more.
  */
 
 
@@ -208,7 +208,7 @@ class User extends RawData {
 		//Setup options
 		if(!options) options = {};
 		if(!options.code2FA) options.code2FA = undefined;
-		if(!options.userId) options.userId = undefined;
+		if(!options.user) options.user = undefined;
 
 		//Create a new CookieJar instance to store required cookies
 		this.cookies = new CookieJar();
@@ -279,16 +279,17 @@ class User extends RawData {
 					}
 				} else {
 					debug(`[Login] Found multiple users with the same username`);
-					if(options.userId) {
-						const user = json.users.find(user => User.parseUserString(user.userid).id == options.userId);
+					if(options.user) {
+						const user = json.users.find(user => user.userid == options.user);
 
 						if(user) {
-							debug(`[Login] Selected user by userId`);
+							debug(`[Login] Selected user by 'user' option`);
 							selectedUser = user;
-						} else {
-							debug(`[Login] Failed to select user by userId (not found), using first user`);
-							selectedUser = json.users[0];
 						}
+					}
+					if(!selectedUser) {
+						error(`[Login] No user selected`);
+						return reject(new LoginError(`Multiple users found: ${json.users.map(user => `${user.userid} (${user.firstname} ${user.lastname})`).join(", ")}. Please, pass the selected user as 'user' option to login options.`));
 					}
 				}
 
