@@ -18,43 +18,50 @@ class Class extends RawData {
 		super(data);
 
 		/**
-		 * Edupage instance
+		 * Edupage instance associated to this object
 		 * @type {Edupage} 
 		 */
 		this.edupage = edupage;
 
 
 		/**
+		 * Grade of the class
 		 * @type {number}
 		 */
 		this.grade = +data.grade ?? null;
 
 		/**
+		 * ID of the class
 		 * @type {string}
 		 */
 		this.id = data.id;
 
 		/**
+		 * Name of the class
 		 * @type {string}
 		 */
 		this.name = data.name;
 
 		/**
+		 * Short name of the class
 		 * @type {string}
 		 */
 		this.short = data.short;
 
 		/**
+		 * Classroom associated to this class
 		 * @type {Classroom}
 		 */
 		this.classroom = null;
 
 		/**
+		 * Teacher associated to this class
 		 * @type {Teacher}
 		 */
 		this.teacher = null;
 
 		/**
+		 * Teacher 2 associated to this class
 		 * @type {Teacher}
 		 */
 		this.teacher2 = null;

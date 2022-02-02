@@ -42,72 +42,87 @@ class User extends RawData {
 		super(data);
 
 		/**
-		 * Edupage instance
+		 * Edupage instance associated to this object associated to this object
 		 * @type {Edupage} 
 		 */
 		this.edupage = edupage;
 
 		/**
+		 * Date since when the user is registered
 		 * @type {Date}
 		 */
 		this.dateFrom = data.datefrom ? new Date(data.datefrom) : null;
 
 		/**
+		 * Date of expected leave of the user
 		 * @type {Date}
 		 */
 		this.dateTo = data.dateto ? new Date(data.dateto) : null;
 
 		/**
+		 * Firstname of the user
 		 * @type {string}
 		 */
 		this.firstname = data.firstname;
 
 		/**
+		 * Lastname of the user
 		 * @type {string}
 		 */
 		this.lastname = data.lastname;
 
 		/**
+		 * Gender of the user
 		 * @type {GENDER}
 		 */
 		this.gender = data.gender;
 
 		/**
+		 * Edupage identifier of the user in format of number
+		 * @example "845796"
 		 * @type {string}
 		 */
 		this.id = data.id;
 
 		/**
+		 * Edupage userstring of the user
+		 * @example "Student845796"
 		 * @type {string}
 		 */
 		this.userString = null;
 
 		/**
+		 * Flag marking if the user has left the school
 		 * @type {boolean}
 		 */
 		this.isOut = data.isOut;
 
 		/**
+		 * Edupage origin of the user (subdomain)
 		 * @type {string}
 		 */
 		this.origin = null;
 
 		/**
-		 * @type {{username: string, password: string}}
+		 * Login credentials of the user. Set if the user is logged in or has attempted to log in.
+		 * @type {{username: string, password: string} | null}
 		 */
 		this.credentials = null;
 
 		/**
+		 * CookieJar object storing current session cookies for logged in user
 		 * @type {CookieJar}
 		 */
 		this.cookies = null;
 
 		/**
+		 * Flag telling if the user is logged in
 		 * @type {boolean}
 		 */
 		this.isLoggedIn = false;
 
 		/**
+		 * Email address of the logged in user
 		 * @type {string}
 		 */
 		this.email = null;
