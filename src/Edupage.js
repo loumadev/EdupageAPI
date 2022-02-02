@@ -158,17 +158,22 @@ class Edupage extends RawData {
 	}
 
 	/**
+	 * @typedef {import("./User").LoginOptions} LoginOptions
+	 */
+
+	/**
 	 * Logs user in for this instance
 	 *
-	 * @param {string} [username=this.user.credentials.username]
-	 * @param {string} [password=this.user.credentials.password]
-	 * @return {Promise<User | Teacher | Student>} 
+	 * @param {string} [username=this.user.credentials.username] Username of the user
+	 * @param {string} [password=this.user.credentials.password] Password of the user
+	 * @param {LoginOptions} [options] Login options
+	 * @return {Promise<User | Teacher | Student>} Returns a promise that resolves with the `User` object if successful. If the 2FA is requested by the Edupage, the promise will resolve with `null`. 
 	 * @memberof Edupage
 	 */
-	async login(username = this.user.credentials.username, password = this.user.credentials.password) {
+	async login(username = this.user.credentials.username, password = this.user.credentials.password, options) {
 		return new Promise((resolve, reject) => {
 			const temp = new User();
-			temp.login(username, password).then(async user => {
+			temp.login(username, password, options).then(async user => {
 				//Assign properties
 				this.user = temp;
 				this.baseUrl = `https://${this.user.origin}.edupage.org`;
