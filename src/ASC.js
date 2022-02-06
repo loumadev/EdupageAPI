@@ -21,7 +21,7 @@ class ASC extends RawData {
 		super(data);
 
 		/**
-		 * @type {Edupage|string}
+		 * @type {Edupage | string}
 		 */
 		this.edupage = edupage;
 

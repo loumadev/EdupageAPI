@@ -14,7 +14,7 @@ class Teacher extends User {
 		super(data, edupage);
 
 		/**
-		 * Edupage instance
+		 * Edupage instance associated to this object
 		 * @type {Edupage} 
 		 */
 		this.edupage = edupage;

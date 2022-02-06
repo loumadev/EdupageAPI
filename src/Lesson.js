@@ -27,7 +27,7 @@ class Lesson extends RawData {
 		super(data);
 
 		/**
-		 * Edupage instance
+		 * Edupage instance associated to this object
 		 * @type {Edupage} 
 		 */
 		this.edupage = edupage;

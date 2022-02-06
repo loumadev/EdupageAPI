@@ -31,6 +31,15 @@ debug.log = console.log.bind(console);
  * @typedef {import("./enums").EntityType} EntityType
  */
 
+
+/**
+ * @typedef {Object} LoginOptions
+ * @prop {string | null | undefined} [code2FA=undefined] If the provided value is typeof `string`, it's considired as a 2FA code (should be provided after first unsuccessful login). If it's `null` the 2FA will be skipped. If omitted or `undefined` and the 2FA is requested by the Edupage, the function will resolve with `null`.
+ * @prop {string} [user] Can be used to select a specific user in case there are more.
+ * @prop {string} [edupage=""] The edupage subdomain (origin) to login to. Try to set this if you have trouble logging in (e.g. incorrect password error).
+ */
+
+
 class User extends RawData {
 	/**
 	 * Creates an instance of User.
@@ -42,72 +51,87 @@ class User extends RawData {
 		super(data);
 
 		/**
-		 * Edupage instance
+		 * Edupage instance associated to this object associated to this object
 		 * @type {Edupage} 
 		 */
 		this.edupage = edupage;
 
 		/**
+		 * Date since when the user is registered
 		 * @type {Date}
 		 */
 		this.dateFrom = data.datefrom ? new Date(data.datefrom) : null;
 
 		/**
+		 * Date of expected leave of the user
 		 * @type {Date}
 		 */
 		this.dateTo = data.dateto ? new Date(data.dateto) : null;
 
 		/**
+		 * Firstname of the user
 		 * @type {string}
 		 */
 		this.firstname = data.firstname;
 
 		/**
+		 * Lastname of the user
 		 * @type {string}
 		 */
 		this.lastname = data.lastname;
 
 		/**
+		 * Gender of the user
 		 * @type {GENDER}
 		 */
 		this.gender = data.gender;
 
 		/**
+		 * Edupage identifier of the user in format of number
+		 * @example "845796"
 		 * @type {string}
 		 */
 		this.id = data.id;
 
 		/**
+		 * Edupage userstring of the user
+		 * @example "Student845796"
 		 * @type {string}
 		 */
 		this.userString = null;
 
 		/**
+		 * Flag marking if the user has left the school
 		 * @type {boolean}
 		 */
 		this.isOut = data.isOut;
 
 		/**
+		 * Edupage origin of the user (subdomain)
 		 * @type {string}
 		 */
 		this.origin = null;
 
 		/**
-		 * @type {{username: string, password: string}}
+		 * Login credentials of the user. Set if the user is logged in or has attempted to log in.
+		 * @type {{username: string, password: string} | null}
 		 */
 		this.credentials = null;
 
 		/**
+		 * CookieJar object storing current session cookies for logged in user
 		 * @type {CookieJar}
 		 */
 		this.cookies = null;
 
 		/**
+		 * Flag telling if the user is logged in
 		 * @type {boolean}
 		 */
 		this.isLoggedIn = false;
 
 		/**
+		 * Email address of the logged in user
 		 * @type {string}
 		 */
 		this.email = null;
@@ -137,7 +161,7 @@ class User extends RawData {
 	/**
 	 * 
 	 * @param {MessageOptions} options
-	 * @this {User|Teacher|Student|Parent}
+	 * @this {User | Teacher | Student | Parent}
 	 * @memberof User
 	 */
 	async sendMessage(options) {
@@ -183,55 +207,112 @@ class User extends RawData {
 	}
 
 	/**
+	 * @typedef {import("../lib/ResponseTypings").MAuthResponse} MAuthResponse
+	 */
+
+	/**
 	 *
-	 * @param {string} username
-	 * @param {string} password
-	 * @return {Promise<User>} 
+	 * @param {string} username Username of the user
+	 * @param {string} password Password of the user
+	 * @param {LoginOptions} [options] Login options
+	 * @return {Promise<User | null>} Returns a promise that resolves with the `User` object if successful. If the 2FA is requested by the Edupage, the promise will resolve with `null`. 
 	 * @memberof User
 	 */
-	async login(username, password) {
+	async login(username, password, options = {}) {
 		if(!username || !password) throw new LoginError(`Invalid credentials`);
+
+		//Setup options
+		if(!options) options = {};
+		if(!options.code2FA) options.code2FA = undefined;
+		if(!options.user) options.user = undefined;
+
+		//Create a new CookieJar instance to store required cookies
 		this.cookies = new CookieJar();
 
 		return new Promise((resolve, reject) => {
 			debug(`[Login] Logging in as ${username}...`);
-			fetch("https://portal.edupage.org/index.php?jwid=jw3&module=Login&lang=sk", {
+
+			const payload = {
+				"m": username,
+				"h": password,
+				"edupage": options.edupage || "",
+				"plgc": null,
+				"ajheslo": "1",
+				"hasujheslo": "1",
+				"ajportal": "1",
+				"ajportallogin": "1",
+				"mobileLogin": "1",
+				"version": "2020.0.18",
+				"fromEdupage": options.edupage || "",
+				"device_name": null,
+				"device_id": null,
+				"device_key": "",
+				"os": null,
+				"murl": null,
+				"edid": ""
+			};
+
+			const loginServer = options.edupage || "login1";
+			const skip2Fa = options.code2FA === null;
+			if(typeof options.code2FA === "string") payload.t2fasec = options.code2FA;
+
+			fetch(`https://${loginServer}.edupage.org/login/mauth`, {
 				"headers": {
-					"accept": "*/*",
-					"content-type": "application/x-www-form-urlencoded",
+					"accept": "application/json, text/javascript, */*; q=0.01",
+					"content-type": "application/x-www-form-urlencoded; charset=UTF-8"
 				},
-				"body": `meno=${username}&heslo=${password}&akcia=login`,
-				"method": "POST"
+				"method": "POST",
+				"body": new URLSearchParams(payload).toString()
 			}).then(res => {
 				debug(`[Login] Saving received cookies...`);
 				this.cookies.setCookie(res);
-				return res.text();
-			}).then(async html => {
-				html = html.replace(/\n/g, "").replace(/\r/g, "");
+				return res.json();
+			}).then(async (/**@type {MAuthResponse}*/json) => {
+				let selectedUser = null;
 
-				//Parse data
-				debug(`[Login] Parsing html data...`);
-				const err = html.match(/<div.*?class=".*?errorbox".*?>(.*?)</)?.[1]?.trim?.();
-				const url = html.match(/window\.open\("(.*?)"/)?.[1];
-				const origin = url?.match(/https?:\/\/(.*?).edupage.org/)?.[1];
-				const ESID = url?.match(/(?:ESID|PSID)=(.+?)\b/)?.[1];
-
-				//Validate parsed data
-				const __data = {html, err, url, origin, ESID};
-				if(origin == "portal") return FatalError.throw(new EdupageError("Edupage server did not redirect login request to proper origin"), __data);
-				if(!url) return FatalError.throw(new ParseError("Failed to parse redirect URL"), __data);
-				if(!origin) return FatalError.throw(new ParseError("Failed to parse edupage origin from redirect URL"), __data);
-				if(!ESID) return FatalError.throw(new ParseError("Failed to parse ESID parameter from URL"), __data);
-
-				//Login error occurred (usually wrong password)
-				if(err) {
-					error(`[Login] Error box showed:`, err);
-					return reject(new LoginError(`Failed to login: ${err}`));
+				//Error handling
+				if(!json.users.length) {
+					if(json.needEdupage) {
+						reject(new LoginError(`Failed to login: Incorrect username. (If you are sure that the username is correct, try providing 'edupage' option)`));
+					} else {
+						reject(new LoginError(`Failed to login: Incorrect password. (If you are sure that the password is correct, try providing 'edupage' option)`));
+					}
+					return;
 				}
 
-				//Setup properties
-				this.cookies.setCookie("PHPSESSID", ESID);
-				this.origin = origin;
+				//Process response
+				if(json.users.length == 1) {
+					if(json.users[0].need2fa == "1" && !skip2Fa) {
+						if(json.t2fasec) {
+							debug(`[Login] 2FA code is invalid`);
+							return reject(new LoginError(`Invalid 2FA code`));
+						} else {
+							debug(`[Login] 2FA was requested by the Edupage`);
+							return resolve(null);
+						}
+					} else {
+						debug(`[Login] Successfully logged in`);
+						selectedUser = json.users[0];
+					}
+				} else {
+					debug(`[Login] Found multiple users with the same username`);
+					if(options.user) {
+						const user = json.users.find(user => user.userid == options.user);
+
+						if(user) {
+							debug(`[Login] Selected user by 'user' option`);
+							selectedUser = user;
+						}
+					}
+					if(!selectedUser) {
+						error(`[Login] No user selected`);
+						return reject(new LoginError(`Multiple users found: ${json.users.map(user => `${user.userid} (${user.firstname} ${user.lastname})`).join(", ")}. Please, pass the selected user as 'user' option to login options.`));
+					}
+				}
+
+				//Update values
+				this.cookies.setCookie("PHPSESSID", selectedUser.esid);
+				this.origin = selectedUser.edupage;
 				this.isLoggedIn = true;
 
 				this.credentials = {
@@ -263,7 +344,7 @@ class User extends RawData {
 	 * @param {string} userString
 	 * @param {RawDataObject} [data={}]
 	 * @param {Edupage} [edupage=null]
-	 * @return {User|Teacher|Student|Parent}
+	 * @return {User | Teacher | Student | Parent}
 	 * @memberof User
 	 */
 	static from(userString, data = {}, edupage = null) {

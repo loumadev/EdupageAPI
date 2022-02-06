@@ -24,7 +24,7 @@ class Plan extends RawData {
 		if(typeof data.settings === "string") data.settings = JSON.parse(data.settings) || {};
 
 		/**
-		 * Edupage instance
+		 * Edupage instance associated to this object
 		 * @type {Edupage} 
 		 */
 		this.edupage = edupage;

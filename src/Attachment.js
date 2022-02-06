@@ -17,17 +17,19 @@ class Attachment extends RawData {
 		super(data);
 
 		/**
-		 * Edupage instance
+		 * Edupage instance associated to this object
 		 * @type {Edupage} 
 		 */
 		this.edupage = edupage;
 
 		/**
+		 * Name of the attachment file
 		 * @type {string}
 		 */
 		this.name = data.name;
 
 		/**
+		 * Absolute URL path to the attachment file uploaded on Edupage cloud server
 		 * @type {string}
 		 */
 		this.src = null;
@@ -46,6 +48,11 @@ class Attachment extends RawData {
 		this.src = `https://${this.edupage.user.origin}.edupage.org` + (this._data.file || this._data.src);
 	}
 
+	/**
+	 * Converts the `Attachment` object to JSON object
+	 * @return {Object<string, string>} JSON object contianing the attachment name as key and the attachment URL as value
+	 * @memberof Attachment
+	 */
 	toJSON() {
 		return {[this._data.file]: this.name};
 	}
