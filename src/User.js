@@ -151,11 +151,24 @@ class User extends RawData {
 	}
 
 	/**
+	 * @typedef {Object} PollOption
+	 * @prop {string} text Text of the option.
+	 * @prop {string} [id] Id of the option. If not provided, a new one will be generated.
+	 */
+
+	/**
+	 * @typedef {Object} PollOptions
+	 * @prop {PollOption[]} options Options to be added to the poll.
+	 * @prop {boolean} [multiple=false] If `true` multiple choices can be selected.
+	 */
+
+	/**
 	 * @typedef {Object} MessageOptions
-	 * @prop {string} text
-	 * @prop {boolean} [important=false]
-	 * @prop {boolean} [parents=false]
-	 * @prop {Attachment[]} [attachments=[]]
+	 * @prop {string} text Text of the message.
+	 * @prop {boolean} [important=false] If `true` the message will be marked as important. You will also be able to track who has read the message.
+	 * @prop {boolean} [parents=false] If `true` the message will be sent to student as well as their parents.
+	 * @prop {Attachment[]} [attachments=[]] Attachments to be added to the message.
+	 * @prop {PollOptions} [poll] Poll to be added to the message.
 	 */
 
 	/**
@@ -169,7 +182,8 @@ class User extends RawData {
 			text = "",
 			important = false,
 			parents = false,
-			attachments = []
+			attachments = [],
+			poll = null
 		} = options;
 
 		if(!this.edupage) throw new EdupageError(`User does not have assigned Edupage instance yet`);
@@ -182,8 +196,14 @@ class User extends RawData {
 				receipt: (+important).toString(),
 				selectedUser: this.getUserString(parents),
 				text: text,
-				typ: TIMELINE_ITEM_TYPE.MESSAGE
-				//TODO: add polls support
+				typ: TIMELINE_ITEM_TYPE.MESSAGE,
+				votingParams: JSON.stringify({
+					"answers": poll.options.map(e => ({
+						text: e.text,
+						id: e.id || Math.random().toString(16).slice(2)
+					})),
+					"multiple": false
+				})
 			}
 		});
 
