@@ -23,8 +23,8 @@ debug.log = console.log.bind(console);
 class Message extends RawData {
 	/**
 	 * Creates an instance of Message.
-	 * @param {RawDataObject} [data={}]
-	 * @param {Edupage} [edupage=null]
+	 * @param {RawDataObject} [data={}] Raw data to initialize the instance with.
+	 * @param {Edupage} [edupage=null] Edupage instance to use.
 	 * @memberof Message
 	 */
 	constructor(data = {}, edupage = null) {
@@ -34,131 +34,156 @@ class Message extends RawData {
 		if(typeof data.data === "string") data.data = JSON.parse(data.data) || {};
 
 		/**
+		 * Edupage instance associated to this object.
 		 * @type {Edupage}
 		 */
 		this.edupage = edupage;
 
 
 		/**
+		 * Timeline item id
 		 * @type {string}
 		 */
 		this.id = data.timelineid;
 
 		/**
+		 * Timeline item type
 		 * @type {string}
 		 */
 		this.type = data.typ;
 
 		/**
+		 * Date when the message was created
 		 * @type {Date}
 		 */
 		this.creationDate = data.cas_pridania ? new Date(data.cas_pridania) : null;
 
 		/**
+		 * Date when the message was last updated
 		 * @type {Date}
 		 */
 		this.timelineDate = data.timestamp ? new Date(data.timestamp) : null;
 
 		/**
+		 * ID of the user who created the message
 		 * @type {string}
 		 */
 		this.otherId = data.otherId || null;
 
 		/**
+		 * Number of replies to the message
 		 * @type {number}
 		 */
 		this.repliesCount = +data.pocet_reakcii || 0;
 
 		/**
+		 * Date of the last reply to the message
 		 * @type {Date}
 		 */
 		this.lastReplyDate = data.posledna_reakcia ? new Date(data.posledna_reakcia) : null;
 
 		/**
+		 * Flag indicating whether the message was removed
 		 * @type {boolean}
 		 */
 		this.isRemoved = !!+data.removed;
 
 		/**
+		 * Flag indicating whether the message is reply
 		 * @type {boolean}
 		 */
 		this.isReply = !!this._data.data.textReply;
 
 		/**
+		 * Flag indicating whether the message is sent as important
 		 * @type {boolean}
 		 */
 		this.isImportant = !!+data.data.receipt || !!+data.data.importantReply;
 
 		/**
+		 * Date when the currently logged in user read the message. If the message is not important, this is same as `Message.creationDate`.
 		 * @type {Date}
 		 */
 		this.seenDate = this.isImportant ? (data.data.myConfirmations?.receipt ? new Date(data.data.myConfirmations?.receipt) : null) : this.creationDate;
 
 		/**
+		 * Flag indicating whether the message was seen. If the message is not important, this will be always `true`.
 		 * @type {boolean}
 		 */
 		this.isSeen = !!this.seenDate;
 
 		/**
+		 * Date when the currently logged in user liked the message.
 		 * @type {Date}
 		 */
 		this.likedDate = data.data.myConfirmations?.like ? new Date(data.data.myConfirmations?.like) : null;
 
 		/**
+		 * Flag indicating whether the message was liked.
 		 * @type {boolean}
 		 */
 		this.isLiked = !!this.likedDate;
 
 		/**
+		 * Date when the currently logged in user marked this message as done.
 		 * @type {Date}
 		 */
 		this.doneDate = null;
 
 		/**
+		 * Flag indicating whether the message was marked as done.
 		 * @type {boolean}
 		 */
 		this.isDone = false;
 
 		/**
+		 * Flag indicating whether the message was starred.
 		 * @type {boolean}
 		 */
 		this.isStarred = false;
 
 		/**
+		 * Number of likes the message has.
 		 * @type {number}
 		 */
 		this.likes = data.data.confirmations?.like || 0;
 
 		/**
+		 * The textual content of the message.
 		 * @type {string}
 		 */
 		this.text = data.data.messageContent || data.text;
 
 		/**
+		 * Title of the message.
 		 * @type {string}
 		 */
 		this.title = data.user_meno;
 
 
 		/**
+		 * Number of participants in the message.
 		 * ! WARNING: This property is only accessible after calling `message.refresh()`!
 		 * @type {number}
 		 */
 		this.participantsCount = null;
 
 		/**
+		 * List of participants in the message.
 		 * ! WARNING: This property is only accessible after calling `message.refresh()`!
 		 * @type {(User | Teacher | Student | Parent)[]}
 		 */
 		this.participants = [];
 
 		/**
+		 * List of users who liked the message.
 		 * ! WARNING: This property is only accessible after calling `message.refresh()`!
 		 * @type {({user: User | Teacher | Student | Parent, date: Date})[]}
 		 */
 		this.likedBy = [];
 
 		/**
+		 * List of users who have seen the message.
 		 * ! WARNING: This property is only accessible after calling `message.refresh()`!
 		 * @type {({user: User | Teacher | Student | Parent, date: Date})[]}
 		 */
@@ -166,41 +191,50 @@ class Message extends RawData {
 
 
 		/**
+		 * Author of the message.
 		 * @type {User | Teacher | Student | Parent}
 		 */
 		this.owner = null;
 
 		/**
+		 * Recipient of the message.
 		 * @type {User | Teacher | Student | Parent | Plan | Class}
 		 */
 		this.recipient = null;
 
 		/**
+		 * Recipient of the message as user string. This can be used, when the exact recipient is not known (e.g. when the recipient is everyone, this will be '*').
 		 * @type {string}
 		 */
 		this.recipientUserString = null;
 
 		/**
+		 * Flag indicating whether the message has no exact recipient (e.g. userstring contains '*').
 		 * @type {boolean}
 		 */
 		this.isWildcardRecipient = false;
 
 		/**
+		 * Root message of the reply.
 		 * @type {Message}
 		 */
 		this.replyOf = null;
 
+
 		/**
+		 * Resources attached to the message.
 		 * @type {Attachment[]}
 		 */
 		this.attachments = [];
 
 		/**
+		 * List of replies to the message.
 		 * @type {Message[]}
 		 */
 		this.replies = [];
 
 		/**
+		 * Assignment attached to the message.
 		 * @type {Assignment}
 		 */
 		this.assignment = null;
@@ -209,8 +243,8 @@ class Message extends RawData {
 	}
 
 	/**
-	 * 
-	 * @param {Edupage} [edupage=null]
+	 * Initializes instance.
+	 * @param {Edupage} [edupage=null] Edupage instance to use.
 	 * @memberof Message
 	 */
 	init(edupage = null) {
@@ -328,7 +362,7 @@ class Message extends RawData {
 	 */
 
 	/**
-	 *
+	 * Creates a new reply to the message
 	 * @param {MessageReplyOptions} options
 	 * @memberof Message
 	 */
@@ -374,8 +408,8 @@ class Message extends RawData {
 	}
 
 	/**
-	 *
-	 * @param {boolean} [state=true]
+	 * Marks the message as liked
+	 * @param {boolean} [state=true] State to use (like/unlike)
 	 * @return {Promise<boolean>} 
 	 * @memberof Message
 	 */
@@ -398,7 +432,7 @@ class Message extends RawData {
 	}
 
 	/**
-	 *
+	 * Marks the message as seen
 	 * @return {Promise<void>} 
 	 * @memberof Message
 	 */
@@ -419,8 +453,8 @@ class Message extends RawData {
 	}
 
 	/**
-	 *
-	 * @param {boolean} [state=true]
+	 * Marks the message as done
+	 * @param {boolean} [state=true] State to use (done/not done)
 	 * @return {Promise<boolean>} 
 	 * @memberof Message
 	 */
@@ -447,8 +481,8 @@ class Message extends RawData {
 	}
 
 	/**
-	 *
-	 * @param {boolean} [state=true]
+	 * Marks the message as starred
+	 * @param {boolean} [state=true] State to use (starred/not starred)
 	 * @return {Promise<boolean>} 
 	 * @memberof Message
 	 */
@@ -475,8 +509,8 @@ class Message extends RawData {
 	}
 
 	/**
-	 * 
-	 * @param {RawDataObject} [data=null]
+	 * Refreshes message replies and some other fields
+	 * @param {RawDataObject} [data=null] Raw data to use instead of requesting from the server
 	 * @memberof Message
 	 */
 	async refresh(data = null) {
@@ -507,10 +541,10 @@ class Message extends RawData {
 	}
 
 	/**
-	 *
+	 * Parses name of the user
 	 * @static
-	 * @param {string} name
-	 * @return {{firstname: string, lastname: string}} 
+	 * @param {string} name Name to parse
+	 * @return {{firstname: string, lastname: string}} Parsed name
 	 * @memberof Message
 	 */
 	static parseUsername(name) {
@@ -520,10 +554,10 @@ class Message extends RawData {
 	}
 
 	/**
-	 *
+	 * Searches for the user object from userstring. If user is not found, the parsed userstring is returned.
 	 * @private
-	 * @param {string} userString
-	 * @return {{recipient: (User | Teacher | Student | Parent | Plan | Class), wildcard: boolean}} 
+	 * @param {string} userString Userstring to search for
+	 * @return {{recipient: (User | Teacher | Student | Parent | Plan | Class), wildcard: boolean}} User object and wildcard flag
 	 * @memberof Message
 	 */
 	getRecipient(userString) {

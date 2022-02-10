@@ -49,86 +49,108 @@ class Edupage extends RawData {
 		super();
 
 		/**
+		 * Instance of currently logged in user.
+		 * All the information in the edupage instance is related to this user.
+		 * This user is used to make all requests to the Edupage internal APIs. 
 		 * @type {User | Teacher | Student}
 		 */
 		this.user = null;
 
 		/**
+		 * List of all seasons or semesters.
 		 * @type {Season[]}
 		 */
 		this.seasons = [];
 
 		/**
+		 * List of all students in the school (if the user is a teacher, otherwise the list contains classmates only).
 		 * @type {Student[]}
 		 */
 		this.students = [];
 
 		/**
+		 * List of all teachers in the school.
 		 * @type {Teacher[]}
 		 */
 		this.teachers = [];
 
 		/**
+		 * List of all classes in the school.
 		 * @type {Class[]}
 		 */
 		this.classes = [];
 
 		/**
+		 * List of all classrooms in the school.
 		 * @type {Classroom[]}
 		 */
 		this.classrooms = [];
 
 		/**
+		 * List of all parents for owned class (if the user is a teacher, otherwise the list contains parents of the student).
 		 * @type {Parent[]}
 		 */
 		this.parents = [];
 
 		/**
+		 * List of all subjects in the school.
 		 * @type {Subject[]}
 		 */
 		this.subjects = [];
 
 		/**
+		 * List of all periods in the school.
 		 * @type {Period[]}
 		 */
 		this.periods = [];
 
 		/**
+		 * List of all timetables currently fetched.
+		 * There are always timetables for 2 - 4 days (current + next, if friday + weekend).
+		 * This list is used as a cache to avoid fetching the same timetable multiple times.
 		 * @type {Timetable[]}
 		 */
 		this.timetables = [];
 
 		/**
+		 * List of all message items on the timeline for currently logged in user.
+		 * Contains visible messages as well as hidden confirmations and helper records
 		 * @type {Message[]}
 		 */
 		this.timelineItems = [];
 
 		/**
+		 * List of all visible timeline items on the timeline for currently logged in user.
 		 * @type {Message[]}
 		 */
 		this.timeline = [];
 
 		/**
+		 * List of all plans for currently logged in user.
 		 * @type {Plan[]}
 		 */
 		this.plans = [];
 
 		/**
+		 * List of all assignments for currently logged in user.
 		 * @type {Assignment[]}
 		 */
 		this.assignments = [];
 
 		/**
+		 * List of all assignments type of homework for currently logged in user.
 		 * @type {Homework[]}
 		 */
 		this.homeworks = [];
 
 		/**
+		 * List of all assignments type of test for currently logged in user.
 		 * @type {Test[]}
 		 */
 		this.tests = [];
 
 		/**
+		 * List of all applications in the school.
 		 * @experimental
 		 * @type {Application[]}
 		 */
@@ -136,16 +158,22 @@ class Edupage extends RawData {
 
 
 		/**
+		 * Instance of an ASC object.
+		 * Can be used to access some general school data.
 		 * @type {ASC}
 		 */
 		this.ASC = null;
 
 		/**
+		 * Current school year.
+		 * If the current school year is "2020/2021", then this value is `2020`.
 		 * @type {number}
 		 */
 		this.year = null;
 
 		/**
+		 * Base edupage URL.
+		 * @example "https://example.edupage.org"
 		 * @type {string}
 		 */
 		this.baseUrl = null;

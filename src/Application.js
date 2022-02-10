@@ -23,66 +23,76 @@ debug.log = console.log.bind(console);
  */
 class Application extends RawData {
 	/**
-	 * Creates an instance of Grade.
-	 * @param {RawDataObject} [data={}]
-	 * @param {Edupage} [edupage=null]
-	 * @memberof Grade
+	 * Creates an instance of Application.
+	 * @param {RawDataObject} [data={}] Raw data to initialize the instance with.
+	 * @param {Edupage} [edupage=null] Edupage instance to use.
+	 * @memberof Application
 	 */
 	constructor(data = {}, edupage = null) {
 		super(data);
 
 		/**
+		 * Edupage instance associated to this object.
 		 * @type {Edupage}
 		 */
 		this.edupage = edupage;
 
 		/**
+		 * Id of the application.
 		 * @type {string}
 		 */
 		this.id = data.id;
 
 		/**
+		 * Date from which the application is valid.
 		 * @type {Date}
 		 */
 		this.dateFrom = data.datefrom ? new Date(data.datefrom) : null;
 
 		/**
+		 * Date until which the application is valid.
 		 * @type {Date}
 		 */
 		this.dateTo = data.dateto ? new Date(data.dateto) : null;
 
 		/**
+		 * Name of the application.
 		 * @type {string}
 		 */
 		this.name = data.name;
 
 		/**
-		 * Contains array of parameter names to be provided to `Application.post(...)` call (e.g. date, price...)
+		 * Array of parameter names to be provided to `Application.post(...)` call (e.g. date, price...)
 		 * @type {string[]}
 		 */
 		this.parameters = data.dataColumns;
 
 		/**
+		 * Type of entities this application is available for.
 		 * @type {EntityType}
 		 */
 		this.availableFor = data.user;
 
 		/**
+		 * Flag indicating whether the application is enabled.
 		 * @type {boolean}
 		 */
 		this.isEnabled = data.enabled;
 
 		/**
+		 * Unknown property
 		 * @type {boolean}
 		 */
 		this.isTextOptional = data.textOptional || false;
 
 		/**
+		 * Unknown property
 		 * @type {boolean}
 		 */
 		this.isAdvancedWorkflow = data.isAdvancedWorkflow || false;
 
 		/**
+		 * Unknown property
 		 * @type {boolean}
 		 */
 		this.isSimpleWorkflow = data.isSimpleWorkflow || false;
@@ -92,7 +102,7 @@ class Application extends RawData {
 
 	/**
 	 * Creates Application draft
-	 * @return {Promise<string>} draft id 
+	 * @return {Promise<string>} Created draft id 
 	 * @memberof Application
 	 */
 	async createDraft() {
@@ -161,8 +171,8 @@ class Application extends RawData {
 	}
 
 	/**
-	 * 
-	 * @param {Edupage} [edupage=null]
+	 * Initializes instance.
+	 * @param {Edupage} [edupage=null] Edupage instance to use.
 	 * @memberof Application
 	 */
 	init(edupage = null) {

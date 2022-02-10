@@ -7,33 +7,38 @@ const RawData = require("../lib/RawData");
 class Period extends RawData {
 	/**
 	 * Creates an instance of Period.
-	 * @param {RawDataObject} [data=null]
+	 * @param {RawDataObject} [data=null] Raw data to initialize the instance with.
 	 * @memberof Period
 	 */
 	constructor(data = null) {
 		super(data);
 
 		/**
+		 * Period id
 		 * @type {string}
 		 */
 		this.id = data.id;
 
 		/**
+		 * Period name
 		* @type {string}
 		*/
 		this.name = data.name;
 
 		/**
+		 * Period short name
 		 * @type {string}
 		 */
 		this.short = data.short;
 
 		/**
+		 * Period start time in format HH:MM
 		 * @type {string}
 		 */
 		this.startTime = data.starttime;
 
 		/**
+		 * Period end time in format HH:MM
 		 * @type {string}
 		 */
 		this.endTime = data.endtime;

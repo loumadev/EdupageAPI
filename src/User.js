@@ -43,15 +43,15 @@ debug.log = console.log.bind(console);
 class User extends RawData {
 	/**
 	 * Creates an instance of User.
-	 * @param {RawDataObject} [data={}]
-	 * @param {Edupage} [edupage=null]
+	 * @param {RawDataObject} [data={}] Raw data to initialize the instance with.
+	 * @param {Edupage} [edupage=null] Edupage instance to use.
 	 * @memberof User
 	 */
 	constructor(data = {}, edupage = null) {
 		super(data);
 
 		/**
-		 * Edupage instance associated to this object associated to this object
+		 * Edupage instance associated to this object.
 		 * @type {Edupage} 
 		 */
 		this.edupage = edupage;
@@ -140,7 +140,7 @@ class User extends RawData {
 	}
 
 	/**
-	 * 
+	 * Initializes instance with raw data
 	 * @param {Edupage} [edupage=null]
 	 * @memberof Class
 	 */
@@ -159,8 +159,8 @@ class User extends RawData {
 	 */
 
 	/**
-	 * 
-	 * @param {MessageOptions} options
+	 * Sends a message to the user
+	 * @param {MessageOptions} options Message options
 	 * @this {User | Teacher | Student | Parent}
 	 * @memberof User
 	 */
@@ -211,7 +211,7 @@ class User extends RawData {
 	 */
 
 	/**
-	 *
+	 * Logs in the user. Provide third parameter as login options if you have troubles logging in.
 	 * @param {string} username Username of the user
 	 * @param {string} password Password of the user
 	 * @param {LoginOptions} [options] Login options
@@ -330,8 +330,8 @@ class User extends RawData {
 	}
 
 	/**
-	 *
-	 * @return {string} UserString
+	 * Retruns Edupage's representation of the user id.
+	 * @return {string} Userstring
 	 * @memberof User
 	 */
 	getUserString() {
@@ -341,10 +341,10 @@ class User extends RawData {
 	/**
 	 * Creates an instance of Student or Teacher from user data.
 	 * @static
-	 * @param {string} userString
-	 * @param {RawDataObject} [data={}]
-	 * @param {Edupage} [edupage=null]
-	 * @return {User | Teacher | Student | Parent}
+	 * @param {string} userString Userstring to create an instance of
+	 * @param {RawDataObject} [data={}] Raw data to use for the instance
+	 * @param {Edupage} [edupage=null] Edupage instance to use for the instance
+	 * @return {User | Teacher | Student | Parent} User instance
 	 * @memberof User
 	 */
 	static from(userString, data = {}, edupage = null) {
@@ -363,10 +363,10 @@ class User extends RawData {
 	}
 
 	/**
-	 *
+	 * Parses the user string to provide some useful information
 	 * @static
-	 * @param {string} userString
-	 * @return {{id: string, type: EntityType, wildcard: boolean}} 
+	 * @param {string} userString Userstring to parse
+	 * @return {{id: string, type: EntityType, wildcard: boolean}} Parsed userstring
 	 * @memberof User
 	 */
 	static parseUserString(userString) {

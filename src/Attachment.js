@@ -9,8 +9,8 @@ const {btoa} = require("../lib/utils");
 class Attachment extends RawData {
 	/**
 	 * Creates an instance of Attachment.
-	 * @param {RawDataObject} [data={}]
-	 * @param {Edupage} [edupage=null]
+	 * @param {RawDataObject} [data={}] Raw data to initialize the instance with.
+	 * @param {Edupage} [edupage=null] Edupage instance to use.
 	 * @memberof Attachment
 	 */
 	constructor(data = {}, edupage = null) {
@@ -38,7 +38,7 @@ class Attachment extends RawData {
 	}
 
 	/**
-	 * 
+	 * Initializes instance.
 	 * @param {Edupage} [edupage=null]
 	 * @memberof Attachment
 	 */

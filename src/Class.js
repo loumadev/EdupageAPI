@@ -10,8 +10,8 @@ const Teacher = require("./Teacher");
 class Class extends RawData {
 	/**
 	 * Creates an instance of Class.
-	 * @param {RawDataObject} [data={}]
-	 * @param {Edupage} [edupage=null]
+	 * @param {RawDataObject} [data={}] Raw data to initialize the instance with.
+	 * @param {Edupage} [edupage=null] Edupage instance to use.
 	 * @memberof Class
 	 */
 	constructor(data = {}, edupage = null) {
@@ -70,8 +70,8 @@ class Class extends RawData {
 	}
 
 	/**
-	 * 
-	 * @param {Edupage} [edupage=null]
+	 * Initializes instance.
+	 * @param {Edupage} [edupage=null] Edupage instance to use.
 	 * @memberof Class
 	 */
 	init(edupage = null) {

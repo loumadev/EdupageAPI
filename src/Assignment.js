@@ -27,137 +27,161 @@ debug.log = console.log.bind(console);
 class Assignment extends RawData {
 	/**
 	 * Creates an instance of Assignment.
-	 * @param {RawDataObject} [data={}]
-	 * @param {Edupage} [edupage=null]
+	 * @param {RawDataObject} [data={}] Initializes instance with raw data.
+	 * @param {Edupage} [edupage=null] Edupage instance to use.
 	 * @memberof Assignment
 	 */
 	constructor(data = {}, edupage = null) {
 		super(data);
 
 		/**
+		 * Edupage instance associated to this object.
 		 * @type {Edupage}
 		 */
 		this.edupage = edupage;
 
 		/**
+		 * Homework id of this assignment.
 		 * @type {string}
 		 * @example "superid:16647"
 		 */
 		this.id = data.homeworkid;
 
 		/**
+		 * Super assignment id.
 		 * @type {string}
 		 */
 		this.superId = data.e_superid;
 
 		/**
+		 * Author of the assignment.
 		 * @type {User | Teacher}
 		 */
 		this.owner = null;
 
 		/**
+		 * Subject associated to this assignment.
 		 * @type {Subject}
 		 */
 		this.subject = null;
 
 		/**
+		 * Title of the assignment.
 		 * @type {string}
 		 */
 		this.title = data.name;
 
 		/**
+		 * Description of the assignment.
 		 * @type {string}
 		 */
 		this.details = data.details;
 
 		/**
+		 * Date when the assignment was created.
 		 * @type {Date}
 		 */
 		this.creationDate = new Date(data.datecreated || data.timestamp);
 
 		/**
+		 * Date from which the assignment is available for the students.
 		 * @type {Date}
 		 */
 		this.fromDate = new Date(data.datetimefrom || data.datefrom);
 
 		/**
+		 * Date by which the assignment is available to students.
 		 * @type {Date}
 		 */
 		this.toDate = new Date(data.datetimeto || data.dateto);
 
 		/**
-		 * @type {number}
 		 * Time to complete the assignment in seconds
+		 * @type {number}
 		 */
 		this.duration = Math.floor((this.toDate.getTime() - this.fromDate.getTime()) / 1000);
 
 		/**
+		 * Period when the assignment is available.
 		 * @type {Period}
 		 */
 		this.period = null;
 
 		/**
+		 * Id of the test.
 		 * @type {string}
 		 */
 		this.testId = data.testid;
 
 		/**
+		 * Type of the assignment.
 		 * @type {ASSIGNMENT_TYPE}
 		 */
 		this.type = data.typ.split("|")[1] || data.typ;
 
 		/**
+		 * Homework id 2.
 		 * @type {string}
 		 * @example "subid:4B1340557B68DE71"
 		 */
 		this.hwkid = data.hwkid;
 
 		/**
+		 * Number of cards in the material.
 		 * @type {number}
 		 */
 		this.cardsCount = data.etestCards;
 
 		/**
+		 * Number of answer cards in the material.
 		 * @type {number}
 		 */
 		this.answerCardsCount = data.etestAnswerCards;
 
 		/**
+		 * The evaluation state of the assignment.
 		 * @type {string}
 		 */
 		this.state = data.stavhodnotenia;
 
 		/**
+		 * Flag indicating if the assignment is new.
 		 * @type {boolean}
 		 */
 		this.isSeen = this.state != "new";
 
 		/**
+		 * Comment of the assignment.
 		 * @type {string}
 		 */
 		this.comment = data.komentarPridelenie || "";
 
 		/**
+		 * Result of the assignment.
 		 * @type {string}
 		 */
 		this.result = data.vysledok;
 
 		/**
+		 * Flag indicating if the assignment is finished.
 		 * @type {boolean}
 		 */
 		this.isFinished = !!+data.skoncil;
 
 		/**
+		 * Date when the assignment was last updated.
 		 * @type {Date}
 		 */
 		this.stateUpdatedDate = data.studentStav?.timestamp ? new Date(data.studentStav?.timestamp) : null;
 
 		/**
+		 * User who last updated the assignment.
 		 * @type {User | Teacher}
 		 */
 		this.stateUpdatedBy = null;
 
 		/**
+		 * List of grades associated to this assignment.
 		 * @type {Grade[]}
 		 */
 		this.grades = [];
@@ -167,8 +191,8 @@ class Assignment extends RawData {
 	}
 
 	/**
-	 * 
-	 * @param {Edupage} [edupage=null]
+	 * Initializes the object.
+	 * @param {Edupage} [edupage=null] Edupage instance to use.
 	 * @memberof Assignment
 	 */
 	init(edupage = null) {
