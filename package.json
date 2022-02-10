@@ -1,6 +1,6 @@
 {
 	"name": "edupage-api",
-	"version": "0.8.2",
+	"version": "0.8.3",
 	"description": "Simple node.js package to manage your EduPage account.",
 	"main": "index.js",
 	"typings": "types/EdupageAPI.d.ts",

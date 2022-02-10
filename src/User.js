@@ -166,6 +166,8 @@ class User extends RawData {
 	 * @prop {string} text Text of the message.
 	 * @prop {boolean} [important=false] If `true` the message will be marked as important. You will also be able to track who has read the message.
 	 * @prop {boolean} [parents=false] If `true` the message will be sent to student as well as their parents.
+	 * @prop {boolean} [allowReplies=true] Allows to disable replies to the message.
+	 * @prop {boolean} [repliesToAuthorOnly=false] Allows to reply only to the author of the message. By default, replies are sent to all users.
 	 * @prop {Attachment[]} [attachments=[]] Attachments to be added to the message.
 	 * @prop {PollOptions} [poll] Poll to be added to the message.
 	 */
@@ -181,6 +183,8 @@ class User extends RawData {
 			text = "",
 			important = false,
 			parents = false,
+			allowReplies = true,
+			repliesToAuthorOnly = false,
 			attachments = [],
 			poll = null
 		} = options;
@@ -188,21 +192,24 @@ class User extends RawData {
 		if(!this.edupage) throw new EdupageError(`User does not have assigned Edupage instance yet`);
 
 		//Post message
+		const hasPoll = poll && poll.options && poll.options;
 		const res = await this.edupage.api({
 			url: ENDPOINT.TIMELINE_CREATE_ITEM,
 			data: {
 				attachements: JSON.stringify(attachments.reduce((a, b) => ({...a, ...b.toJSON()}), {})),
-				receipt: (+important).toString(),
+				receipt: important ? "1" : "0",
+				repliesDisabled: !allowReplies ? "1" : "0",
+				repliesToAllDisabled: !allowReplies || repliesToAuthorOnly ? "1" : "0",
 				selectedUser: this.getUserString(parents),
 				text: text,
 				typ: TIMELINE_ITEM_TYPE.MESSAGE,
-				votingParams: JSON.stringify({
+				votingParams: hasPoll ? JSON.stringify({
 					"answers": poll.options.map(e => ({
 						text: e.text,
 						id: e.id || Math.random().toString(16).slice(2)
 					})),
 					"multiple": false
-				})
+				}) : undefined
 			}
 		});
 
