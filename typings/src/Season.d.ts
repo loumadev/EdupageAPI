@@ -66,6 +66,4 @@ declare namespace Season {
 }
 import RawData = require("../lib/RawData");
 import Edupage = require("./Edupage");
-type RawDataObject = {
-    [x: string]: any;
-};
+type RawDataObject = import("../lib/RawData").RawDataObject;

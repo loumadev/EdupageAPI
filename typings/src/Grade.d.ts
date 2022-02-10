@@ -158,6 +158,4 @@ import Teacher = require("./Teacher");
 import Class = require("./Class");
 import Plan = require("./Plan");
 import Assignment = require("./Assignment");
-type RawDataObject = {
-    [x: string]: any;
-};
+type RawDataObject = import("../lib/RawData").RawDataObject;

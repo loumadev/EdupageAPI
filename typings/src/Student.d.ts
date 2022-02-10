@@ -4,13 +4,6 @@ export = Student;
  */
 declare class Student extends User {
     /**
-     * Creates an instance of Student.
-     * @param {RawDataObject} [data={}]
-     * @param {Edupage} [edupage=null]
-     * @memberof Student
-     */
-    constructor(data?: RawDataObject, edupage?: Edupage);
-    /**
      * @type {number}
      */
     number: number;
@@ -53,7 +46,4 @@ declare namespace Student {
 import User = require("./User");
 import Parent = require("./Parent");
 import Class = require("./Class");
-type RawDataObject = {
-    [x: string]: any;
-};
-import Edupage = require("./Edupage");
+type RawDataObject = import("../lib/RawData").RawDataObject;

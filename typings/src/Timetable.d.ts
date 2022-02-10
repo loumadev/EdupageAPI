@@ -20,7 +20,7 @@ declare class Timetable extends RawData {
      */
     constructor(data?: RawDataObject, date?: string, edupage?: Edupage);
     /**
-     * Edupage instance
+     * Edupage instance associated to this object
      * @type {Edupage}
      */
     edupage: Edupage;
@@ -48,6 +48,4 @@ declare namespace Timetable {
 import RawData = require("../lib/RawData");
 import Edupage = require("./Edupage");
 import Lesson = require("./Lesson");
-type RawDataObject = {
-    [x: string]: any;
-};
+type RawDataObject = import("../lib/RawData").RawDataObject;

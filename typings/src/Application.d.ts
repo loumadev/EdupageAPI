@@ -12,60 +12,70 @@ export = Application;
  */
 declare class Application extends RawData {
     /**
-     * Creates an instance of Grade.
-     * @param {RawDataObject} [data={}]
-     * @param {Edupage} [edupage=null]
-     * @memberof Grade
+     * Creates an instance of Application.
+     * @param {RawDataObject} [data={}] Raw data to initialize the instance with.
+     * @param {Edupage} [edupage=null] Edupage instance to use.
+     * @memberof Application
      */
     constructor(data?: RawDataObject, edupage?: Edupage);
     /**
+     * Edupage instance associated to this object.
      * @type {Edupage}
      */
     edupage: Edupage;
     /**
+     * Id of the application.
      * @type {string}
      */
     id: string;
     /**
+     * Date from which the application is valid.
      * @type {Date}
      */
     dateFrom: Date;
     /**
+     * Date until which the application is valid.
      * @type {Date}
      */
     dateTo: Date;
     /**
+     * Name of the application.
      * @type {string}
      */
     name: string;
     /**
-     * Contains array of parameter names to be provided to `Application.post(...)` call (e.g. date, price...)
+     * Array of parameter names to be provided to `Application.post(...)` call (e.g. date, price...)
      * @type {string[]}
      */
     parameters: string[];
     /**
+     * Type of entities this application is available for.
      * @type {EntityType}
      */
     availableFor: EntityType;
     /**
+     * Flag indicating whether the application is enabled.
      * @type {boolean}
      */
     isEnabled: boolean;
     /**
+     * Unknown property
      * @type {boolean}
      */
     isTextOptional: boolean;
     /**
+     * Unknown property
      * @type {boolean}
      */
     isAdvancedWorkflow: boolean;
     /**
+     * Unknown property
      * @type {boolean}
      */
     isSimpleWorkflow: boolean;
     /**
      * Creates Application draft
-     * @return {Promise<string>} draft id
+     * @return {Promise<string>} Created draft id
      * @memberof Application
      */
     createDraft(): Promise<string>;
@@ -79,8 +89,8 @@ declare class Application extends RawData {
      */
     post(parameters?: RawDataObject, draftId?: string): Promise<boolean>;
     /**
-     *
-     * @param {Edupage} [edupage=null]
+     * Initializes instance.
+     * @param {Edupage} [edupage=null] Edupage instance to use.
      * @memberof Application
      */
     init(edupage?: Edupage): void;
@@ -90,7 +100,5 @@ declare namespace Application {
 }
 import RawData = require("../lib/RawData");
 import Edupage = require("./Edupage");
-type EntityType = string;
-type RawDataObject = {
-    [x: string]: any;
-};
+type EntityType = import("./enums").EntityType;
+type RawDataObject = import("../lib/RawData").RawDataObject;

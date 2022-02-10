@@ -1,6 +1,4 @@
-export type RawDataObject = {
-    [x: string]: any;
-};
+export type RawDataObject = import("../lib/RawData").RawDataObject;
 /**
  * @typedef {import("../lib/RawData").RawDataObject} RawDataObject
  */
@@ -43,5 +41,4 @@ export class FatalError extends Error {
      * @memberof FatalError
      */
     static warn(error: Error, data: RawDataObject): any;
-    constructor(message?: string);
 }

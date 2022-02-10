@@ -1,5 +1,5 @@
-export function btoa(data: any): any;
-export function atob(data: any): any;
+export function btoa(data: any): string;
+export function atob(data: any): string;
 /**
  * Create iterable key-value pairs.
  * @param {any} iterable Iterable Object, Array or any other value.

@@ -1,3 +1,4 @@
+/// <reference types="node" />
 export = CookieJar;
 declare class CookieJar {
     /**
@@ -11,13 +12,13 @@ declare class CookieJar {
     cookies: (typeof Cookie)[];
     /**
      * Adds cookie to the Jar
-     * @param {string|CookieJar.Cookie|http.ServerResponse|http.IncomingMessage|fetch.Response} cookie Cookie name (requires second parameter), Cookie String, CookieJar.Cookie object, ServerResponseLike object
+     * @param {string | CookieJar.Cookie | http.ServerResponse | http.IncomingMessage | fetch.Response} cookie Cookie name (requires second parameter), Cookie String, CookieJar.Cookie object, ServerResponseLike object
      * @param {string} [value=undefined]
      * @param {Object<string, any>} [options={}]
      * @return {CookieJar}
      * @memberof CookieJar
      */
-    setCookie(cookie: string | typeof Cookie | any | any | any, value?: string, options?: {
+    setCookie(cookie: string | typeof Cookie | http.ServerResponse | http.IncomingMessage | fetch.Response, value?: string, options?: {
         [x: string]: any;
     }): CookieJar;
     /**
@@ -29,7 +30,7 @@ declare class CookieJar {
     getCookie(name: string): typeof Cookie;
     /**
      * Removes cookie from the Jar
-     * @param {string|CookieJar.Cookie} cookie
+     * @param {string | CookieJar.Cookie} cookie
      * @return {CookieJar.Cookie} Deleted cookie
      * @memberof CookieJar
      */
@@ -41,7 +42,7 @@ declare class CookieJar {
      * @return {CookieJar}
      * @memberof CookieJar
      */
-    sendCookies(response: any, full?: boolean): CookieJar;
+    sendCookies(response: http.ServerResponse, full?: boolean): CookieJar;
     /**
      * Converts Cookie object to cookie string
      * @param {boolean} [full=true] Include cookie properties and flags
@@ -109,7 +110,7 @@ declare class Cookie {
         SameSite?: string;
     };
     /**
-     * @type {Array<"Secure"|"HttpOnly">}
+     * @type {Array<"Secure" | "HttpOnly">}
      */
     flags: Array<"Secure" | "HttpOnly">;
     /**
@@ -118,5 +119,6 @@ declare class Cookie {
      * @param {boolean} [full=true] Include cookie properties and flags
      * @return {string} Cookie String
      */
-    toString(full?: boolean): string;
+    override toString(full?: boolean): string;
 }
+import http = require("http");

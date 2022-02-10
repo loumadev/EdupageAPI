@@ -18,28 +18,27 @@ declare class Period extends RawData {
         endTime?: string;
     }): Period;
     /**
-     * Creates an instance of Period.
-     * @param {RawDataObject} [data=null]
-     * @memberof Period
-     */
-    constructor(data?: RawDataObject);
-    /**
+     * Period id
      * @type {string}
      */
     id: string;
     /**
+     * Period name
     * @type {string}
     */
     name: string;
     /**
+     * Period short name
      * @type {string}
      */
     short: string;
     /**
+     * Period start time in format HH:MM
      * @type {string}
      */
     startTime: string;
     /**
+     * Period end time in format HH:MM
      * @type {string}
      */
     endTime: string;
@@ -48,6 +47,4 @@ declare namespace Period {
     export { RawDataObject };
 }
 import RawData = require("../lib/RawData");
-type RawDataObject = {
-    [x: string]: any;
-};
+type RawDataObject = import("../lib/RawData").RawDataObject;

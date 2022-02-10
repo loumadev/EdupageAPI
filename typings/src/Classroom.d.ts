@@ -5,35 +5,39 @@ export = Classroom;
 declare class Classroom extends RawData {
     /**
      * Creates an instance of Classroom.
-     * @param {RawDataObject} [data={}]
-     * @param {Edupage} [edupage=null]
+     * @param {RawDataObject} [data={}] Raw data to initialize the instance with.
+     * @param {Edupage} [edupage=null] Edupage instance to use.
      * @memberof Classroom
      */
     constructor(data?: RawDataObject, edupage?: Edupage);
     /**
-     * Edupage instance
+     * Edupage instance associated to this object.
      * @type {Edupage}
      */
     edupage: Edupage;
     /**
+     * Unknown property
      * @type {boolean}
      */
     cb_hidden: boolean;
     /**
+     * Classroom id
      * @type {string}
      */
     id: string;
     /**
+     * Classroom name
      * @type {string}
      */
     name: string;
     /**
+     * Classroom short name
      * @type {string}
      */
     short: string;
     /**
-     *
-     * @param {Edupage} [edupage=null]
+     * Initializes instance.
+     * @param {Edupage} [edupage=null] Edupage instance to use.
      * @memberof Classroom
      */
     init(edupage?: Edupage): void;
@@ -43,6 +47,4 @@ declare namespace Classroom {
 }
 import RawData = require("../lib/RawData");
 import Edupage = require("./Edupage");
-type RawDataObject = {
-    [x: string]: any;
-};
+type RawDataObject = import("../lib/RawData").RawDataObject;

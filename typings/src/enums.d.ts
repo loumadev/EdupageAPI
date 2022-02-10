@@ -21,17 +21,17 @@ export type AssignmentType = string;
 /**
  * Assignment group
  */
-export type AssignmentGroup = string[];
+export type AssignmentGroup = AssignmentType[];
 /**
  * Timeline item type
  */
 export type TimelineItemType = string;
-export type GENDER = string;
+export type GENDER = Gender;
 export namespace GENDER {
     const MALE: string;
     const FEMALE: string;
 }
-export type ENDPOINT = number;
+export type ENDPOINT = APIEndpoint;
 export namespace ENDPOINT {
     const DASHBOARD_GET_USER: number;
     const DASHBOARD_GET_CLASSBOOK: number;
@@ -51,7 +51,7 @@ export namespace ENDPOINT {
     const GRADES_DATA: number;
     const SESSION_PING: number;
 }
-export type ENTITY_TYPE = string;
+export type ENTITY_TYPE = EntityType;
 export namespace ENTITY_TYPE {
     const STUD_PLAN: string;
     const STUDENT: string;
@@ -67,12 +67,12 @@ export namespace ENTITY_TYPE {
     const ADMIN: string;
     const PARENT: string;
 }
-export type API_STATUS = string;
+export type API_STATUS = APIStatus;
 export namespace API_STATUS {
     const OK: string;
     const FAIL: string;
 }
-export type ASSIGNMENT_TYPE = string;
+export type ASSIGNMENT_TYPE = AssignmentType;
 export namespace ASSIGNMENT_TYPE {
     const HOMEWORK: string;
     const ETEST_HOMEWORK: string;
@@ -106,7 +106,7 @@ export namespace ASSIGNMENT_GROUP {
     export const PRESENTATION: string[];
     export const OTHER: string[];
 }
-export type TIMELINE_ITEM_TYPE = string;
+export type TIMELINE_ITEM_TYPE = TimelineItemType;
 export namespace TIMELINE_ITEM_TYPE {
     export const MESSAGE: string;
     export const MESSAGE_TO_SUBTITUTER: string;

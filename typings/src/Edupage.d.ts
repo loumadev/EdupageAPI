@@ -8,8 +8,8 @@ export = Edupage;
 declare class Edupage extends RawData {
     /**
      *
-     * @param {Date|number|string} date1
-     * @param {Date|number|string} date2
+     * @param {Date | number | string} date1
+     * @param {Date | number | string} date2
      * @return {boolean} true if day of the dates is same, otherwise false
      * @memberof Edupage
      */
@@ -29,95 +29,132 @@ declare class Edupage extends RawData {
      */
     private static parse;
     /**
-     * @type {User|Teacher|Student}
+     * Creates an instance of Edupage.
+     * @memberof Edupage
+     */
+    constructor();
+    /**
+     * Instance of currently logged in user.
+     * All the information in the edupage instance is related to this user.
+     * This user is used to make all requests to the Edupage internal APIs.
+     * @type {User | Teacher | Student}
      */
     user: User | Teacher | Student;
     /**
+     * List of all seasons or semesters.
      * @type {Season[]}
      */
     seasons: Season[];
     /**
+     * List of all students in the school (if the user is a teacher, otherwise the list contains classmates only).
      * @type {Student[]}
      */
     students: Student[];
     /**
+     * List of all teachers in the school.
      * @type {Teacher[]}
      */
     teachers: Teacher[];
     /**
+     * List of all classes in the school.
      * @type {Class[]}
      */
     classes: Class[];
     /**
+     * List of all classrooms in the school.
      * @type {Classroom[]}
      */
     classrooms: Classroom[];
     /**
+     * List of all parents for owned class (if the user is a teacher, otherwise the list contains parents of the student).
      * @type {Parent[]}
      */
     parents: Parent[];
     /**
+     * List of all subjects in the school.
      * @type {Subject[]}
      */
     subjects: Subject[];
     /**
+     * List of all periods in the school.
      * @type {Period[]}
      */
     periods: Period[];
     /**
+     * List of all timetables currently fetched.
+     * There are always timetables for 2 - 4 days (current + next, if friday + weekend).
+     * This list is used as a cache to avoid fetching the same timetable multiple times.
      * @type {Timetable[]}
      */
     timetables: Timetable[];
     /**
+     * List of all message items on the timeline for currently logged in user.
+     * Contains visible messages as well as hidden confirmations and helper records
      * @type {Message[]}
      */
     timelineItems: Message[];
     /**
+     * List of all visible timeline items on the timeline for currently logged in user.
      * @type {Message[]}
      */
     timeline: Message[];
     /**
+     * List of all plans for currently logged in user.
      * @type {Plan[]}
      */
     plans: Plan[];
     /**
+     * List of all assignments for currently logged in user.
      * @type {Assignment[]}
      */
     assignments: Assignment[];
     /**
+     * List of all assignments type of homework for currently logged in user.
      * @type {Homework[]}
      */
     homeworks: Homework[];
     /**
+     * List of all assignments type of test for currently logged in user.
      * @type {Test[]}
      */
     tests: Test[];
     /**
+     * List of all applications in the school.
      * @experimental
      * @type {Application[]}
      */
     applications: Application[];
     /**
+     * Instance of an ASC object.
+     * Can be used to access some general school data.
      * @type {ASC}
      */
     ASC: ASC;
     /**
+     * Current school year.
+     * If the current school year is "2020/2021", then this value is `2020`.
      * @type {number}
      */
     year: number;
     /**
+     * Base edupage URL.
+     * @example "https://example.edupage.org"
      * @type {string}
      */
     baseUrl: string;
     /**
+     * @typedef {import("./User").LoginOptions} LoginOptions
+     */
+    /**
      * Logs user in for this instance
      *
-     * @param {string} [username=this.user.credentials.username]
-     * @param {string} [password=this.user.credentials.password]
-     * @return {Promise<User|Teacher|Student>}
+     * @param {string} [username=this.user.credentials.username] Username of the user
+     * @param {string} [password=this.user.credentials.password] Password of the user
+     * @param {LoginOptions} [options] Login options
+     * @return {Promise<User | Teacher | Student>} Returns a promise that resolves with the `User` object if successful. If the 2FA is requested by the Edupage, the promise will resolve with `null`.
      * @memberof Edupage
      */
-    login(username?: string, password?: string): Promise<User | Teacher | Student>;
+    login(username?: string, password?: string, options?: User.LoginOptions): Promise<User | Teacher | Student>;
     /**
      * Refreshes all fields in `Edupage` instance
      * @memberof Edupage
@@ -166,11 +203,11 @@ declare class Edupage extends RawData {
      * @memberof Edupage
      */
     _updateInternalValues(): void;
-    grades: any;
+    grades: Grade[];
     /**
      *
      * @param {string} id
-     * @return {User|Teacher|Student|Parent|undefined}
+     * @return {User | Teacher | Student | Parent | undefined}
      * @memberof Edupage
      */
     getUserById(id: string): User | Teacher | Student | Parent | undefined;
@@ -184,7 +221,7 @@ declare class Edupage extends RawData {
     /**
      *
      * @param {string} userString
-     * @return {User|Teacher|Student|Parent|undefined}
+     * @return {User | Teacher | Student | Parent | undefined}
      * @memberof Edupage
      */
     getUserByUserString(userString: string): User | Teacher | Student | Parent | undefined;
@@ -198,7 +235,7 @@ declare class Edupage extends RawData {
     /**
      *
      * @param {Date} date
-     * @return {Promise<Timetable|undefined>}
+     * @return {Promise<Timetable | undefined>}
      * @memberof Edupage
      */
     getTimetableForDate(date: Date): Promise<Timetable | undefined>;
@@ -217,12 +254,12 @@ declare class Edupage extends RawData {
     uploadAttachment(filepath: string): Promise<Attachment>;
     /**
      * @typedef {Object} APIOptions
-     * @prop {string|ENDPOINT} url
-     * @prop {Object<string, any>|stream.Readable|Buffer|string} [data={}]
+     * @prop {string | ENDPOINT} url
+     * @prop {Object<string, any> | stream.Readable | Buffer | string} [data={}]
      * @prop {Object<string, any>} [headers={}]
      * @prop {string} [method="POST"]
      * @prop {boolean} [encodeBody=true]
-     * @prop {"json"|"text"} [type="json"]
+     * @prop {"json" | "text"} [type="json"]
      * @prop {boolean} [autoLogin=true]
      */
     /**
@@ -237,7 +274,7 @@ declare class Edupage extends RawData {
         url: string | ENDPOINT;
         data?: {
             [x: string]: any;
-        } | any | any | string;
+        } | stream.Readable | Buffer | string;
         headers?: {
             [x: string]: any;
         };
@@ -258,7 +295,7 @@ declare class Edupage extends RawData {
      * Schedules a session ping request
      */
     scheduleSessionPing(): void;
-    _sessionPingTimeout: number;
+    _sessionPingTimeout: NodeJS.Timeout;
     /**
      * Stops internal timers to prevent process from hanging infinitely.
      */
@@ -299,9 +336,9 @@ import Homework = require("./Homework");
 import Test = require("./Test");
 import Application = require("./Application");
 import ASC = require("./ASC");
+import Grade = require("./Grade");
 import Attachment = require("./Attachment");
 import { ENDPOINT } from "./enums";
-type RawDataObject = {
-    [x: string]: any;
-};
-type APIEndpoint = number;
+import stream = require("stream");
+type RawDataObject = import("../lib/RawData").RawDataObject;
+type APIEndpoint = import("./enums").APIEndpoint;

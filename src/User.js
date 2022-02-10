@@ -1,4 +1,3 @@
-module.exports = null;
 const debug = require("debug")("edupage:log");
 const error = require("debug")("edupage:error");
 const {default: fetch} = require("node-fetch");

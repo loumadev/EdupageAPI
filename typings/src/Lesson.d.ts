@@ -11,7 +11,7 @@ declare class Lesson extends RawData {
      */
     constructor(data?: RawDataObject, edupage?: Edupage);
     /**
-     * Edupage instance
+     * Edupage instance associated to this object
      * @type {Edupage}
      */
     edupage: Edupage;
@@ -101,6 +101,4 @@ import Classroom = require("./Classroom");
 import Student = require("./Student");
 import Teacher = require("./Teacher");
 import Assignment = require("./Assignment");
-type RawDataObject = {
-    [x: string]: any;
-};
+type RawDataObject = import("../lib/RawData").RawDataObject;
