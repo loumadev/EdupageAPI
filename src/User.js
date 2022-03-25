@@ -33,7 +33,7 @@ debug.log = console.log.bind(console);
 
 /**
  * @typedef {Object} LoginOptions
- * @prop {string | null | undefined} [code2FA=undefined] If the provided value is typeof `string`, it's considired as a 2FA code (should be provided after first unsuccessful login). If it's `null` the 2FA will be skipped. If omitted or `undefined` and the 2FA is requested by the Edupage, the function will resolve with `null`.
+ * @prop {string | null | undefined} [code2FA=undefined] If the provided value is typeof `string`, it's considered as a 2FA code (should be provided after first unsuccessful login). If it's `null` the 2FA will be skipped. If omitted or `undefined` and the 2FA is requested by the Edupage, the function will resolve with `null`.
  * @prop {string} [user] Can be used to select a specific user in case there are more.
  * @prop {string} [edupage=""] The edupage subdomain (origin) to login to. Try to set this if you have trouble logging in (e.g. incorrect password error).
  */
